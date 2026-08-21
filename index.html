@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>BordadoPreco Pro — Precificador de Bordados | Calcule o Valor do Bordado | Software para Bordado</title>
-    <meta name="description" content="BordadoPreco Pro — O melhor software de precificação de bordado. Calcule o valor do bordado automaticamente. Precificador de bordados profissional. Lê arquivos .pes, .jef, .dst, .emb. Baixe grátis para teste!">
-    <meta name="keywords" content="precificador de bordados, BordadoPrecoPro, valor do bordado, Software Bordado, calcular preço de bordado, orçamento de bordado, programa para precificar bordado, JDC Tecnologia">
+    <title>BordadoPreco Pro v4.0.2 — Precificador de Bordados | Calcule o Valor do Bordado | JDC Tecnologia</title>
+    <meta name="description" content="BordadoPreco Pro v4.0.2 — Software 100% independente. Identificador Automático de Cores. Lê arquivos .pes, .jef, .dst, .emb, .exp, .vp3. Lançamento Agosto de 2026.">
+    <meta name="keywords" content="precificador de bordados, BordadoPrecoPro, valor do bordado, Software Bordado, calcular preço de bordado, orçamento de bordado, programa independente, JDC Tecnologia, Identificador Automático de Cores">
     <meta name="author" content="JDC Tecnologia em Bordados">
     
-    <meta property="og:title" content="BordadoPreco Pro — Precificador de Bordados">
-    <meta property="og:description" content="Calcule o valor do bordado em segundos. Software profissional para bordadeiros.">
+    <meta property="og:title" content="BordadoPreco Pro v4.0.2 — Precificador de Bordados">
+    <meta property="og:description" content="Funciona sozinho! Não precisa de outros programas. Reconhecimento automático de cores. Orçamentos em PDF e HTML.">
     <meta property="og:type" content="website">
     
     <style>
@@ -18,20 +18,27 @@
         :root {
             --azul-escuro: #0A2540;
             --azul-medio: #1E4072;
+            --azul-claro: #2C5282;
             --dourado: #F5A623;
+            --dourado-escuro: #E69500;
             --branco: #FFFFFF;
             --cinza-claro: #F4F6F9;
-            --texto: #333333;
+            --cinza-meio: #E2E8F0;
+            --texto: #2D3748;
+            --texto-claro: #718096;
             --telegram: #0088CC;
             --aviso: #FFF3CD;
             --aviso-borda: #FFC107;
             --aviso-texto: #856404;
+            --sucesso: #F0FFF4;
+            --sucesso-borda: #25D366;
+            --destaque: #FF5722;
         }
-        body { color: var(--texto); line-height: 1.6; }
+        body { color: var(--texto); line-height: 1.7; background: var(--branco); }
         a { text-decoration: none; color: inherit; }
         ul { list-style: none; }
-        img { max-width: 100%; height: auto; }
-        .container { width: 90%; max-width: 1200px; margin: 0 auto; }
+        img { max-width: 100%; height: auto; border-radius: 8px; }
+        .container { width: 92%; max-width: 1200px; margin: 0 auto; }
 
         /* ======================================
            CABEÇALHO COM LOGO
@@ -39,17 +46,18 @@
         header { 
             background: var(--azul-escuro); 
             color: var(--branco); 
-            padding: 0.8rem 0; 
+            padding: 0.9rem 0; 
             position: sticky; 
             top: 0; 
             z-index: 100; 
-            box-shadow: 0 3px 15px rgba(0,0,0,0.2); 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15); 
         }
         .header-content { 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
             flex-wrap: wrap; 
+            gap: 1rem;
         }
         .logo { 
             display: flex; 
@@ -61,11 +69,9 @@
             width: auto; 
             transition: transform 0.3s ease; 
         }
-        .logo img:hover { 
-            transform: scale(1.05); 
-        }
+        .logo img:hover { transform: scale(1.05); }
         .logo-text h1 { 
-            font-size: 1.35rem; 
+            font-size: 1.3rem; 
             color: var(--branco); 
             margin: 0; 
             line-height: 1.3;
@@ -77,7 +83,7 @@
         }
         nav ul { 
             display: flex; 
-            gap: 1.3rem; 
+            gap: 1.1rem; 
             align-items: center; 
             flex-wrap: wrap; 
         }
@@ -85,11 +91,9 @@
             color: #E0E6ED; 
             font-weight: 500; 
             transition: color 0.3s; 
-            font-size: 0.95rem;
+            font-size: 0.92rem;
         }
-        nav a:hover { 
-            color: var(--dourado); 
-        }
+        nav a:hover { color: var(--dourado); }
         .btn-whatsapp { 
             background: #25D366; 
             color: white !important; 
@@ -99,17 +103,18 @@
             display: inline-flex; 
             align-items: center; 
             gap: 0.4rem; 
-            transition: transform 0.2s; 
-            font-size: 0.95rem;
+            transition: transform 0.2s, box-shadow 0.2s; 
+            font-size: 0.92rem;
         }
         .btn-whatsapp:hover { 
             transform: translateY(-2px); 
+            box-shadow: 0 4px 12px rgba(37,211,102,0.3);
             color: white !important; 
         }
         .btn-telegram { 
             background: var(--telegram); 
             color: white !important; 
-            padding: 0.6rem 1.2rem; 
+            padding: 0.7rem 1.3rem; 
             border-radius: 6px; 
             font-weight: 600; 
             display: inline-flex; 
@@ -117,58 +122,92 @@
             gap: 0.5rem; 
             transition: transform 0.2s; 
         }
-        .btn-telegram:hover { 
-            transform: translateY(-2px); 
-            color: white !important; 
-        }
+        .btn-telegram:hover { transform: translateY(-2px); }
 
-        /* ⚠️ AVISO DE COMPATIBILIDADE */
-        .aviso-compatibilidade {
+        /* ⚠️ AVISOS */
+        .aviso-box {
+            padding: 1.1rem 1.3rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-weight: 500;
+        }
+        .aviso-independente {
+            background: #E3F2FD;
+            border-left: 5px solid #1976D2;
+            color: #1565C0;
+        }
+        .aviso-sistema {
             background: var(--aviso);
             border-left: 5px solid var(--aviso-borda);
             color: var(--aviso-texto);
-            padding: 1rem 1.2rem;
-            border-radius: 8px;
-            margin: 1.5rem 0;
-            font-weight: 500;
         }
-        .aviso-compatibilidade strong {
-            display: block;
-            margin-bottom: 0.3rem;
-            font-size: 1.05rem;
+        .aviso-atualizacao {
+            background: var(--sucesso);
+            border-left: 5px solid var(--sucesso-borda);
+            color: #157C38;
         }
+
+        /* 🏆 SELO DE CONFIANÇA */
+        .selo-jdc {
+            background: linear-gradient(90deg, #1E4072, #2C5282);
+            color: white;
+            padding: 1.1rem;
+            border-radius: 10px;
+            margin-bottom: 1.2rem;
+        }
+        .selo-jdc h3 { color: var(--dourado); margin-bottom: 0.4rem; font-size: 1.1rem; }
+        .paises { font-size: 0.88rem; color: #B0C4DE; margin-top: 0.3rem; }
+        .selo-lancamento {
+            background: linear-gradient(90deg, #E91E63, #C2185B);
+            color: white;
+            padding: 1.1rem;
+            border-radius: 10px;
+            margin-bottom: 1.2rem;
+            text-align: center;
+        }
+        .selo-lancamento h3 { margin-bottom: 0.3rem; font-size: 1.1rem; }
 
         /* HERO */
         .hero { 
             background: linear-gradient(135deg, var(--azul-escuro) 0%, var(--azul-medio) 100%); 
             color: white; 
-            padding: 4rem 0; 
+            padding: 3.5rem 0; 
         }
         .hero-content { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
             gap: 3rem; 
-            align-items: center; 
+            align-items: flex-start; 
         }
         .hero-text h2 { 
-            font-size: 2.4rem; 
+            font-size: 2.2rem; 
             line-height: 1.2; 
-            margin-bottom: 1.3rem; 
+            margin-bottom: 0.8rem; 
             color: var(--dourado); 
         }
+        .destaque-novidade {
+            display: inline-block;
+            background: var(--destaque);
+            color: white;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            margin: 0.5rem 0 0.8rem;
+        }
         .hero-text p { 
-            font-size: 1.1rem; 
-            margin-bottom: 1rem; 
+            font-size: 1.03rem; 
+            margin-bottom: 0.6rem; 
             color: #E0E6ED; 
         }
         .hashtags { 
-            margin: 1.5rem 0; 
+            margin: 1.4rem 0; 
             display: flex; 
             gap: 0.6rem; 
             flex-wrap: wrap; 
         }
         .hashtag { 
-            background: rgba(245, 166, 35, 0.2); 
+            background: rgba(245, 166, 35, 0.18); 
             color: #FFD700; 
             padding: 0.4rem 0.85rem; 
             border-radius: 20px; 
@@ -195,6 +234,7 @@
         .btn-primary:hover { 
             transform: translateY(-3px); 
             box-shadow: 0 6px 20px rgba(245, 166, 35, 0.35); 
+            background: var(--dourado-escuro);
         }
         .btn-secondary { 
             background: transparent; 
@@ -210,15 +250,18 @@
             background: white; 
             color: var(--azul-escuro); 
         }
+        .hero-img { display: flex; flex-direction: column; gap: 1.2rem; }
         .hero-img img { 
             border-radius: 10px; 
-            box-shadow: 0 6px 20px rgba(0,0,0,0.2); 
-            margin-bottom: 1.5rem; 
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25); 
             width: 100%; 
+            transition: transform 0.3s;
         }
+        .hero-img img:hover { transform: scale(1.02); }
+        .legenda-img { font-size: 0.85rem; color: #B0C4DE; text-align: center; margin-top: -0.5rem; }
 
         /* SEÇÕES */
-        section { padding: 4rem 0; }
+        section { padding: 3.5rem 0; }
         .section-title { 
             text-align: center; 
             font-size: 2rem; 
@@ -236,22 +279,19 @@
             left: 50%; 
             transform: translateX(-50%); 
         }
+        .subtitulo-secao { text-align: center; color: var(--texto-claro); margin-top: -2rem; margin-bottom: 2.5rem; max-width: 700px; margin-left: auto; margin-right: auto; }
 
-        /* PROBLEMA → SOLUÇÃO */
-        .problema-solucao { background: var(--cinza-claro); }
-        .grid-2 { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 3rem; 
-            align-items: center; 
+        /* QUEM SOMOS */
+        .quem-somos-box {
+            background: white;
+            padding: 2.2rem;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            max-width: 800px;
+            margin: 0 auto;
         }
-        .caixa { padding: 2rem; border-radius: 12px; }
-        .problema { background: #FFF2F2; border-left: 5px solid #FF6B6B; }
-        .solucao { background: #F0FFF4; border-left: 5px solid #25D366; }
-        .caixa h3 { font-size: 1.3rem; margin-bottom: 1rem; color: var(--azul-escuro); }
-        .caixa ul { gap: 0.5rem; display: flex; flex-direction: column; }
-        .caixa li { padding-left: 1.5rem; position: relative; }
-        .caixa li::before { content: "✓"; position: absolute; left: 0; font-weight: bold; }
+        .quem-somos-box h3 { color: var(--azul-medio); margin-bottom: 1rem; font-size: 1.2rem; }
+        .quem-somos-box p { margin-bottom: 0.7rem; }
 
         /* FUNCIONALIDADES */
         .funcionalidades-grid { 
@@ -263,46 +303,41 @@
             background: white; 
             padding: 2rem; 
             border-radius: 12px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07); 
             border-top: 4px solid var(--dourado); 
-            transition: transform 0.3s; 
+            transition: transform 0.3s, box-shadow 0.3s; 
         }
-        .card:hover { transform: translateY(-8px); }
-        .card h3 { color: var(--azul-escuro); margin-bottom: 0.8rem; font-size: 1.1rem; }
-        .card p { color: #555; font-size: 0.95rem; }
+        .card:hover { transform: translateY(-6px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        .card.destaque { border-top-color: var(--destaque); background: #FFF8F5; }
+        .card h3 { color: var(--azul-escuro); margin-bottom: 0.8rem; font-size: 1.08rem; }
+        .card p { color: var(--texto-claro); font-size: 0.95rem; line-height: 1.6; }
 
-        /* COMO FUNCIONA */
-        .passos { 
-            display: flex; 
-            justify-content: space-between; 
-            gap: 1rem; 
-            flex-wrap: wrap; 
+        /* FORMATOS */
+        .formatos-section { background: var(--cinza-claro); }
+        .formatos-lista {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            justify-content: center;
+            margin-top: 1.5rem;
         }
-        .passo { 
-            flex: 1; 
-            min-width: 160px; 
-            text-align: center; 
-            padding: 1.5rem; 
+        .formato-tag {
+            background: var(--azul-escuro);
+            color: white;
+            padding: 0.5rem 1.1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.95rem;
         }
-        .passo-num { 
-            width: 50px; 
-            height: 50px; 
-            background: var(--azul-escuro); 
-            color: var(--dourado); 
-            border-radius: 50%; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 1.4rem; 
-            font-weight: bold; 
-            margin: 0 auto 1rem; 
+        .mais-formatos {
+            background: var(--dourado);
+            color: var(--azul-escuro);
         }
-        .passo h4 { color: var(--azul-escuro); margin-bottom: 0.5rem; }
 
         /* LICENÇA / DOWNLOAD */
         .preco-section { background: linear-gradient(135deg, #F4F6F9 0%, #E9ECEF 100%); }
         .plano-card { 
-            max-width: 550px; 
+            max-width: 620px; 
             margin: 0 auto; 
             background: white; 
             padding: 3rem; 
@@ -311,18 +346,18 @@
             text-align: center; 
             border-top: 6px solid var(--dourado); 
         }
-        .plano-card h3 { font-size: 1.5rem; color: var(--azul-escuro); margin-bottom: 0.5rem; }
+        .versao-tag { display: inline-block; background: var(--azul-medio); color: white; padding: 0.4rem 1.2rem; border-radius: 20px; font-size: 0.95rem; margin-bottom: 0.8rem; font-weight: 600; }
         .licenca-tag { 
             display: inline-block; 
             background: #25D366; 
             color: white; 
-            padding: 0.3rem 1rem; 
+            padding: 0.4rem 1.2rem; 
             border-radius: 20px; 
-            font-size: 0.9rem; 
+            font-size: 0.95rem; 
             font-weight: 600; 
             margin-bottom: 1.5rem; 
         }
-        .info-texto { font-size: 1.1rem; color: var(--azul-escuro); margin: 1.5rem 0; line-height: 1.8; }
+        .info-texto { font-size: 1.05rem; color: var(--azul-escuro); margin: 1.5rem 0; line-height: 1.8; }
         .destaque-telegram { 
             background: #E8F4FC; 
             border-left: 4px solid var(--telegram); 
@@ -333,32 +368,8 @@
         }
         .destaque-telegram p { font-weight: 500; color: #006699; margin-bottom: 0.8rem; }
 
-        /* DEPOIMENTOS / PROVA SOCIAL */
-        .depoimentos { background: var(--azul-escuro); color: white; text-align: center; }
-        .depoimentos .section-title { color: white; }
-        .depoimentos .section-title::after { background: var(--dourado); }
-        .depoimento-texto { 
-            font-size: 1.3rem; 
-            max-width: 800px; 
-            margin: 0 auto 2rem; 
-            font-style: italic; 
-            color: #E0E6ED; 
-        }
-        .contador { font-size: 1.5rem; color: var(--dourado); font-weight: 600; }
-
-        /* CTA FINAL */
-        .cta-final { 
-            text-align: center; 
-            background: linear-gradient(135deg, var(--azul-medio) 0%, var(--azul-escuro) 100%); 
-            color: white; 
-            border-radius: 16px; 
-            padding: 3rem; 
-            margin: 2rem 0; 
-        }
-        .cta-final h3 { font-size: 1.8rem; margin-bottom: 2rem; color: var(--dourado); }
-
         /* FOOTER */
-        footer { background: #061428; color: #B0C4DE; padding: 3rem 0 1.5rem; }
+        footer { background: #061428; color: #B0C4DE; padding: 3rem 0 1.5rem; margin-top: 2rem; }
         .footer-grid { 
             display: grid; 
             grid-template-columns: repeat(3, 1fr); 
@@ -377,17 +388,17 @@
         }
 
         /* RESPONSIVIDADE */
-        @media(max-width: 900px) {
-            .hero-content, .grid-2 { grid-template-columns: 1fr; }
+        @media(max-width: 968px) {
+            .hero-content { grid-template-columns: 1fr; }
             .funcionalidades-grid { grid-template-columns: repeat(2, 1fr); }
             .footer-grid { grid-template-columns: 1fr 1fr; }
-            .section-title { font-size: 1.6rem; }
+            .section-title { font-size: 1.7rem; }
             .hero-text h2 { font-size: 1.8rem; }
         }
         @media(max-width: 600px) {
             .funcionalidades-grid { grid-template-columns: 1fr; }
             .footer-grid { grid-template-columns: 1fr; }
-            nav ul { gap: 0.7rem; margin-top: 0.5rem; font-size: 0.9rem; }
+            nav ul { gap: 0.6rem; margin-top: 0.5rem; font-size: 0.85rem; }
             .logo img { height: 45px; }
         }
     </style>
@@ -395,234 +406,222 @@
 <body>
 
 <!-- ==============================================
-    CABEÇALHO COM LOGO (.PNG)
+    CABEÇALHO COM LOGO
     ============================================== -->
 <header>
     <div class="container header-content">
         <div class="logo">
-            <!-- 📂 Salve sua logo na mesma pasta com o nome: logo-jdc.png -->
             <img src="logo-jdc.png" alt="JDC Tecnologia em Bordados — Logo">
             <div class="logo-text">
                 <h1>JDC Tecnologia em Bordados</h1>
-                <p>Soluções em automação para bordado</p>
+                <p>Manutenção e suporte de softwares de bordado</p>
             </div>
         </div>
         <nav>
             <ul>
-                <li><a href="#inicio">Início</a></li>
-                <li><a href="#funcionalidades">Funcionalidades</a></li>
-                <li><a href="#como-funciona">Como Funciona</a></li>
-                <li><a href="#licenca">Licença</a></li>
-                <li><a href="#depoimentos">Depoimentos</a></li>
-                <li><a href="#contato">Contato</a></li>
-                <li><a class="btn-whatsapp" href="https://wa.me/5565999460391" target="_blank">📱 WhatsApp</a></li>
+                <li><a href="#quem-somos">Quem Somos</a></li>
+                <li><a href="#produto">O Produto</a></li>
+                <li><a href="#recursos">Recursos</a></li>
+                <li><a href="#download">Download</a></li>
+                <li><a class="btn-whatsapp" href="https://wa.me/5565999460391" target="_blank">📱 (65) 99946-0391</a></li>
             </ul>
         </nav>
     </div>
 </header>
 
-<!-- HERO -->
-<section class="hero" id="inicio">
+<!-- ==============================================
+    SEÇÃO PRINCIPAL
+    ============================================== -->
+<section class="hero" id="produto">
     <div class="container hero-content">
         <div class="hero-text">
-            <h2>Calcule o valor do seu bordado em segundos ✅</h2>
-            <p>O <strong>BordadoPreco Pro</strong> é o <strong>precificador de bordados</strong> que calcula o preço exato com base em custos reais. Não precifique mais no chute — saiba quanto cobrar e quanto lucra!</p>
+
+            <!-- 🏆 JDC — QUEM SOMOS -->
+            <div class="selo-jdc">
+                <h3>🏆 JDC Tecnologia — +10 Anos de Mercado</h3>
+                <p>Referência em manutenção, instalação e suporte de softwares de bordado. Milhares de clientes satisfeitos em todo o Brasil e exterior.</p>
+                <p class="paises">Paraguai • Argentina • EUA • França • Espanha • Portugal • Reino Unido • Austrália • África do Sul • Turquia</p>
+            </div>
+
+            <!-- 🆕 LANÇAMENTO -->
+            <div class="selo-lancamento">
+                <h3>🍒 NOVIDADE — BordadoPreco Pro</h3>
+                <p>Lançamento Agosto de 2026. Desenvolvido após meses de pesquisa e desenvolvimento. A cereja do bolo!</p>
+            </div>
+
+            <h2>Calcule o preço certo dos seus bordados</h2>
             
-            <!-- ⚠️ AVISO DE COMPATIBILIDADE BEM VISÍVEL -->
-            <div class="aviso-compatibilidade">
-                <strong>⚠️ Requisito do Sistema</strong>
-                Funciona exclusivamente em <strong>Windows 10 64 bits</strong> ou <strong>Windows 11 64 bits</strong>. Não compatível com versões antigas do Windows (7, 8, Vista, XP).
+            <div class="destaque-novidade">⭐ Identificador Automático de Cores</div>
+            
+            <p>O <strong>BordadoPreco Pro v4.0.2</strong> é um software 100% independente. Lê sua matriz, reconhece cores, pontos e dimensões, calcula custos reais e gera orçamentos em PDF e HTML.</p>
+
+            <!-- ✅ INDEPENDÊNCIA -->
+            <div class="aviso-box aviso-independente">
+                <strong>✅ Funciona sozinho!</strong> Não precisa de nenhum outro programa instalado no computador.
+            </div>
+
+            <!-- ⚠️ SISTEMA -->
+            <div class="aviso-box aviso-sistema">
+                <strong>⚠️ Requisito do Sistema</strong> Windows 10 64 bits ou Windows 11 64 bits. Não compatível com versões antigas ou 32 bits.
+            </div>
+
+            <!-- 🔄 ATUALIZAÇÃO -->
+            <div class="aviso-box aviso-atualizacao">
+                <strong>✅ Atualize sem medo!</strong> Sua licença NÃO se perde nas atualizações.
             </div>
             
-            <!-- 🏷️ Suas hashtags -->
             <div class="hashtags">
                 <span class="hashtag">#precificadordebordados</span>
                 <span class="hashtag">#BordadoPrecoPro</span>
-                <span class="hashtag">#valordobordado</span>
-                <span class="hashtag">#SoftwareBordado</span>
+                <span class="hashtag">#IdentificadorDeCores</span>
+                <span class="hashtag">#SoftwareIndependente</span>
             </div>
             
             <div class="hero-buttons">
-                <a href="#licenca" class="btn-primary">Baixar versão de teste</a>
-                <a href="#como-funciona" class="btn-secondary">Ver como funciona</a>
+                <a href="#download" class="btn-primary">Baixar versão de teste</a>
+                <a href="#recursos" class="btn-secondary">Ver recursos completos</a>
             </div>
         </div>
+
+        <!-- 🖼️ IMAGENS -->
         <div class="hero-img">
-            <!-- 📂 Suas imagens em .jpg -->
-            <img src="imagem1.jpg" alt="BordadoPreco Pro — Tela principal do software">
-            <img src="imagem2.jpg" alt="Calculadora de valor de bordado — Cálculo automático">
-            <img src="imagem3.jpg" alt="Orçamento profissional gerado em PDF">
+            <img src="imagem1.jpg" alt="Tela principal — Cálculo completo do BordadoPreco Pro">
+            <p class="legenda-img">Leitura automática + cálculo de custos</p>
+            
+            <img src="imagem2.jpg" alt="Orçamentos em PDF e HTML">
+            <p class="legenda-img">Orçamentos profissionais prontos para enviar</p>
         </div>
     </div>
 </section>
 
-<!-- PROBLEMA → SOLUÇÃO -->
-<section class="problema-solucao">
+<!-- ==============================================
+    QUEM SOMOS — DETALHADO
+    ============================================== -->
+<section id="quem-somos">
     <div class="container">
-        <h2 class="section-title">Deixe de calcular no olho</h2>
-        <div class="grid-2">
-            <div class="caixa problema">
-                <h3>😰 Sem o #precificadordebordados</h3>
-                <ul>
-                    <li>Perde horas calculando o valor do bordado na mão</li>
-                    <li>Erra e cobra menos do que deveria</li>
-                    <li>Orçamentos sem padrão, parecem pouco profissionais</li>
-                    <li>Não sabe quanto gasta com linha, estabilizador e energia</li>
-                </ul>
-            </div>
-            <div class="caixa solucao">
-                <h3>✅ Com o #BordadoPrecoPro</h3>
-                <ul>
-                    <li>Lê a matriz e calcula tudo automaticamente em segundos</li>
-                    <li>Precifica com custos reais — linha, mão de obra, energia</li>
-                    <li>Gera orçamentos profissionais em PDF ou HTML</li>
-                    <li>Você sabe exatamente seu custo e lucro por cada bordado</li>
-                </ul>
-            </div>
+        <h2 class="section-title">Quem Somos</h2>
+        <div class="quem-somos-box">
+            <h3>🏆 JDC Tecnologia em Bordados</h3>
+            <p>Com mais de <strong>10 anos de experiência</strong> no mercado, somos referência em <strong>manutenção, instalação e suporte de softwares de bordado</strong>.</p>
+            <p>Atendemos <strong>milhares de clientes satisfeitos</strong> em todo o Brasil e em diversos países, incluindo Paraguai, Argentina, Estados Unidos, França, Espanha, Portugal, Reino Unido, Austrália, África do Sul e Turquia.</p>
+            <p>Nosso crescimento acontece pela confiança e qualidade do atendimento — <strong>um cliente indica o outro</strong> pelos bons resultados.</p>
+            <p style="margin-top: 0.8rem; border-top: 1px dashed #ddd; padding-top: 1rem;">
+                <strong>Agora lançamos o BordadoPreco Pro</strong> — desenvolvido após meses de pesquisa e desenvolvimento, atendendo a uma necessidade real do mercado. A cereja do bolo que faltava!
+            </p>
         </div>
     </div>
 </section>
 
-<!-- FUNCIONALIDADES -->
-<section id="funcionalidades">
+<!-- ==============================================
+    RECURSOS
+    ============================================== -->
+<section id="recursos">
     <div class="container">
-        <h2 class="section-title">O que o #SoftwareBordado faz</h2>
+        <h2 class="section-title">O que o BordadoPreco Pro faz</h2>
+        <p class="subtitulo-secao">Tudo que você precisa em um só programa</p>
         <div class="funcionalidades-grid">
-            <div class="card">
-                <h3>📂 Lê matrizes</h3>
-                <p>Suporta .pes, .jef, .dst, .emb, .exp, .vp3 e outros formatos. Lê pontos, cores e dimensões automaticamente.</p>
+            <div class="card destaque">
+                <h3>🎨 Identifica Cores Sozinho</h3>
+                <p>Reconhece automaticamente as cores usadas no bordado e sugere nomes e códigos de fio.</p>
+            </div>
+            <div class="card destaque">
+                <h3>📂 Lê Matrizes</h3>
+                <p>Extrai pontos, cores e dimensões. Suporta mais de 10 formatos de arquivo.</p>
+            </div>
+            <div class="card destaque">
+                <h3>💰 Calcula Custos</h3>
+                <p>Mão de obra, custo fixo, linha por metro, estabilizador, energia por região e tempo de máquina.</p>
             </div>
             <div class="card">
-                <h3>💰 Cálculo do #valordobordado</h3>
-                <p>Mão de obra, custo fixo, linha por metro, estabilizador e energia elétrica por região — tudo detalhado.</p>
+                <h3>📄 Orçamentos Profissionais</h3>
+                <p>Gera PDF e HTML com sua identidade visual. Pronto para enviar ao cliente.</p>
             </div>
             <div class="card">
-                <h3>📄 Orçamentos prontos</h3>
-                <p>Gera orçamentos profissionais em HTML ou PDF com a identidade visual da sua empresa.</p>
+                <h3>🖼️ Visualização Real</h3>
+                <p>Mostra miniatura do bordado na tela. Veja pontos, cores e dimensões de um olhar.</p>
             </div>
             <div class="card">
-                <h3>🖼️ Miniaturas no Windows</h3>
-                <p>Mostra miniaturas coloridas dos seus arquivos de bordado direto no Explorador do Windows.</p>
-            </div>
-            <div class="card">
-                <h3>🎨 Personalização total</h3>
-                <p>Logo, cores, dados da empresa — você define tudo nos orçamentos.</p>
-            </div>
-            <div class="card">
-                <h3>📋 Insumos e serviços</h3>
-                <p>Cadastre materiais e serviços extras. O sistema lembra tudo na próxima vez que você orçar.</p>
+                <h3>💾 Configurações Salvas</h3>
+                <p>Cadastre custos uma vez. O programa lembra tudo na próxima vez que abrir.</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- COMO FUNCIONA -->
-<section id="como-funciona" class="preco-section">
+<!-- ==============================================
+    FORMATOS SUPORTADOS
+    ============================================== -->
+<section class="formatos-section">
     <div class="container">
-        <h2 class="section-title">5 passos para precificar</h2>
-        <div class="passos">
-            <div class="passo">
-                <div class="passo-num">1</div>
-                <h4>Selecione a matriz</h4>
-                <p>Escolha o arquivo de bordado no computador</p>
-            </div>
-            <div class="passo">
-                <div class="passo-num">2</div>
-                <h4>Configure custos</h4>
-                <p>Salário, horas, custos regionais — configure uma vez</p>
-            </div>
-            <div class="passo">
-                <div class="passo-num">3</div>
-                <h4>Adicione extras</h4>
-                <p>Materiais, serviços, cores do fio se precisar</p>
-            </div>
-            <div class="passo">
-                <div class="passo-num">4</div>
-                <h4>Gere orçamento</h4>
-                <p>Salve em PDF ou HTML pronto para enviar</p>
-            </div>
-            <div class="passo">
-                <div class="passo-num">5</div>
-                <h4>Envie ao cliente</h4>
-                <p>Orçamento profissional, rápido e com preço correto ✅</p>
-            </div>
+        <h2 class="section-title">Formatos de Arquivo Suportados</h2>
+        <p class="subtitulo-secao">Lê mais de 10 formatos de matriz de bordado</p>
+        <div class="formatos-lista">
+            <span class="formato-tag">.DST</span>
+            <span class="formato-tag">.PES</span>
+            <span class="formato-tag">.JEF</span>
+            <span class="formato-tag">.EMB</span>
+            <span class="formato-tag">.EXP</span>
+            <span class="formato-tag">.VP3</span>
+            <span class="formato-tag mais-formatos">+10 formatos</span>
         </div>
     </div>
 </section>
 
-<!-- LICENÇA / DOWNLOAD -->
-<section id="licenca" class="preco-section">
+<!-- ==============================================
+    DOWNLOAD / LICENÇA
+    ============================================== -->
+<section id="download" class="preco-section">
     <div class="container">
-        <h2 class="section-title">Adquira sua licença</h2>
+        <h2 class="section-title">Adquira sua Licença</h2>
         <div class="plano-card">
-            <h3>BordadoPreco Pro — Versão 4.0.1</h3>
+            <span class="versao-tag">✅ Versão 4.0.2 — Lançamento Agosto 2026</span>
+            <h3>BordadoPreco Pro</h3>
             <span class="licenca-tag">LICENÇA ATIVA</span>
-            <p style="margin-bottom: 1rem;">Software para Windows — uso vitalício com atualizações</p>
-
-            <!-- ⚠️ AVISO REPETIDO NA PÁGINA DE DOWNLOAD -->
-            <div class="aviso-compatibilidade" style="text-align: left;">
-                <strong>⚠️ Requisito Obrigatório</strong>
-                Este programa funciona <strong>apenas em Windows 10 64 bits</strong> ou <strong>Windows 11 64 bits</strong>.<br>
-                <em>Não é compatível com Windows 7, 8, Vista, XP ou versões de 32 bits.</em>
-            </div>
-
-            <div class="info-texto">
-                <p>💬 <strong>Procure o suporte pelo WhatsApp:</strong><br>
-                <a href="https://wa.me/5565999460391" target="_blank" style="color: #25D366; text-decoration: underline;">+55 65 99946-0391</a></p>
-            </div>
+            <p style="margin: 1rem 0;">Uso vitalício com atualizações • Funciona de forma independente</p>
 
             <div class="destaque-telegram">
                 <p>📥 <strong>Baixe gratuitamente para teste no Telegram:</strong></p>
-                <a class="btn-telegram" href="https://t.me/EmbroGestPro" target="_blank">👉 Acessar canal no Telegram</a>
+                <a class="btn-telegram" href="https://t.me/EmbroGestPro" target="_blank">👉 t.me/EmbroGestPro</a>
             </div>
 
-            <p style="margin-top: 1.5rem; font-size: 0.95rem; color: #666;">Suporte técnico incluso • Versão de teste • Atendimento personalizado</p>
+            <div style="margin-top: 1.5rem;">
+                <p>💬 <strong>Atendimento e suporte:</strong></p>
+                <a class="btn-whatsapp" href="https://wa.me/5565999460391" target="_blank">📱 (65) 99946-0391</a>
+            </div>
+
+            <p style="margin-top: 1.5rem; font-size: 0.9rem; color: var(--texto-claro);">
+                Suporte técnico incluso • Ativação rápida • Atendimento personalizado
+            </p>
         </div>
     </div>
 </section>
 
-<!-- DEPOIMENTOS / PROVA SOCIAL -->
-<section id="depoimentos" class="depoimentos">
-    <div class="container">
-        <h2 class="section-title">Quem já usa, aprova</h2>
-        <p class="depoimento-texto">"Parei de perder dinheiro. Agora sei exatamente o valor do bordado e meus orçamentos parecem muito mais profissionais."</p>
-        <p class="contador">✅ Usado por bordadeiros em todo o Brasil</p>
-    </div>
-</section>
-
-<!-- CTA FINAL -->
-<section class="container">
-    <div class="cta-final">
-        <h3>Pare de calcular no olho. Comece a usar o #precificadordebordados mais completo do Brasil!</h3>
-        <a href="#licenca" class="btn-primary">Baixar versão de teste</a>
-        <br><br>
-        <a class="btn-whatsapp" href="https://wa.me/5565999460391" target="_blank" style="font-size: 1.1rem;">📱 Falar pelo WhatsApp: +55 65 99946-0391</a>
-    </div>
-</section>
-
-<!-- RODAPÉ -->
-<footer id="contato">
+<!-- ==============================================
+    RODAPÉ
+    ============================================== -->
+<footer>
     <div class="container footer-grid">
         <div class="footer-col">
             <h4>JDC Tecnologia em Bordados</h4>
-            <p>Soluções em automação para bordado<br>Calculadora de Preço de Bordado — BordadoPreco Pro v4.0.1</p>
-            <p style="margin-top: 1rem; font-size: 0.85rem; color: #888;">#precificadordebordados #BordadoPrecoPro #valordobordado #SoftwareBordado</p>
+            <p>🏆 +10 anos de experiência em manutenção, instalação e suporte de softwares de bordado.</p>
+            <p>Milhares de clientes satisfeitos no Brasil e exterior: Paraguai, Argentina, EUA, França, Espanha, Portugal, Reino Unido, Austrália, África do Sul e Turquia.</p>
         </div>
         <div class="footer-col">
             <h4>Contato</h4>
-            <p>📱 WhatsApp: <a href="https://wa.me/5565999460391" target="_blank">+55 65 99946-0391</a></p>
-            <p>📥 Download de teste: <a href="https://t.me/EmbroGestPro" target="_blank">Telegram @EmbroGestPro</a></p>
+            <p>📱 WhatsApp: <a href="https://wa.me/5565999460391" target="_blank">(65) 99946-0391</a></p>
+            <p>📥 Download: <a href="https://t.me/EmbroGestPro" target="_blank">t.me/EmbroGestPro</a></p>
         </div>
         <div class="footer-col">
             <h4>Links rápidos</h4>
-            <p><a href="#inicio">Início</a></p>
-            <p><a href="#funcionalidades">Funcionalidades</a></p>
-            <p><a href="#como-funciona">Como Funciona</a></p>
-            <p><a href="#licenca">Licença e Download</a></p>
+            <p><a href="#quem-somos">Quem Somos</a></p>
+            <p><a href="#produto">O Produto</a></p>
+            <p><a href="#recursos">Recursos</a></p>
+            <p><a href="#download">Download</a></p>
         </div>
     </div>
     <div class="copyright">
-        <p>© 2026 JDC Tecnologia em Bordados — Todos os direitos reservados. BordadoPreco Pro versão 4.0.1 — Compatível apenas com Windows 10/11 64 bits.</p>
+        © 2026 JDC Tecnologia em Bordados — Todos os direitos reservados.<br>
+        BordadoPreco Pro v4.0.2 — Lançamento Agosto de 2026. Funciona em Windows 10/11 64 bits.
     </div>
 </footer>
 

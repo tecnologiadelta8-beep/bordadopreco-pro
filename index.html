@@ -31,7 +31,8 @@
             --sucesso: #F0FFF4;
             --sucesso-borda: #25D366;
             --destaque: #FF5722;
-            --cereja: #E91E63;
+            --vermelho-lancamento: #B71C1C;
+            --vermelho-escuro: #7F0000;
         }
         body { color: var(--texto); line-height: 1.7; background: var(--branco); }
         a { text-decoration: none; color: inherit; }
@@ -144,25 +145,66 @@
             color: #157C38;
         }
 
-        /* SELO JDC E LANÇAMENTO */
-        .selo-jdc {
-            background: linear-gradient(90deg, #1E4072, #2C5282);
+        /* DESTAQUE DE LANÇAMENTO */
+        .lancamento-destaque {
+            background: linear-gradient(135deg, #B71C1C, #E65100, #F5A623);
             color: white;
-            padding: 1.1rem;
-            border-radius: 10px;
-            margin-bottom: 1.2rem;
-        }
-        .selo-jdc h3 { color: var(--dourado); margin-bottom: 0.4rem; font-size: 1.1rem; }
-        .paises { font-size: 0.88rem; color: #B0C4DE; margin-top: 0.3rem; }
-        .selo-lancamento {
-            background: linear-gradient(90deg, #E91E63, #C2185B);
-            color: white;
-            padding: 1.1rem;
-            border-radius: 10px;
+            padding: 1.5rem;
+            border-radius: 12px;
             margin-bottom: 1.2rem;
             text-align: center;
+            border: 3px solid #FFD700;
+            box-shadow: 0 0 25px rgba(245, 166, 35, 0.45);
+            position: relative;
+            overflow: hidden;
         }
-        .selo-lancamento h3 { margin-bottom: 0.3rem; font-size: 1.1rem; }
+        .lancamento-destaque::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+            animation: brilho 3s infinite linear;
+        }
+        @keyframes brilho {
+            0% { transform: translateX(-30%) translateY(-30%); }
+            50% { transform: translateX(30%) translateY(30%); }
+            100% { transform: translateX(-30%) translateY(-30%); }
+        }
+        .lancamento-destaque h3 {
+            position: relative;
+            z-index: 1;
+            margin-bottom: 0.5rem;
+            font-size: 1.35rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .frase-destaque {
+            position: relative;
+            z-index: 1;
+            font-size: 1.1rem;
+            color: #FFFFFF;
+            font-weight: 600;
+            font-style: italic;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .lancamento-destaque p {
+            position: relative;
+            z-index: 1;
+            font-size: 1.1rem;
+            color: #FFD700;
+            font-weight: 700;
+        }
+        .lancamento-sub {
+            position: relative;
+            z-index: 1;
+            font-size: 0.95rem;
+            color: #FFF;
+            margin-top: 0.5rem;
+        }
 
         /* ÁREA PRINCIPAL */
         .hero { 
@@ -433,17 +475,12 @@
     <div class="container hero-content">
         <div class="hero-text">
 
-            <!-- 🏆 JDC — QUEM SOMOS -->
-            <div class="selo-jdc">
-                <h3>🏆 JDC Tecnologia — +10 Anos de Mercado</h3>
-                <p>Referência em manutenção, instalação e suporte de softwares de bordado. Milhares de clientes satisfeitos em todo o Brasil e exterior.</p>
-                <p class="paises">Paraguai • Argentina • EUA • França • Espanha • Portugal • Reino Unido • Austrália • África do Sul • Turquia</p>
-            </div>
-
-            <!-- 🆕 LANÇAMENTO -->
-            <div class="selo-lancamento">
-                <h3>🍒 NOVIDADE — BordadoPreco Pro</h3>
-                <p>Lançamento Agosto de 2026. Desenvolvido após meses de pesquisa e desenvolvimento. A cereja do bolo!</p>
+            <!-- 🚀 LANÇAMENTO CHAMATIVO COM A FRASE -->
+            <div class="lancamento-destaque">
+                <h3>🚀 LANÇAMENTO EXCLUSIVO</h3>
+                <p class="frase-destaque">"Do bordado à gestão, a JDC tem a solução!"</p>
+                <p>BordadoPreco Pro v4.0.2 — Agosto de 2026</p>
+                <p class="lancamento-sub">O software de precificação que faltava para o seu estúdio de bordado!</p>
             </div>
 
             <h2>Calcule o preço certo dos seus bordados</h2>
@@ -480,7 +517,7 @@
             </div>
         </div>
 
-        <!-- 🖼️ SÓ 2 IMAGENS + LOGO NO TOPO -->
+        <!-- 🖼️ SÓ 2 IMAGENS -->
         <div class="hero-img">
             <img src="imagem1.jpg" alt="Tela principal — Cálculo completo do BordadoPreco Pro">
             <p class="legenda-img">Leitura automática + cálculo de custos</p>
@@ -492,7 +529,7 @@
 </section>
 
 <!-- ==============================================
-    QUEM SOMOS — DETALHADO
+    QUEM SOMOS — TEXTO ATUALIZADO ✅
     ============================================== -->
 <section id="quem-somos">
     <div class="container">
@@ -500,11 +537,8 @@
         <div class="quem-somos-box">
             <h3>🏆 JDC Tecnologia em Bordados</h3>
             <p>Com mais de <strong>10 anos de experiência</strong> no mercado, somos referência em <strong>manutenção, instalação e suporte de softwares de bordado</strong>.</p>
-            <p>Atendemos <strong>milhares de clientes satisfeitos</strong> em todo o Brasil e em diversos países, incluindo Paraguai, Argentina, Estados Unidos, França, Espanha, Portugal, Reino Unido, Austrália, África do Sul e Turquia.</p>
+            <p>Atendemos <strong>centenas de clientes satisfeitos no Brasil e no mundo</strong>, incluindo Paraguai, Argentina, Estados Unidos, França, Espanha, Portugal, Reino Unido, Austrália, África do Sul e Turquia.</p>
             <p>Nosso crescimento acontece pela confiança e qualidade do atendimento — <strong>um cliente indica o outro</strong> pelos bons resultados.</p>
-            <p style="margin-top: 0.8rem; border-top: 1px dashed #ddd; padding-top: 1rem;">
-                <strong>Agora lançamos o BordadoPreco Pro</strong> — desenvolvido após meses de pesquisa e desenvolvimento, atendendo a uma necessidade real do mercado. A cereja do bolo que faltava!
-            </p>
         </div>
     </div>
 </section>
@@ -601,7 +635,7 @@
         <div class="footer-col">
             <h4>JDC Tecnologia em Bordados</h4>
             <p>🏆 +10 anos de experiência em manutenção, instalação e suporte de softwares de bordado.</p>
-            <p>Milhares de clientes satisfeitos no Brasil e exterior: Paraguai, Argentina, EUA, França, Espanha, Portugal, Reino Unido, Austrália, África do Sul e Turquia.</p>
+            <p>Atendemos <strong>centenas de clientes no Brasil e no mundo</strong>: Paraguai, Argentina, EUA, França, Espanha, Portugal, Reino Unido, Austrália, África do Sul e Turquia.</p>
         </div>
         <div class="footer-col">
             <h4>Contato</h4>

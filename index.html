@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>BordadoPreco Pro v4.0.2 — Precificador de Bordados | Calcule o Valor do Bordado | JDC Tecnologia</title>
-    <meta name="description" content="BordadoPreco Pro v4.0.2 — Software 100% independente. Identificador Automático de Cores. Lê arquivos .pes, .jef, .dst, .emb, .exp, .vp3. Lançamento Agosto de 2026.">
+    <title>BordadoPreco Pro v5.1 — Precificador de Bordados | Calcule o Valor do Bordado | JDC Tecnologia</title>
+    <meta name="description" content="BordadoPreco Pro v5.1 — Software 100% independente. Identificador Automático de Cores. Lê matrizes, calcula custos reais e gera orçamentos. Atende Brasil, América e Europa.">
     <meta name="keywords" content="precificador de bordados, BordadoPrecoPro, valor do bordado, Software Bordado, calcular preço de bordado, orçamento de bordado, programa independente, JDC Tecnologia, Identificador Automático de Cores">
     <meta name="author" content="JDC Tecnologia em Bordados">
     
-    <meta property="og:title" content="BordadoPreco Pro v4.0.2 — Precificador de Bordados">
+    <meta property="og:title" content="BordadoPreco Pro v5.1 — Precificador de Bordados">
     <meta property="og:description" content="Funciona sozinho! Não precisa de outros programas. Reconhecimento automático de cores. Orçamentos em PDF e HTML.">
     <meta property="og:type" content="website">
     
@@ -144,10 +144,76 @@
             border-left: 5px solid var(--sucesso-borda);
             color: #157C38;
         }
+
+        /* ANÚNCIO DESTAQUE "AGORA COM" */
         .aviso-novidade {
-            background: #FFF8E1;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #FFF8E1, #FFECB3, #FFE082);
             border-left: 5px solid #FF8F00;
             color: #E65100;
+            padding: 1.2rem 1.4rem;
+            border-radius: 10px;
+            box-shadow: 0 0 25px rgba(255, 143, 0, 0.55);
+            animation: pulse-glow 2s infinite alternate;
+        }
+
+        /* Animação de brilho */
+        @keyframes pulse-glow {
+            from {
+                box-shadow: 0 0 20px rgba(255, 143, 0, 0.45);
+            }
+            to {
+                box-shadow: 0 0 35px rgba(255, 143, 0, 0.75);
+            }
+        }
+
+        /* Estrelas piscando */
+        .estrela {
+            position: absolute;
+            color: #FFD700;
+            font-size: 1.2rem;
+            animation: piscar 1.5s infinite ease-in-out;
+        }
+
+        .estrela:nth-child(1) { top: 10%; left: 5%; animation-delay: 0s; }
+        .estrela:nth-child(2) { top: 20%; right: 8%; animation-delay: 0.3s; }
+        .estrela:nth-child(3) { bottom: 15%; left: 10%; animation-delay: 0.6s; }
+        .estrela:nth-child(4) { bottom: 10%; right: 5%; animation-delay: 0.9s; }
+
+        @keyframes piscar {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.3); }
+        }
+
+        /* Efeito de fogo/faíscas */
+        .fogo {
+            position: absolute;
+            font-size: 1.3rem;
+            animation: brilho-fogo 1.2s infinite alternate;
+        }
+
+        .fogo:nth-child(5) { top: 8%; left: 15%; animation-delay: 0.2s; }
+        .fogo:nth-child(6) { top: 25%; right: 15%; animation-delay: 0.5s; }
+        .fogo:nth-child(7) { bottom: 20%; left: 20%; animation-delay: 0.8s; }
+
+        @keyframes brilho-fogo {
+            0% { opacity: 0.4; filter: drop-shadow(0 0 8px #FF4500); }
+            100% { opacity: 1; filter: drop-shadow(0 0 15px #FF4500) drop-shadow(0 0 30px #FF8C00); }
+        }
+
+        /* Texto principal do anúncio */
+        .texto-novidade {
+            position: relative;
+            z-index: 10;
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+
+        .texto-novidade strong {
+            font-size: 1.15rem;
+            color: #BF360C;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
         }
 
         /* DESTAQUE DE LANÇAMENTO */
@@ -484,7 +550,7 @@
             <div class="lancamento-destaque">
                 <h3>🚀 LANÇAMENTO EXCLUSIVO</h3>
                 <p class="frase-destaque">"Do bordado à gestão, a JDC tem a solução!"</p>
-                <p>BordadoPreco Pro v4.0.2 — Agosto de 2026</p>
+                <p>BordadoPreco Pro v5.1 — Lançamento Agosto de 2026</p>
                 <p class="lancamento-sub">O software de precificação que faltava para o seu estúdio de bordado!</p>
             </div>
 
@@ -492,7 +558,7 @@
             
             <div class="destaque-novidade">⭐ Identificador Automático de Cores</div>
             
-            <p>O <strong>BordadoPreco Pro v4.0.2</strong> é um software 100% independente. Lê sua matriz, reconhece cores, pontos e dimensões, calcula custos reais e gera orçamentos em PDF e HTML.</p>
+            <p>O <strong>BordadoPreco Pro v5.1</strong> é um software 100% independente que calcula o preço de produção de matrizes de bordado, considerando pontos, cores, linha, estabilizador e energia elétrica. Funciona no Brasil e em países da América e Europa, cada um com sua própria referência de tarifa de energia.</p>
 
             <!-- ✅ INDEPENDÊNCIA -->
             <div class="aviso-box aviso-independente">
@@ -509,9 +575,19 @@
                 <strong>✅ Atualize sem medo!</strong> Sua licença NÃO se perde nas atualizações.
             </div>
 
-            <!-- 📢 NOVO AVISO ADICIONADO ✅ -->
-            <div class="aviso-box aviso-novidade">
-                <strong>📢 Em breve!</strong> Nas próximas atualizações: <strong>preço de energia elétrica atualizado automaticamente por estado no Brasil e nos 7 países onde a JDC Tecnologia mais tem clientes.</strong>
+            <!-- ✅ ANÚNCIO ESTILIZADO COM ESTRELAS, FOGO E EFEITOS -->
+            <div class="aviso-novidade">
+                <span class="estrela">⭐</span>
+                <span class="estrela">✨</span>
+                <span class="estrela">🌟</span>
+                <span class="estrela">💫</span>
+                <span class="fogo">🔥</span>
+                <span class="fogo">🔥</span>
+                <span class="fogo">💥</span>
+
+                <div class="texto-novidade">
+                    <strong>💡 Agora com</strong> análise e atualização de valores de energia nos países onde a JDC Tecnologia mais atende, para o maior bem-estar dos seus clientes.
+                </div>
             </div>
             
             <div class="hashtags">
@@ -546,8 +622,8 @@
         <h2 class="section-title">Quem Somos</h2>
         <div class="quem-somos-box">
             <h3>🏆 JDC Tecnologia em Bordados</h3>
-            <p>Com mais de <strong>10 anos de experiência</strong> no mercado, somos referência em <strong>manutenção, instalação e suporte de softwares de bordado</strong>.</p>
-            <p>Atendemos <strong>centenas de clientes satisfeitos no Brasil e no mundo</strong>, incluindo Paraguai, Argentina, Estados Unidos, França, Espanha, Portugal, Reino Unido, Austrália, África do Sul e Turquia.</p>
+            <p>Com mais de <strong>10 anos de experiência</strong> no mercado, somos referência em <strong>manutenção, installation and support of embroidery software</strong>.</p>
+            <p>Atendemos <strong>centenas de clientes satisfeitos no Brasil e no mundo</strong>, em países da América e Europa.</p>
             <p>Nosso crescimento acontece pela confiança e qualidade do atendimento — <strong>um cliente indica o outro</strong> pelos bons resultados.</p>
         </div>
     </div>
@@ -567,11 +643,11 @@
             </div>
             <div class="card destaque">
                 <h3>📂 Lê Matrizes</h3>
-                <p>Extrai pontos, cores e dimensões. Suporta mais de 10 formatos de arquivo.</p>
+                <p>Extrai pontos, cores e dimensões. Suporta os formatos mais usados do mercado.</p>
             </div>
             <div class="card destaque">
                 <h3>💰 Calcula Custos</h3>
-                <p>Mão de obra, custo fixo, linha por metro, estabilizador, energia por região e tempo de máquina.</p>
+                <p>Mão de obra, custo fixo, linha por metro, estabilizador e energia elétrica por região.</p>
             </div>
             <div class="card">
                 <h3>📄 Orçamentos Profissionais</h3>
@@ -582,7 +658,7 @@
                 <p>Mostra miniatura do bordado na tela. Veja pontos, cores e dimensões de um olhar.</p>
             </div>
             <div class="card">
-                <h3>💾 Configurações Salvas</h3>
+                <h3>💾 Configurações</h3>
                 <p>Cadastre custos uma vez. O programa lembra tudo na próxima vez que abrir.</p>
             </div>
         </div>
@@ -595,15 +671,15 @@
 <section class="formatos-section">
     <div class="container">
         <h2 class="section-title">Formatos de Arquivo Suportados</h2>
-        <p class="subtitulo-secao">Lê mais de 10 formatos de matriz de bordado</p>
+        <p class="subtitulo-secao">Lê os principais formatos de matriz de bordado</p>
         <div class="formatos-lista">
-            <span class="formato-tag">.DST</span>
             <span class="formato-tag">.PES</span>
             <span class="formato-tag">.JEF</span>
+            <span class="formato-tag">.DST</span>
             <span class="formato-tag">.EMB</span>
             <span class="formato-tag">.EXP</span>
             <span class="formato-tag">.VP3</span>
-            <span class="formato-tag mais-formatos">+10 formatos</span>
+            <span class="formato-tag mais-formatos">+ formatos</span>
         </div>
     </div>
 </section>
@@ -615,8 +691,8 @@
     <div class="container">
         <h2 class="section-title">Adquira sua Licença</h2>
         <div class="plano-card">
-            <span class="versao-tag">✅ Versão 4.0.2 — Lançamento Agosto 2026</span>
-            <h3>BordadoPreco Pro</h3>
+            <span class="versao-tag">✅ Versão 5.1 — Lançamento Agosto 2026</span>
+            <h3>BordadoPreco Pro</td>
             <span class="licenca-tag">LICENÇA ATIVA</span>
             <p style="margin: 1rem 0;">Uso vitalício com atualizações • Funciona de forma independente</p>
 
@@ -645,7 +721,7 @@
         <div class="footer-col">
             <h4>JDC Tecnologia em Bordados</h4>
             <p>🏆 +10 anos de experiência em manutenção, instalação e suporte de softwares de bordado.</p>
-            <p>Atendemos <strong>centenas de clientes no Brasil e no mundo</strong>: Paraguai, Argentina, EUA, França, Espanha, Portugal, Reino Unido, Austrália, África do Sul e Turquia.</p>
+            <p>Atendemos <strong>centenas de clientes no Brasil e em países da América e Europa</strong>.</p>
         </div>
         <div class="footer-col">
             <h4>Contato</h4>
@@ -662,7 +738,7 @@
     </div>
     <div class="copyright">
         © 2026 JDC Tecnologia em Bordados — Todos os direitos reservados.<br>
-        BordadoPreco Pro v4.0.2 — Lançamento Agosto de 2026. Funciona em Windows 10/11 64 bits.
+        BordadoPreco Pro v5.1 — Lançamento Agosto de 2026. Funciona em Windows 10/11 64 bits.
     </div>
 </footer>
 

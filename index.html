@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>BordadoPreco Pro v5.1 — Precificador de Bordados | JDC Tecnologia</title>
-    <meta name="description" content="BordadoPreco Pro v5.1 — Software independente, isento de dependências. Precifica por pontos e gera orçamentos profissionais.">
-    <meta name="keywords" content="precificador de bordados, BordadoPrecoPro, valor do bordado, Software Bordado, JDC Tecnologia">
+    <title>BordadoPreco Pro v5.1 — Precificador de Bordados | Calcule quanto cobrar pelo seu bordado</title>
+    <meta name="description" content="Precifique seus bordados com facilidade. Calculadora de bordados completa. Saiba quanto cobrar pelo bordado com precisão e sem erro.">
+    <meta name="keywords" content="precificar bordado, quanto cobrar pelo bordado, calculadora de bordados, precificador de bordados, BordadoPrecoPro, valor do bordado, calcular preço de bordado, orçamento de bordado, programa precificar bordado, JDC Tecnologia">
     <meta name="author" content="JDC Tecnologia em Bordados">
+    
+    <meta property="og:title" content="BordadoPreco Pro v5.1 — Precifique seus bordados">
+    <meta property="og:description" content="Precifique sem complicação. Saiba quanto cobrar pelo bordado com uma calculadora de bordados automática.">
+    <meta property="og:type" content="website">
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
@@ -32,9 +36,7 @@
         img { max-width: 100%; height: auto; border-radius: 8px; }
         .container { width: 92%; max-width: 1200px; margin: 0 auto; }
 
-        /* ==============================================
-           ⭐ POPUP ANIMADO — ESTRELA QUE ABRE E FECHA
-           ============================================== */
+        /* ⭐ POPUP ANIMADO — MAIS LENTO E COM TEXTO NOVO */
         .popup-futuro {
             position: fixed;
             top: 22px;
@@ -43,9 +45,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            animation: abreFecha 3s ease-in-out infinite;
+            animation: abreFecha 8s ease-in-out infinite;
         }
-
         .estrela-base {
             width: 72px;
             height: 72px;
@@ -62,7 +63,6 @@
             transition: transform 0.3s;
         }
         .estrela-base:hover { transform: scale(1.15); }
-
         .mensagem-popup {
             position: absolute;
             right: 85px;
@@ -70,13 +70,13 @@
             transform: translateY(-50%);
             background: linear-gradient(135deg, #FFF8E1, #FFECB3);
             color: #B71C1C;
-            padding: 14px 18px;
+            padding: 16px 18px;
             border-radius: 12px;
             border: 2px solid #FF8F00;
             box-shadow: 0 4px 20px rgba(255, 143, 0, 0.35);
-            width: 260px;
-            font-size: 0.92rem;
-            line-height: 1.5;
+            width: 280px;
+            font-size: 0.95rem;
+            line-height: 1.6;
             font-weight: 600;
             opacity: 0;
             transform: translateY(-50%) scale(0.75);
@@ -84,8 +84,6 @@
             transition: all 0.6s ease;
             pointer-events: none;
         }
-
-        /* Seta apontando para a estrela */
         .mensagem-popup::after {
             content: '';
             position: absolute;
@@ -96,32 +94,23 @@
             border-style: solid;
             border-color: transparent transparent transparent #FFECB3;
         }
-
-        /* Animação: estrela cresce, mensagem aparece, depois encolhe e some */
+        /* Animação da estrela — mais lenta */
         @keyframes abreFecha {
             0% { transform: scale(1); }
-            15% { transform: scale(1.25); }
-            25% { transform: scale(1.25); }
-            40% { transform: scale(1); }
+            10% { transform: scale(1.25); }
+            20% { transform: scale(1.25); }
+            30% { transform: scale(1); }
             100% { transform: scale(1); }
         }
-
-        .popup-futuro:hover .mensagem-popup,
-        .popup-futuro .mensagem-popup.visivel {
-            opacity: 1;
-            transform: translateY(-50%) scale(1);
-            pointer-events: auto;
-        }
-
-        /* Classe para aparecer e sumir automaticamente */
+        /* Mensagem: aparece, fica tempo, some e demora pra voltar */
         .mensagem-popup {
-            animation: apareceSome 3s ease-in-out infinite;
+            animation: apareceSome 15s ease-in-out infinite;
         }
-
         @keyframes apareceSome {
             0% { opacity: 0; transform: translateY(-50%) scale(0.75); }
-            20% { opacity: 1; transform: translateY(-50%) scale(1); }
-            75% { opacity: 1; transform: translateY(-50%) scale(1); }
+            10% { opacity: 1; transform: translateY(-50%) scale(1); }
+            40% { opacity: 1; transform: translateY(-50%) scale(1); }
+            50% { opacity: 0; transform: translateY(-50%) scale(0.75); }
             100% { opacity: 0; transform: translateY(-50%) scale(0.75); }
         }
 
@@ -378,19 +367,19 @@
             nav ul { gap: 0.6rem; font-size: 0.85rem; }
             .popup-futuro { right: 10px; top: 12px; }
             .estrela-base { width: 56px; height: 56px; font-size: 28px; }
-            .mensagem-popup { width: 200px; right: 70px; font-size: 0.85rem; }
+            .mensagem-popup { width: 220px; right: 70px; font-size: 0.85rem; }
         }
     </style>
 </head>
 <body>
 
-<!-- ⭐ POPUP ANIMADO — FICA FLUTUANDO NO CANTO SUPERIOR DIREITO -->
+<!-- ⭐ POPUP ANIMADO — TEXTO NOVO + BEM MAIS LENTO -->
 <div class="popup-futuro">
     <div class="estrela-base">⭐</div>
     <div class="mensagem-popup">
         Em breve!<br>
         <strong>Bordado Fácil Pro 1.0</strong><br>
-        Seu precificador com base em número de pontos!
+        Sistema de cálculo baseado na quantidade de pontos da matriz!
     </div>
 </div>
 
@@ -425,11 +414,11 @@
                 <p>BordadoPreco Pro v5.1 — Lançamento Agosto de 2026</p>
             </div>
 
-            <h2>Calcule o preço certo dos seus bordados</h2>
+            <h2>Precifique seus bordados — Saiba quanto cobrar pelo seu trabalho!</h2>
             
-            <div class="destaque-novidade">⭐ Identificador Automático de Cores</div>
+            <div class="destaque-novidade">⭐ Calculadora de bordados automática</div>
             
-            <p>O <strong>BordadoPreco Pro v5.1</strong> é um software que calcula o preço de produção de matrizes de bordado, considerando pontos, cores, linha, estabilizador e energia elétrica. Funciona no Brasil e em países da América e Europa.</p>
+            <p>O <strong>BordadoPreco Pro v5.1</strong> é a ferramenta ideal para <strong>precificar bordado</strong> com exatidão. Uma verdadeira <strong>calculadora de bordados</strong> que considera pontos, cores, linha, estabilizador e energia elétrica. Descubra facilmente <strong>quanto cobrar pelo bordado</strong> sem adivinhação!</p>
 
             <div class="aviso-box aviso-independente">
                 ✅ Software independente de outros programas de bordado. Isento de dependências.
@@ -452,7 +441,8 @@
             <div class="hashtags">
                 <span class="hashtag">#precificadordebordados</span>
                 <span class="hashtag">#BordadoPrecoPro</span>
-                <span class="hashtag">#SoftwareIndependente</span>
+                <span class="hashtag">#QuantoCobrarPeloBordado</span>
+                <span class="hashtag">#CalculadoraDeBordados</span>
             </div>
             
             <div class="hero-buttons">
@@ -462,10 +452,10 @@
         </div>
 
         <div class="hero-img">
-            <img src="imagem1.jpg" alt="Tela principal — Cálculo do BordadoPreco Pro">
-            <p class="legenda-img">Leitura automática + cálculo de custos</p>
-            <img src="imagem2.jpg" alt="Orçamentos em PDF e HTML">
-            <p class="legenda-img">Orçamentos profissionais prontos</p>
+            <img src="imagem1.jpg" alt="Precificação automática — Calcule o valor do bordado">
+            <p class="legenda-img">Precifique com precisão e rapidez</p>
+            <img src="imagem2.jpg" alt="Calculadora de custos de bordado">
+            <p class="legenda-img">Saiba quanto cobrar com segurança</p>
         </div>
     </div>
 </section>
@@ -485,6 +475,7 @@
 <section id="recursos">
     <div class="container">
         <h2 class="section-title">O que o BordadoPreco Pro faz</h2>
+        <p class="subtitulo-secao">A ferramenta completa para você precificar e saber quanto cobrar pelo seu bordado</p>
         <div class="funcionalidades-grid">
             <div class="card destaque">
                 <h3>🎨 Identifica Cores Sozinho</h3>
@@ -496,11 +487,11 @@
             </div>
             <div class="card destaque">
                 <h3>💰 Calcula Custos</h3>
-                <p>Mão de obra, linha, estabilizador e energia por região.</p>
+                <p>Mão de obra, linha, estabilizador e energia por região. A verdadeira calculadora de bordados!</p>
             </div>
             <div class="card">
                 <h3>📄 Orçamentos Profissionais</h3>
-                <p>Gera PDF e HTML com sua identidade visual. Pronto para enviar.</p>
+                <p>Gera PDF e HTML com sua identidade visual. Pronto para enviar ao cliente.</p>
             </div>
             <div class="card">
                 <h3>🖼️ Visualização Real</h3>
@@ -533,9 +524,9 @@
         <h2 class="section-title">Adquira sua Licença</h2>
         <div class="plano-card">
             <span class="versao-tag">✅ Versão 5.1 — Agosto 2026</span>
-            <h3>BordadoPreco Pro</h3>
+            <h3>BordadoPreco Pro — Precifique seus bordados</h3>
             <span class="licenca-tag">LICENÇA ATIVA</span>
-            <p style="margin: 1rem 0;">Uso vitalício com atualizações</p>
+            <p style="margin: 1rem 0;">Uso vitalício com atualizações — A melhor calculadora de bordados do mercado</p>
 
             <div class="destaque-telegram">
                 <p>📥 Baixe gratuitamente para teste no Telegram:</p>
@@ -555,7 +546,7 @@
         <div class="footer-col">
             <h4>JDC Tecnologia em Bordados</h4>
             <p>🏆 +10 anos de experiência em softwares de bordado.</p>
-            <p>Atendemos centenas de clientes no Brasil, América e Europa.</p>
+            <p>Precifique seus bordados com segurança — saiba exatamente quanto cobrar pelo seu trabalho!</p>
         </div>
         <div class="footer-col">
             <h4>Contato</h4>
@@ -570,7 +561,7 @@
         </div>
     </div>
     <div class="copyright">
-        © 2026 JDC Tecnologia em Bordados — BordadoPreco Pro v5.1 — Windows 10/11 64 bits.
+        © 2026 JDC Tecnologia em Bordados — Precifique bordado, saiba quanto cobrar, use a melhor calculadora de bordados.
     </div>
 </footer>
 

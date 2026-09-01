@@ -35,8 +35,7 @@
         ul { list-style: none; }
         img { max-width: 100%; height: auto; border-radius: 8px; }
         .container { width: 92%; max-width: 1200px; margin: 0 auto; }
-
-        /* ⭐ POPUP ANIMADO — MAIS LENTO E COM TEXTO NOVO */
+        /* ⭐ POPUP ANIMADO */
         .popup-futuro {
             position: fixed;
             top: 22px;
@@ -94,7 +93,6 @@
             border-style: solid;
             border-color: transparent transparent transparent #FFECB3;
         }
-        /* Animação da estrela — mais lenta */
         @keyframes abreFecha {
             0% { transform: scale(1); }
             10% { transform: scale(1.25); }
@@ -102,7 +100,6 @@
             30% { transform: scale(1); }
             100% { transform: scale(1); }
         }
-        /* Mensagem: aparece, fica tempo, some e demora pra voltar */
         .mensagem-popup {
             animation: apareceSome 15s ease-in-out infinite;
         }
@@ -113,7 +110,6 @@
             50% { opacity: 0; transform: translateY(-50%) scale(0.75); }
             100% { opacity: 0; transform: translateY(-50%) scale(0.75); }
         }
-
         /* CABEÇALHO */
         header { 
             background: var(--azul-escuro); 
@@ -158,7 +154,6 @@
             transition: transform 0.2s; 
         }
         .btn-telegram:hover { transform: translateY(-2px); }
-
         .aviso-box {
             padding: 1.1rem 1.3rem;
             border-radius: 8px;
@@ -170,7 +165,6 @@
         .aviso-independente { background: #E3F2FD; border-left: 5px solid #1976D2; color: #0D47A1; }
         .aviso-sistema { background: var(--aviso); border-left: 5px solid var(--aviso-borda); color: var(--aviso-texto); }
         .aviso-atualizacao { background: var(--sucesso); border-left: 5px solid var(--sucesso-borda); color: #157C38; }
-
         .aviso-novidade {
             position: relative;
             overflow: hidden;
@@ -184,7 +178,6 @@
         }
         .texto-novidade { position: relative; z-index: 10; font-size: 1.05rem; line-height: 1.6; }
         .texto-novidade strong { font-size: 1.15rem; color: #BF360C; }
-
         .lancamento-destaque {
             background: linear-gradient(135deg, #B71C1C, #E65100, #F5A623);
             color: white;
@@ -198,7 +191,6 @@
         .lancamento-destaque h3 { margin-bottom: 0.5rem; font-size: 1.35rem; text-transform: uppercase; }
         .frase-destaque { font-size: 1.1rem; color: #FFF; font-weight: 600; font-style: italic; margin-bottom: 0.5rem; }
         .lancamento-destaque p { font-size: 1.1rem; color: #FFD700; font-weight: 700; }
-
         .hero { 
             background: linear-gradient(135deg, var(--azul-escuro) 0%, var(--azul-medio) 100%); 
             color: white; 
@@ -251,7 +243,6 @@
         .hero-img { display: flex; flex-direction: column; gap: 1.2rem; }
         .hero-img img { border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.25); width: 100%; }
         .legenda-img { font-size: 0.85rem; color: #B0C4DE; text-align: center; margin-top: -0.5rem; }
-
         section { padding: 3.5rem 0; }
         .section-title { 
             text-align: center; 
@@ -272,15 +263,24 @@
         }
         .quem-somos-box {
             background: white;
-            padding: 2.2rem;
+            padding: 2.5rem;
             border-radius: 14px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.06);
             max-width: 800px;
             margin: 0 auto;
         }
-        .quem-somos-box h3 { color: var(--azul-medio); margin-bottom: 1rem; font-size: 1.2rem; }
-        .quem-somos-box p { margin-bottom: 0.7rem; }
-
+        .quem-somos-box h3 { color: var(--azul-medio); margin-bottom: 1.5rem; font-size: 1.45rem; text-align: center; }
+        .quem-somos-box p { margin-bottom: 1rem; font-size: 1.05rem; color: #374151; }
+        .quem-somos-box .destaque-frase {
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: #1e3a5f;
+            text-align: center;
+            margin: 20px 0;
+            padding: 12px;
+            background: linear-gradient(90deg, #fef3c7, #fef9c3);
+            border-radius: 8px;
+        }
         .funcionalidades-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
         .card { 
             background: white; 
@@ -293,7 +293,6 @@
         .card.destaque { border-top-color: #FF5722; background: #FFF8F5; }
         .card h3 { color: var(--azul-escuro); margin-bottom: 0.8rem; font-size: 1.08rem; }
         .card p { color: var(--texto-claro); font-size: 0.95rem; }
-
         .formatos-section { background: var(--cinza-claro); }
         .formatos-lista {
             display: flex;
@@ -310,7 +309,6 @@
             font-weight: 600;
             font-size: 0.95rem;
         }
-
         .preco-section { background: linear-gradient(135deg, #F4F6F9 0%, #E9ECEF 100%); }
         .plano-card { 
             max-width: 620px; 
@@ -342,7 +340,6 @@
             text-align: left; 
         }
         .destaque-telegram p { font-weight: 500; color: #006699; margin-bottom: 0.8rem; }
-
         footer { background: #061428; color: #B0C4DE; padding: 3rem 0 1.5rem; margin-top: 2rem; }
         .footer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-bottom: 2rem; }
         .footer-col h4 { color: white; margin-bottom: 1rem; font-size: 1.1rem; }
@@ -355,7 +352,6 @@
             font-size: 0.9rem; 
             color: #7A8CA8; 
         }
-
         @media(max-width: 968px) {
             .hero-content { grid-template-columns: 1fr; }
             .funcionalidades-grid { grid-template-columns: repeat(2, 1fr); }
@@ -372,17 +368,15 @@
     </style>
 </head>
 <body>
-
-<!-- ⭐ POPUP ANIMADO — TEXTO NOVO + BEM MAIS LENTO -->
+<!-- ⭐ POPUP ANIMADO -->
 <div class="popup-futuro">
     <div class="estrela-base">⭐</div>
     <div class="mensagem-popup">
         Em breve!<br>
-        <strong>Bordado Fácil Pro 1.0</strong><br>
+        <strong>Borda Fácil Pro 1.0</strong><br>
         Sistema de cálculo baseado na quantidade de pontos da matriz!
     </div>
 </div>
-
 <header>
     <div class="container header-content">
         <div class="logo">
@@ -403,35 +397,28 @@
         </nav>
     </div>
 </header>
-
 <section class="hero" id="produto">
     <div class="container hero-content">
         <div class="hero-text">
-
             <div class="lancamento-destaque">
                 <h3>🚀 LANÇAMENTO EXCLUSIVO</h3>
                 <p class="frase-destaque">"Do bordado à gestão, a JDC tem a solução!"</p>
                 <p>BordadoPreco Pro v5.1 — Lançamento Agosto de 2026</p>
             </div>
-
             <h2>Precifique seus bordados — Saiba quanto cobrar pelo seu trabalho!</h2>
             
             <div class="destaque-novidade">⭐ Calculadora de bordados automática</div>
             
             <p>O <strong>BordadoPreco Pro v5.1</strong> é a ferramenta ideal para <strong>precificar bordado</strong> com exatidão. Uma verdadeira <strong>calculadora de bordados</strong> que considera pontos, cores, linha, estabilizador e energia elétrica. Descubra facilmente <strong>quanto cobrar pelo bordado</strong> sem adivinhação!</p>
-
             <div class="aviso-box aviso-independente">
                 ✅ Software independente de outros programas de bordado. Isento de dependências.
             </div>
-
             <div class="aviso-box aviso-sistema">
                 ⚠️ Requisito do Sistema: Windows 10 64 bits ou Windows 11 64 bits. Não compatível com versões antigas ou 32 bits.
             </div>
-
             <div class="aviso-box aviso-atualizacao">
                 ✅ Atualize sem medo! Sua licença NÃO se perde nas atualizações.
             </div>
-
             <div class="aviso-novidade">
                 <div class="texto-novidade">
                     💡 <strong>Agora com</strong> análise e atualização de valores de energia nos países onde a JDC Tecnologia mais atende, para o maior bem-estar dos seus clientes.
@@ -450,7 +437,6 @@
                 <a href="#recursos" class="btn-secondary">Ver recursos completos</a>
             </div>
         </div>
-
         <div class="hero-img">
             <img src="imagem1.jpg" alt="Precificação automática — Calcule o valor do bordado">
             <p class="legenda-img">Precifique com precisão e rapidez</p>
@@ -459,23 +445,23 @@
         </div>
     </div>
 </section>
-
 <section id="quem-somos">
     <div class="container">
         <h2 class="section-title">Quem Somos</h2>
         <div class="quem-somos-box">
             <h3>🏆 JDC Tecnologia em Bordados</h3>
-            <p>Com mais de <strong>10 anos de experiência</strong> no mercado, somos referência em manutenção, instalação e suporte de softwares de bordado.</p>
-            <p>Atendemos <strong>centenas de clientes satisfeitos no Brasil e no mundo</strong>, em países da América e Europa.</p>
-            <p>Nosso crescimento vem pela confiança e qualidade — um cliente indica o outro pelos bons resultados.</p>
+            <p>Com mais de <strong>10 anos de experiência</strong> no mercado, somos referência em <strong>manutenção, instalação e suporte de softwares de bordado</strong>.</p>
+            <p>Atendemos <strong>milhares de clientes pelo mundo todo</strong>, com <strong>dezenas de atendimentos diários</strong> — <strong>agende já o seu!</strong></p>
+            <p>Nosso crescimento acontece pela confiança e qualidade do atendimento — um cliente indica o outro pelos bons resultados.</p>
+            <p class="destaque-frase">💡 Do bordado à gestão, a JDC tem a solução!</p>
+            <p>Agora desenvolvendo softwares inteligentes pra melhorar o seu dia a dia.</p>
         </div>
     </div>
 </section>
-
 <section id="recursos">
     <div class="container">
         <h2 class="section-title">O que o BordadoPreco Pro faz</h2>
-        <p class="subtitulo-secao">A ferramenta completa para você precificar e saber quanto cobrar pelo seu bordado</p>
+        <p class="subtitulo-secao" style="text-align:center; color:#4B5563; margin-bottom:2rem;">A ferramenta completa para você precificar e saber quanto cobrar pelo seu bordado</p>
         <div class="funcionalidades-grid">
             <div class="card destaque">
                 <h3>🎨 Identifica Cores Sozinho</h3>
@@ -504,7 +490,6 @@
         </div>
     </div>
 </section>
-
 <section class="formatos-section">
     <div class="container">
         <h2 class="section-title">Formatos Suportados</h2>
@@ -518,7 +503,6 @@
         </div>
     </div>
 </section>
-
 <section id="download" class="preco-section">
     <div class="container">
         <h2 class="section-title">Adquira sua Licença</h2>
@@ -527,12 +511,10 @@
             <h3>BordadoPreco Pro — Precifique seus bordados</h3>
             <span class="licenca-tag">LICENÇA ATIVA</span>
             <p style="margin: 1rem 0;">Uso vitalício com atualizações — A melhor calculadora de bordados do mercado</p>
-
             <div class="destaque-telegram">
                 <p>📥 Baixe gratuitamente para teste no Telegram:</p>
                 <a class="btn-telegram" href="https://t.me/EmbroGestPro" target="_blank">👉 t.me/EmbroGestPro</a>
             </div>
-
             <div style="margin-top: 1.5rem;">
                 <p>💬 Suporte e informações:</p>
                 <a class="btn-whatsapp" href="https://wa.me/5565999460391" target="_blank">📱 (65) 99946-0391</a>
@@ -540,7 +522,6 @@
         </div>
     </div>
 </section>
-
 <footer>
     <div class="container footer-grid">
         <div class="footer-col">
@@ -564,6 +545,5 @@
         © 2026 JDC Tecnologia em Bordados — Precifique bordado, saiba quanto cobrar, use a melhor calculadora de bordados.
     </div>
 </footer>
-
 </body>
 </html>

@@ -23,6 +23,14 @@
             background-color: #fff;
             padding: 15px 20px;
             border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .cabecalho img {
+            height: 50px;
+            width: auto;
         }
 
         .cabecalho h1 {
@@ -234,6 +242,21 @@
             text-decoration: underline;
         }
 
+        .imagens-secao {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .imagens-secao img {
+            flex: 1;
+            min-width: 280px;
+            max-width: 100%;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
         .contato-secao {
             background-color: #f0f7ff;
             padding: 25px;
@@ -304,6 +327,7 @@
 <body>
 
     <div class="cabecalho">
+        <img src="logo-jdc.png" alt="Logo JDC Tecnologia em Bordados">
         <h1>JDC Tecnologia em Bordados</h1>
     </div>
 
@@ -312,7 +336,7 @@
 
             <!-- IMAGEM EM DESTAQUE -->
             <div class="imagem-destaque">
-                <img src="produto.jpg" alt="BordadoPreço Pro — Calculadora Completa com Custos Reais" />
+                <img src="imagem1.jpg" alt="BordadoPreço Pro — Calculadora Completa com Custos Reais" />
             </div>
 
             <!-- INFORMAÇÕES DO PRODUTO PRINCIPAL -->
@@ -346,6 +370,11 @@
                 <div class="secao">
                     <h3>📋 O que o programa faz</h3>
                     <p>Calcula o preço de produção de matrizes de bordado considerando quantidade de pontos, cores, linha, estabilizador e energia elétrica. Com tarifas de energia atualizadas por estado brasileiro e suporte a mais 7 países. Você configura seus custos → o programa calcula o preço ideal!</p>
+                </div>
+
+                <!-- SEGUNDA IMAGEM -->
+                <div class="imagens-secao">
+                    <img src="imagem2.jpg" alt="Tela do programa — Configuração de cores e fabricantes" />
                 </div>
 
                 <div class="secao">

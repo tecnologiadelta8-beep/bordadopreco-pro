@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="BordadoPreço Pro v5.1 — Calculadora COMPLETA de preços de bordado. Precificação com seus custos reais: salário, energia, materiais e margem de lucro. Precificação personalizada e orçamentos profissionais.">
-    <meta name="keywords" content="precificadordebordados, BordadoPrecoPro, valordobordado, SoftwareBordado, precificar bordado, quanto cobrar pelo bordado, calculadora de bordados, preço de bordado, orçamento de bordado, valor de bordado, precificação completa de bordado, preço com custos reais, calculadora personalizada de bordado, preço por custos próprios, programa completo de precificação, custos de produção de bordado, margem de lucro bordado">
-    <title>BordadoPreço Pro v5.1 — Calculadora Completa de Preços com Custos Reais - JDC Tecnologia em Bordados</title>
+    <meta name="description" content="JDC Tecnologia em Bordados — 2 calculadoras de preço com orçamentos em PDF e HTML personalizados + 1 organizador de matrizes por bastidor.">
+    <meta name="keywords" content="precificadordebordados, BordadoPrecoPro, valordobordado, SoftwareBordado, precificar bordado, calculadora de bordados, orçamento PDF, orçamento personalizado, Borda Fácil, Extrator de Matrizes, manutenção de software, suporte técnico">
+    <title>JDC Tecnologia em Bordados — Precificação e Organização de Bordados</title>
     <style>
         * {
             margin: 0;
@@ -15,262 +15,241 @@
         }
 
         body {
-            background-color: #f5f5f5;
-            color: #333;
+            background: linear-gradient(135deg, #0f1729 0%, #1a2744 50%, #0f1729 100%);
+            color: #fff;
+            line-height: 1.6;
         }
 
         .cabecalho {
-            background-color: #fff;
-            padding: 15px 20px;
-            border-bottom: 1px solid #e0e0e0;
-            display: flex;
-            align-items: center;
-            gap: 15px;
+            background: rgba(0,0,0,0.4);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid #ffd700;
         }
 
-        .cabecalho img {
-            height: 50px;
+        .logo-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .logo-area img {
+            height: 70px;
             width: auto;
         }
 
         .cabecalho h1 {
-            font-size: 22px;
-            color: #1a1a1a;
+            font-size: 28px;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .cabecalho p {
+            font-size: 18px;
+            color: #e0e0e0;
+            font-style: italic;
         }
 
         .container {
-            max-width: 1000px;
-            margin: 20px auto;
-            padding: 0 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
         }
 
-        .produto-box {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .imagem-destaque {
-            width: 100%;
-            padding: 20px;
+        .destaque-principal {
             text-align: center;
-            background-color: #fafafa;
-            border-bottom: 1px solid #eee;
+            margin-bottom: 50px;
         }
 
-        .imagem-destaque img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 4px;
-        }
-
-        .info-box {
-            padding: 25px;
-        }
-
-        .versao-tag {
-            display: inline-block;
-            background-color: #ffd900;
-            color: #333;
-            font-weight: bold;
-            padding: 5px 12px;
-            border-radius: 4px;
-            font-size: 14px;
+        .destaque-principal h2 {
+            font-size: 32px;
+            color: #ffd700;
             margin-bottom: 15px;
         }
 
-        .diferencial-tag {
-            display: inline-block;
-            background-color: #4caf50;
-            color: #fff;
-            font-weight: bold;
-            padding: 6px 14px;
-            border-radius: 4px;
-            font-size: 14px;
-            margin: 0 0 15px 8px;
-        }
-
-        .info-box h2 {
-            font-size: 24px;
-            margin-bottom: 10px;
-            color: #1a1a1a;
-        }
-
-        .descricao-curta {
-            font-size: 16px;
-            color: #555;
-            margin-bottom: 25px;
-            line-height: 1.6;
-        }
-
-        .aviso-custo {
-            background-color: #fff8c5;
-            border-left: 4px solid #ffd900;
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            font-size: 15px;
-        }
-
-        .diferencial-box {
-            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-            border-left: 4px solid #2e7d32;
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 25px;
-        }
-
-        .download-teste {
-            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-            border: 2px solid #1976d2;
-            padding: 18px;
-            border-radius: 8px;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .download-teste h3 {
-            color: #0d47a1;
-            margin-bottom: 10px;
-        }
-
-        .download-teste a {
-            color: #0d47a1;
-            font-weight: bold;
-            font-size: 17px;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 8px;
-        }
-
-        .download-teste a:hover {
-            text-decoration: underline;
-        }
-
-        .secao {
-            margin-bottom: 30px;
-        }
-
-        .secao h3 {
+        .destaque-principal p {
             font-size: 18px;
-            color: #3468c0;
-            margin-bottom: 12px;
-            padding-bottom: 5px;
-            border-bottom: 2px solid #e8edf5;
+            color: #f0f0f0;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
-        .secao p {
-            margin-bottom: 10px;
-            line-height: 1.6;
-        }
-
-        .lista-itens {
-            list-style: none;
-        }
-
-        .lista-itens li {
-            padding: 8px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .lista-itens li::before {
-            content: "✅ ";
-            color: #28a745;
-        }
-
-        .formatos {
-            background-color: #f8f9fa;
-            padding: 12px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 14px;
-            color: #444;
-        }
-
-        .requisitos {
-            background-color: #eef4ff;
-            padding: 15px;
-            border-radius: 6px;
-            border-left: 4px solid #3468c0;
-            margin: 15px 0;
-        }
-
-        .outros-produtos-box {
-            background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
-            border-left: 4px solid #ff9800;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
+        .grade-produtos {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-bottom: 60px;
         }
 
         .produto-card {
-            background: #fff;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 12px;
-            border: 1px solid #ffe082;
-            transition: transform 0.2s, box-shadow 0.2s;
+            background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.05));
+            border-radius: 16px;
+            padding: 0;
+            overflow: hidden;
+            border: 2px solid rgba(255,215,0,0.3);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
 
         .produto-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(255,215,0,0.25);
+            border-color: #ffd700;
         }
 
-        .produto-card h4 {
-            color: #e65100;
-            margin-bottom: 8px;
-            font-size: 16px;
+        .produto-imagem {
+            width: 100%;
+            height: 260px;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
         }
 
-        .produto-card p {
-            font-size: 14px;
-            color: #555;
+        .produto-imagem img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #fff;
+        }
+
+        .produto-conteudo {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .produto-tag {
+            display: inline-block;
+            background: #ffd700;
+            color: #000;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+
+        .produto-card h3 {
+            font-size: 20px;
+            color: #ffd700;
             margin-bottom: 10px;
         }
 
-        .produto-card a {
-            color: #e65100;
+        .produto-card p {
+            color: #e0e0e0;
+            font-size: 14px;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+
+        .botao-acessar {
+            display: inline-block;
+            background: linear-gradient(90deg, #ffd700, #ffb300);
+            color: #000;
             font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 8px;
             text-decoration: none;
+            font-size: 15px;
+            text-align: center;
+            transition: all 0.2s;
         }
 
-        .produto-card a:hover {
-            text-decoration: underline;
+        .botao-acessar:hover {
+            background: #fff;
+            color: #000;
         }
 
-        .imagens-secao {
+        .telas-secao {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 35px;
+            border: 2px solid rgba(0,200,255,0.3);
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .telas-secao h2 {
+            color: #00d4ff;
+            margin-bottom: 15px;
+        }
+
+        .telas-secao p {
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+
+        .em-breve {
+            padding: 30px;
+            color: #888;
+            font-style: italic;
+            border: 2px dashed rgba(0,200,255,0.2);
+            border-radius: 10px;
+        }
+
+        .servicos-secao {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 35px;
+            border: 2px solid rgba(0,200,255,0.3);
+            margin-bottom: 50px;
+        }
+
+        .servicos-secao h2 {
+            text-align: center;
+            font-size: 28px;
+            color: #00d4ff;
+            margin-bottom: 30px;
+        }
+
+        .servico-item {
             display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin: 20px 0;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
         }
 
-        .imagens-secao img {
-            flex: 1;
-            min-width: 280px;
-            max-width: 100%;
-            border-radius: 6px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        .servico-icone {
+            font-size: 28px;
+        }
+
+        .servico-texto h4 {
+            color: #ffd700;
+            font-size: 17px;
+            margin-bottom: 5px;
+        }
+
+        .servico-texto p {
+            color: #ccc;
+            font-size: 14px;
         }
 
         .contato-secao {
-            background-color: #f0f7ff;
-            padding: 25px;
-            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(0,150,80,0.3), rgba(0,100,60,0.2));
+            border-radius: 16px;
+            padding: 35px;
             text-align: center;
-            margin-top: 20px;
+            border: 2px solid #00c853;
         }
 
-        .contato-secao h3 {
-            margin-bottom: 15px;
-            color: #0047ab;
+        .contato-secao h2 {
+            color: #00ff88;
+            margin-bottom: 20px;
         }
 
-        .botoes {
+        .botoes-contato {
             display: flex;
             gap: 15px;
             justify-content: center;
@@ -278,190 +257,219 @@
             margin-top: 15px;
         }
 
-        .botao {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 20px;
-            border-radius: 6px;
-            color: #fff;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 15px;
-            transition: opacity 0.2s;
-        }
-
-        .botao:hover {
-            opacity: 0.9;
-        }
-
         .botao-whatsapp {
-            background-color: #25d366;
+            background: #25d366;
+            color: #fff;
+        }
+
+        .botao-instagram {
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            color: #fff;
         }
 
         .botao-telegram {
-            background-color: #0088cc;
+            background: #0088cc;
+            color: #fff;
+        }
+
+        .botao-contato {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 15px;
+            transition: transform 0.2s;
+        }
+
+        .botao-contato:hover {
+            transform: scale(1.05);
+        }
+
+        .download-teste {
+            margin-top: 25px;
+            padding: 18px;
+            background: rgba(0,136,204,0.2);
+            border-radius: 10px;
+        }
+
+        .download-teste a {
+            color: #00d4ff;
+            font-weight: bold;
+            font-size: 17px;
+            text-decoration: none;
         }
 
         .rodape {
             text-align: center;
-            padding: 20px;
+            padding: 25px;
+            color: #888;
             font-size: 14px;
-            color: #777;
-            margin-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .grade-produtos {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         @media (max-width: 600px) {
-            .info-box {
-                padding: 15px;
+            .cabecalho h1 { font-size: 20px; }
+            .grade-produtos {
+                grid-template-columns: 1fr;
             }
-            .botoes {
-                flex-direction: column;
-            }
-            .botao {
-                justify-content: center;
+            .produto-imagem {
+                height: 220px;
             }
         }
     </style>
 </head>
 <body>
 
+    <!-- CABEÇALHO -->
     <div class="cabecalho">
-        <img src="logo-jdc.png" alt="Logo JDC Tecnologia em Bordados">
-        <h1>JDC Tecnologia em Bordados</h1>
+        <div class="logo-area">
+            <img src="logo-jdc.png" alt="Logo JDC Tecnologia em Bordados">
+            <h1>JDC Tecnologia em Bordados</h1>
+        </div>
+        <p>Precificação Inteligente e Organização Prática para o Seu Ateliê!</p>
     </div>
 
     <div class="container">
-        <div class="produto-box">
 
-            <!-- IMAGEM EM DESTAQUE -->
-            <div class="imagem-destaque">
-                <img src="imagem1.jpg" alt="BordadoPreço Pro — Calculadora Completa com Custos Reais" />
-            </div>
+        <!-- DESTAQUE PRINCIPAL -->
+        <div class="destaque-principal">
+            <h2>🚀 2 Formas de Precificar + 1 Para Organizar!</h2>
+            <p>Duas calculadoras que geram orçamentos em PDF e HTML com a sua marca, e um organizador de matrizes por tamanho de bastidor!</p>
+        </div>
 
-            <!-- INFORMAÇÕES DO PRODUTO PRINCIPAL -->
-            <div class="info-box">
-                <span class="versao-tag">Versão 5.1 — Agosto 2026</span>
-                <span class="diferencial-tag">⚙️ Completo e Configurável</span>
+        <!-- GRADE DE PRODUTOS CLICÁVEIS -->
+        <div class="grade-produtos">
 
-                <h2>BordadoPreço Pro — Calculadora de Preços com Custos Reais</h2>
-                
-                <p class="descricao-curta">
-                    A calculadora MAIS COMPLETA para precificar seus bordados: digite seus custos reais e o programa calcula o preço verdadeiro de produção. Salário, energia, materiais e margem de lucro — tudo configurável por você!
-                </p>
-
-                <div class="aviso-custo">
-                    <strong>ℹ️ Preço NÃO é fixo:</strong> O valor sugerido é calculado com base NAS SUAS DESPESAS reais! Salário, custo fixo, linha, estabilizador, energia e margem de lucro — VOCÊ define tudo!
-                </div>
-
-                <div class="diferencial-box">
-                    <strong>💡 DIFERENCIAL:</strong> Diferente de calculadoras simples, aqui o preço vem dos SEUS custos. Cada ateliê tem seu preço — e agora você sabe o SEU!
-                </div>
-
-                <!-- DOWNLOAD DA VERSÃO DE TESTE -->
-                <div class="download-teste">
-                    <h3>⬇️ Baixe Grátis para Testar</h3>
-                    <p>Experimente antes de adquirir!</p>
-                    <a href="https://t.me/EmbroGestPro" target="_blank">
-                        ✈️ t.me/EmbroGestPro
-                    </a>
-                </div>
-
-                <div class="secao">
-                    <h3>📋 O que o programa faz</h3>
-                    <p>Calcula o preço de produção de matrizes de bordado considerando quantidade de pontos, cores, linha, estabilizador e energia elétrica. Com tarifas de energia atualizadas por estado brasileiro e suporte a mais 7 países. Você configura seus custos → o programa calcula o preço ideal!</p>
-                </div>
-
-                <!-- SEGUNDA IMAGEM -->
-                <div class="imagens-secao">
-                    <img src="imagem2.jpg" alt="Tela do programa — Configuração de cores e fabricantes" />
-                </div>
-
-                <div class="secao">
-                    <h3>📁 Formatos de arquivos suportados</h3>
-                    <div class="formatos">
-                        .pes &nbsp; .jef &nbsp; .dst &nbsp; .exp &nbsp; .vp3 &nbsp; .emb &nbsp; .sew &nbsp; .xxx &nbsp; .hus &nbsp; .vip
+            <!-- PRODUTO 1: BordadoPreço Pro v5.1 -->
+            <a href="https://tecnologiadelta8-beep.github.io/bordadopreco-pro-v5-1/" style="text-decoration: none;">
+                <div class="produto-card">
+                    <div class="produto-imagem">
+                        <img src="imagem1.jpg" alt="BordadoPreço Pro v5.1 — Precificação Completa com Seus Custos">
+                    </div>
+                    <div class="produto-conteudo">
+                        <span class="produto-tag">⚙️ Completa</span>
+                        <h3>BordadoPreço Pro v5.1</h3>
+                        <p>Calcula o preço com base nos SEUS custos reais: salário, energia, materiais e margem de lucro. <strong>Gera orçamentos em PDF e HTML personalizados com a logo e cores do seu ateliê ou empresa.</strong></p>
+                        <span class="botao-acessar">👉 Conheça →</span>
                     </div>
                 </div>
+            </a>
 
-                <div class="secao">
-                    <h3>✨ Principais recursos</h3>
-                    <ul class="lista-itens">
-                        <li>✅ Leitura automática de pontos, cores e tempo estimado</li>
-                        <li>✅ Você configura: salário, custo fixo, linha, estabilizador e margem de lucro</li>
-                        <li>✅ Tarifas de energia atualizadas por estado brasileiro e bandeira tarifária</li>
-                        <li>✅ Funciona também em: Paraguai, Argentina, Uruguai, EUA, Portugal, Espanha e França</li>
-                        <li>✅ Precificação com SEUS custos reais — preço justo e verdadeiro</li>
-                        <li>✅ Defina cores reais do fio com código/nome do fabricante</li>
-                        <li>✅ Cadastre materiais e serviços extras — ficam salvos para reutilizar</li>
-                        <li>✅ Gera orçamentos profissionais em HTML e PDF prontos para enviar</li>
-                        <li>✅ Miniaturas coloridas dos bordados direto no Windows Explorer</li>
-                        <li>✅ Personalize com sua logo, dados e cores da empresa</li>
-                        <li>✅ Licença vitalícia com atualizações</li>
-                    </ul>
-                </div>
-
-                <div class="secao">
-                    <h3>📝 Como usar</h3>
-                    <ul class="lista-itens">
-                        <li>1. Configure SEUS custos: salário, energia, materiais, lucro desejado</li>
-                        <li>2. Selecione o arquivo de bordado — o cálculo é feito na hora</li>
-                        <li>3. Adicione cores reais do fio e itens/serviços extras se precisar</li>
-                        <li>4. Gere o orçamento em PDF ou HTML e envie ao cliente</li>
-                    </ul>
-                </div>
-
-                <div class="secao">
-                    <h3>💻 Requisitos do Sistema</h3>
-                    <div class="requisitos">
-                        <p>✅ Windows 10 64 bits ou Windows 11 64 bits</p>
-                        <p>⚠️ Não compatível com versões antigas ou 32 bits</p>
+            <!-- PRODUTO 2: Borda Fácil Pro v1.0 -->
+            <a href="https://tecnologiadelta8-beep.github.io/borda-facil-pro-v1-0/" style="text-decoration: none;">
+                <div class="produto-card">
+                    <div class="produto-imagem">
+                        <img src="imagem2.jpg" alt="Borda Fácil Pro v1.0 — Preço pela Quantidade de Pontos">
+                    </div>
+                    <div class="produto-conteudo">
+                        <span class="produto-tag">⚡ Rápida</span>
+                        <h3>Borda Fácil Pro v1.0</h3>
+                        <p>Calcula o preço direto pela quantidade de pontos. Sem configurações complexas. <strong>Também gera orçamentos em PDF e HTML com a sua logo e cores personalizadas.</strong></p>
+                        <span class="botao-acessar">👉 Conheça →</span>
                     </div>
                 </div>
+            </a>
 
-                <!-- TODOS OS NOSSOS PRODUTOS -->
-                <div class="outros-produtos-box">
-                    <h3>📦 Conheça também nossos outros produtos</h3>
-                    
-                    <div class="produto-card">
-                        <h4>🔗 BordadoPreço Pro — Versão Anterior (v5)</h4>
-                        <p>Versão anterior do nosso precificador completo. Precificação com custos configuráveis: salário, energia, materiais e margem de lucro.</p>
-                        <a href="https://tecnologiadelta8-beep.github.io/bordadopreco-pro/" target="_blank">👉 Clique aqui para acessar →</a>
+            <!-- PRODUTO 3: Extrator de Matrizes Pro -->
+            <a href="https://tecnologiadelta8-beep.github.io/extrator-matrizes-bastidor-pro/" style="text-decoration: none;">
+                <div class="produto-card">
+                    <div class="produto-imagem">
+                        <img src="imagem3.jpg" alt="Extrator de Matrizes — Organiza por Tamanho de Bastidor">
                     </div>
-                    
-                    <div class="produto-card">
-                        <h4>🔗 Borda Fácil Pro v1.0</h4>
-                        <p>Calcula o preço direto pela quantidade de pontos. Rápido, prático e sem complicação. Sem precisar configurar salário, energia ou estabilizador.</p>
-                        <a href="https://tecnologiadelta8-beep.github.io/borda-facil-pro-v1-0/" target="_blank">👉 Clique aqui para acessar →</a>
-                    </div>
-                    
-                    <div class="produto-card">
-                        <h4>🔗 Extrator de Matrizes por Bastidor Pro</h4>
-                        <p>Organize automaticamente seus arquivos de bordado, separando-os em pastas de acordo com o bastidor compatível. Rápido, inteligente e sem trabalho manual!</p>
-                        <a href="https://tecnologiadelta8-beep.github.io/extrator-matrizes-bastidor-pro/" target="_blank">👉 Clique aqui para acessar →</a>
+                    <div class="produto-conteudo">
+                        <span class="produto-tag">🗂️ Organização</span>
+                        <h3>Extrator de Matrizes Pro</h3>
+                        <p>Separa e organiza automaticamente seus arquivos de bordado em pastas, de acordo com o TAMANHO DO BASTIDOR compatível com cada matriz. Rápido, prático e sem trabalho manual!</p>
+                        <span class="botao-acessar">👉 Conheça →</span>
                     </div>
                 </div>
+            </a>
 
-                <!-- CONTATO -->
-                <div class="contato-secao">
-                    <h3>📞 Quer saber mais? Fale conosco!</h3>
-                    <p>Entre em contato para informações sobre aquisição, licença e suporte.</p>
-                    <div class="botoes">
-                        <a class="botao botao-whatsapp" href="https://wa.me/5565999460391" target="_blank">
-                            💬 WhatsApp: +55 65 99946-0391
-                        </a>
-                        <a class="botao botao-telegram" href="https://t.me/Juarezcunha" target="_blank">
-                            ✈️ Telegram: @Juarezcunha
-                        </a>
-                    </div>
-                </div>
+        </div>
 
+        <!-- SEÇÃO: FOTOS DAS TELAS EM BREVE -->
+        <div class="telas-secao">
+            <h2>📸 Veja o Programa em Funcionamento</h2>
+            <p>Em breve: telas reais de cada ferramenta mostrando passo a passo como usar!</p>
+            <div class="em-breve">
+                🚧 Área em construção — Em breve você verá telas de cada programa! 🚧
             </div>
         </div>
+
+        <!-- SEÇÃO DE SERVIÇOS -->
+        <div class="servicos-secao">
+            <h2>🔧 Serviços e Manutenção</h2>
+
+            <div class="servico-item">
+                <span class="servico-icone">🔄</span>
+                <div class="servico-texto">
+                    <h4>Atualização e Manutenção de Programas</h4>
+                    <p>Garanta que suas ferramentas estejam sempre com as últimas melhorias, tarifas de energia atualizadas e compatibilidade com novos sistemas operacionais.</p>
+                </div>
+            </div>
+
+            <div class="servico-item">
+                <span class="servico-icone">🛠️</span>
+                <div class="servico-texto">
+                    <h4>Suporte Técnico e Resolução de Problemas</h4>
+                    <p>Dificuldades na instalação, funcionamento ou dúvidas de uso? Conte com suporte dedicado para resolver rapidamente!</p>
+                </div>
+            </div>
+
+            <div class="servico-item">
+                <span class="servico-icone">💡</span>
+                <div class="servico-texto">
+                    <h4>Consultoria e Ajustes Personalizados</h4>
+                    <p>Precisa de regras específicas, cálculos extras ou relatórios personalizados? Podemos adaptar às necessidades do seu ateliê!</p>
+                </div>
+            </div>
+
+            <div class="servico-item">
+                <span class="servico-icone">📚</span>
+                <div class="servico-texto">
+                    <h4>Treinamento e Orientações de Uso</h4>
+                    <p>Aprenda a extrair o máximo de cada ferramenta! Dicas de precificação, melhores práticas e organização de arquivos.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTATO E DOWNLOAD -->
+        <div class="contato-secao">
+            <h2>📞 Fale Conosco e Baixe Gratuitamente!</h2>
+            <p>Experimente qualquer ferramenta sem compromisso. Teste, avalie e depois decida!</p>
+
+            <div class="download-teste">
+                <h3>⬇️ Baixe para Testar — Sem Compromisso!</h3>
+                <a href="https://t.me/EmbroGestPro" target="_blank">✈️ t.me/EmbroGestPro</a>
+            </div>
+
+            <div class="botoes-contato">
+                <a class="botao-contato botao-whatsapp" href="https://wa.me/5565999460391" target="_blank">
+                    💬 WhatsApp: +55 65 99946-0391
+                </a>
+                <a class="botao-contato botao-instagram" href="https://instagram.com/juarez.tec.compt" target="_blank">
+                    📷 Instagram: @juarez.tec.compt
+                </a>
+                <a class="botao-contato botao-telegram" href="https://t.me/Juarezcunha" target="_blank">
+                    ✈️ Telegram: @Juarezcunha
+                </a>
+            </div>
+        </div>
+
     </div>
 
     <div class="rodape">
-        <p>JDC Tecnologia em Bordados — Todos os direitos reservados.</p>
+        <p>JDC Tecnologia em Bordados — Precificação e Organização. © 2026 Todos os direitos reservados.</p>
     </div>
 
 </body>

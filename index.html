@@ -3,30 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="JDC Tecnologia em Bordados — 2 calculadoras de preço com orçamentos em PDF e HTML personalizados + 1 organizador de matrizes por bastidor.">
-    <meta name="keywords" content="precificadordebordados, BordadoPrecoPro, valordobordado, SoftwareBordado, precificar bordado, calculadora de bordados, orçamento PDF, orçamento personalizado, Borda Fácil, Extrator de Matrizes, manutenção de software, suporte técnico">
-    <title>JDC Tecnologia em Bordados — Precificação e Organização de Bordados</title>
+    <meta name="description" content="JDC Tecnologia em Bordados — BordadoPreço Pro v5.1 completo com variáveis ajustáveis + Borda Fácil simples + Extrator de Matrizes. Orçamentos em PDF e HTML.">
+    <meta name="keywords" content="precificadordebordados, BordadoPrecoPro, valordobordado, SoftwareBordado, precificar bordado, calculadora de bordados, ajuste tarifa energia, orçamento PDF, orçamento personalizado, Borda Fácil, Extrator de Matrizes">
+    <title>JDC Tecnologia em Bordados — Precificação e Organização</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
         body {
             background: linear-gradient(135deg, #0f1729 0%, #1a2744 50%, #0f1729 100%);
             color: #fff;
             line-height: 1.6;
         }
-
         .cabecalho {
             background: rgba(0,0,0,0.4);
             padding: 20px;
             text-align: center;
             border-bottom: 3px solid #ffd700;
         }
-
         .logo-area {
             display: flex;
             align-items: center;
@@ -34,47 +26,18 @@
             gap: 15px;
             margin-bottom: 10px;
         }
-
-        .logo-area img {
-            height: 70px;
-            width: auto;
-        }
-
+        .logo-area img { height: 70px; width: auto; }
         .cabecalho h1 {
             font-size: 28px;
             color: #ffd700;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
+        .cabecalho p { font-size: 18px; color: #e0e0e0; font-style: italic; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
 
-        .cabecalho p {
-            font-size: 18px;
-            color: #e0e0e0;
-            font-style: italic;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 30px 20px;
-        }
-
-        .destaque-principal {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .destaque-principal h2 {
-            font-size: 28px;
-            color: #ffd700;
-            margin-bottom: 15px;
-        }
-
-        .destaque-principal p {
-            font-size: 17px;
-            color: #f0f0f0;
-            max-width: 800px;
-            margin: 0 auto;
-        }
+        .destaque-principal { text-align: center; margin-bottom: 40px; }
+        .destaque-principal h2 { font-size: 28px; color: #ffd700; margin-bottom: 15px; }
+        .destaque-principal p { font-size: 17px; color: #f0f0f0; max-width: 800px; margin: 0 auto; }
 
         .grade-produtos {
             display: grid;
@@ -82,7 +45,6 @@
             gap: 25px;
             margin-bottom: 60px;
         }
-
         .produto-card {
             background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.05));
             border-radius: 16px;
@@ -90,19 +52,16 @@
             overflow: hidden;
             border: 2px solid rgba(255,215,0,0.3);
             box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             display: flex;
             flex-direction: column;
             height: 100%;
         }
-
         .produto-card:hover {
             transform: translateY(-8px);
             box-shadow: 0 15px 40px rgba(255,215,0,0.25);
             border-color: #ffd700;
         }
-
         .produto-imagem {
             width: 100%;
             height: 260px;
@@ -110,23 +69,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
         }
-
-        .produto-imagem img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            background: #fff;
-        }
-
-        .produto-conteudo {
-            padding: 20px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
+        .produto-imagem img { width: 100%; height: 100%; object-fit: contain; background: #fff; }
+        .produto-conteudo { padding: 20px; flex-grow: 1; }
         .produto-tag {
             display: inline-block;
             background: #ffd700;
@@ -137,39 +82,22 @@
             font-size: 12px;
             margin-bottom: 12px;
         }
-
-        .produto-card h3 {
-            font-size: 20px;
-            color: #ffd700;
-            margin-bottom: 10px;
-        }
-
-        .produto-card p {
-            color: #e0e0e0;
-            font-size: 14px;
-            margin-bottom: 15px;
-            flex-grow: 1;
-        }
-
+        .produto-card h3 { font-size: 20px; color: #ffd700; margin-bottom: 10px; }
+        .produto-card p { color: #e0e0e0; font-size: 14px; margin-bottom: 15px; }
         .botao-acessar {
-            display: inline-block;
+            display: block;
             background: linear-gradient(90deg, #ffd700, #ffb300);
             color: #000;
             font-weight: bold;
             padding: 10px 20px;
             border-radius: 8px;
+            text-align: center;
             text-decoration: none;
             font-size: 15px;
-            text-align: center;
-            transition: all 0.2s;
         }
+        .botao-acessar:hover { background: #fff; color: #000; }
 
-        .botao-acessar:hover {
-            background: #fff;
-            color: #000;
-        }
-
-        /* === GALERIA DE TELAS — AJUSTADA PARA PRINTS DE TELA === */
+        /* GALERIA DE TELAS — 3 POR LINHA NO COMPUTADOR */
         .galeria-secao {
             background: rgba(255,255,255,0.05);
             border-radius: 16px;
@@ -178,55 +106,31 @@
             margin-bottom: 50px;
             text-align: center;
         }
-
-        .galeria-secao h2 {
-            color: #00d4ff;
-            margin-bottom: 10px;
-            font-size: 26px;
-        }
-
-        .galeria-secao > p {
-            color: #ccc;
-            margin-bottom: 25px;
-        }
-
-        /* SEMPRE 3 IMAGENS POR LINHA */
+        .galeria-secao h2 { color: #00d4ff; margin-bottom: 10px; font-size: 26px; }
+        .galeria-secao > p { color: #ccc; margin-bottom: 25px; }
         .galeria-grade {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 18px;
         }
-
         .galeria-item {
             background: rgba(0,0,0,0.25);
             border-radius: 12px;
             padding: 10px;
             border: 1px solid rgba(0,200,255,0.2);
-            transition: transform 0.2s, border-color 0.2s;
+            transition: transform 0.2s;
         }
-
-        .galeria-item:hover {
-            transform: translateY(-5px);
-            border-color: #00d4ff;
-        }
-
-        /* AJUSTADO PARA PRINTS DE TELA — NÃO DISTORCE */
+        .galeria-item:hover { transform: translateY(-5px); border-color: #00d4ff; }
         .galeria-item img {
             width: 100%;
-            height: 110px; /* Altura ideal para capturas de tela */
-            object-fit: contain; /* ← MOSTRA A IMAGEM INTEIRA, SEM CORTAR! */
+            height: 110px;
+            object-fit: contain;
             border-radius: 6px;
             margin-bottom: 8px;
             background: #fff;
         }
+        .galeria-item p { font-size: 12px; color: #e0e0e0; line-height: 1.3; }
 
-        .galeria-item p {
-            font-size: 12px;
-            color: #e0e0e0;
-            line-height: 1.3;
-        }
-
-        /* === SERVIÇOS === */
         .servicos-secao {
             background: rgba(255,255,255,0.05);
             border-radius: 16px;
@@ -234,14 +138,7 @@
             border: 2px solid rgba(0,200,255,0.3);
             margin-bottom: 50px;
         }
-
-        .servicos-secao h2 {
-            text-align: center;
-            font-size: 28px;
-            color: #00d4ff;
-            margin-bottom: 30px;
-        }
-
+        .servicos-secao h2 { text-align: center; font-size: 28px; color: #00d4ff; margin-bottom: 30px; }
         .servico-item {
             display: flex;
             align-items: flex-start;
@@ -251,23 +148,10 @@
             background: rgba(0,0,0,0.2);
             border-radius: 10px;
         }
+        .servico-icone { font-size: 28px; }
+        .servico-texto h4 { color: #ffd700; font-size: 17px; margin-bottom: 5px; }
+        .servico-texto p { color: #ccc; font-size: 14px; }
 
-        .servico-icone {
-            font-size: 28px;
-        }
-
-        .servico-texto h4 {
-            color: #ffd700;
-            font-size: 17px;
-            margin-bottom: 5px;
-        }
-
-        .servico-texto p {
-            color: #ccc;
-            font-size: 14px;
-        }
-
-        /* === CONTATO === */
         .contato-secao {
             background: linear-gradient(135deg, rgba(0,150,80,0.3), rgba(0,100,60,0.2));
             border-radius: 16px;
@@ -276,12 +160,7 @@
             border: 2px solid #00c853;
             margin-bottom: 40px;
         }
-
-        .contato-secao h2 {
-            color: #00ff88;
-            margin-bottom: 20px;
-        }
-
+        .contato-secao h2 { color: #00ff88; margin-bottom: 20px; }
         .botoes-contato {
             display: flex;
             gap: 15px;
@@ -289,11 +168,9 @@
             flex-wrap: wrap;
             margin-top: 15px;
         }
-
         .botao-whatsapp { background: #25d366; color: #fff; }
         .botao-instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: #fff; }
         .botao-telegram { background: #0088cc; color: #fff; }
-
         .botao-contato {
             display: inline-flex;
             align-items: center;
@@ -303,26 +180,16 @@
             font-weight: bold;
             text-decoration: none;
             font-size: 15px;
-            transition: transform 0.2s;
         }
-
         .botao-contato:hover { transform: scale(1.05); }
-
         .download-teste {
             margin-top: 25px;
             padding: 18px;
             background: rgba(0,136,204,0.2);
             border-radius: 10px;
         }
+        .download-teste a { color: #00d4ff; font-weight: bold; font-size: 17px; text-decoration: none; }
 
-        .download-teste a {
-            color: #00d4ff;
-            font-weight: bold;
-            font-size: 17px;
-            text-decoration: none;
-        }
-
-        /* === QUEM SOMOS === */
         .quem-somos {
             background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,179,0,0.05));
             border-radius: 16px;
@@ -331,18 +198,8 @@
             margin-bottom: 30px;
             text-align: center;
         }
-
-        .quem-somos h2 {
-            font-size: 24px;
-            color: #ffd700;
-            margin-bottom: 12px;
-        }
-
-        .quem-somos p {
-            font-size: 16px;
-            color: #fff;
-            line-height: 1.7;
-        }
+        .quem-somos h2 { font-size: 24px; color: #ffd700; margin-bottom: 12px; }
+        .quem-somos p { font-size: 16px; color: #fff; line-height: 1.7; }
 
         .rodape {
             text-align: center;
@@ -353,22 +210,30 @@
             margin-top: 10px;
         }
 
-        /* === CELULAR === */
+        /* TABLET — 2 POR LINHA */
+        @media (max-width: 900px) {
+            .grade-produtos { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* 📱 CELULAR — 1 IMAGEM POR LINHA, BEM GRANDE! */
         @media (max-width: 600px) {
             .cabecalho h1 { font-size: 20px; }
             .grade-produtos { grid-template-columns: 1fr; }
+            
             .galeria-grade { 
-                grid-template-columns: repeat(3, 1fr);
-                gap: 10px;
+                grid-template-columns: 1fr; /* ← UMA IMAGEM SÓ POR LINHA! */
+                gap: 15px;
             }
-            .galeria-item img { height: 80px; }
+            .galeria-item img { 
+                height: 200px; /* ← IMAGEM BEM GRANDE NO CELULAR! */
+            }
+            
             .produto-imagem { height: 220px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- CABEÇALHO -->
     <div class="cabecalho">
         <div class="logo-area">
             <img src="logo-jdc.png" alt="Logo JDC Tecnologia em Bordados">
@@ -379,23 +244,21 @@
 
     <div class="container">
 
-        <!-- DESTAQUE PRINCIPAL -->
         <div class="destaque-principal">
             <h2>🚀 2 Formas de Precificar + 1 Para Organizar!</h2>
-            <p>Duas calculadoras que geram orçamentos em PDF e HTML com a sua marca, e um organizador de matrizes por tamanho de bastidor!</p>
+            <p><strong>BordadoPreço Pro v5.1</strong> — completo e configurável. <strong>Borda Fácil</strong> — simples e direto. As duas calculam pontos automaticamente e geram orçamentos em PDF e HTML!</p>
         </div>
 
-        <!-- PRODUTOS -->
         <div class="grade-produtos">
             <a href="https://tecnologiadelta8-beep.github.io/bordadopreco-pro-v5-1/" style="text-decoration: none;">
                 <div class="produto-card">
                     <div class="produto-imagem">
-                        <img src="imagem1.jpg" alt="BordadoPreço Pro v5.1 — Precificação Completa com Seus Custos">
+                        <img src="imagem1.jpg" alt="BordadoPreço Pro v5.1 — Completo e Configurável">
                     </div>
                     <div class="produto-conteudo">
-                        <span class="produto-tag">⚙️ Completa</span>
+                        <span class="produto-tag">⭐ Mais Completo</span>
                         <h3>BordadoPreço Pro v5.1</h3>
-                        <p>Calcula o preço com base nos SEUS custos reais: salário, energia, materiais e margem de lucro. <strong>Gera orçamentos em PDF e HTML personalizados com a logo e cores do seu ateliê ou empresa.</strong></p>
+                        <p>Cálculo automático de pontos + variáveis ajustáveis: tarifa de energia, salário, materiais e margem de lucro. Gera orçamentos em PDF e HTML personalizados.</p>
                         <span class="botao-acessar">👉 Conheça →</span>
                     </div>
                 </div>
@@ -404,12 +267,12 @@
             <a href="https://tecnologiadelta8-beep.github.io/borda-facil-pro-v1-0/" style="text-decoration: none;">
                 <div class="produto-card">
                     <div class="produto-imagem">
-                        <img src="imagem2.jpg" alt="Borda Fácil Pro v1.0 — Preço pela Quantidade de Pontos">
+                        <img src="imagem2.jpg" alt="Borda Fácil Pro v1.0 — Simples e Rápido">
                     </div>
                     <div class="produto-conteudo">
-                        <span class="produto-tag">⚡ Rápida</span>
+                        <span class="produto-tag">✅ Mais Simples</span>
                         <h3>Borda Fácil Pro v1.0</h3>
-                        <p>Calcula o preço direto pela quantidade de pontos. Sem configurações complexas. <strong>Também gera orçamentos em PDF e HTML com a sua logo e cores personalizadas.</strong></p>
+                        <p>Cálculo automático de pontos → preço direto pela quantidade. Sem configurações complexas. Também gera orçamentos em PDF e HTML com sua marca.</p>
                         <span class="botao-acessar">👉 Conheça →</span>
                     </div>
                 </div>
@@ -418,73 +281,65 @@
             <a href="https://tecnologiadelta8-beep.github.io/extrator-matrizes-bastidor-pro/" style="text-decoration: none;">
                 <div class="produto-card">
                     <div class="produto-imagem">
-                        <img src="imagem3.jpg" alt="Extrator de Matrizes — Organiza por Tamanho de Bastidor">
+                        <img src="imagem3.jpg" alt="Extrator de Matrizes — Organização">
                     </div>
                     <div class="produto-conteudo">
                         <span class="produto-tag">🗂️ Organização</span>
                         <h3>Extrator de Matrizes Pro</h3>
-                        <p>Separa e organiza automaticamente seus arquivos de bordado em pastas, de acordo com o TAMANHO DO BASTIDOR compatível com cada matriz. Rápido, prático e sem trabalho manual!</p>
+                        <p>Separa e organiza automaticamente seus arquivos de bordado em pastas, de acordo com o tamanho do bastidor compatível com cada matriz.</p>
                         <span class="botao-acessar">👉 Conheça →</span>
                     </div>
                 </div>
             </a>
         </div>
 
-        <!-- GALERIA DE TELAS — SEMPRE 3 POR LINHA, AJUSTADA PARA PRINTS -->
+        <!-- GALERIA DE TELAS — PRINCIPAIS FUNÇÕES -->
         <div class="galeria-secao">
-            <h2>📷 Veja o Programa em Funcionamento</h2>
-            <p>Cada imagem mostra uma tela ou funcionalidade das ferramentas:</p>
+            <h2>📷 Principais Telas e Funcionalidades</h2>
+            <p>Veja o que cada ferramenta faz na prática:</p>
 
             <div class="galeria-grade">
-
+                <!-- LINHA 1 -->
                 <div class="galeria-item">
                     <img src="tela1.jpg" alt="Tela principal — cálculo completo">
                     <p>Tela principal — cálculo completo</p>
                 </div>
-
                 <div class="galeria-item">
                     <img src="tela2.jpg" alt="Configuração de custos">
                     <p>Configuração de custos</p>
                 </div>
-
                 <div class="galeria-item">
                     <img src="tela3.jpg" alt="Orçamento em PDF gerado">
                     <p>Orçamento em PDF gerado</p>
                 </div>
 
+                <!-- LINHA 2 -->
                 <div class="galeria-item">
                     <img src="tela4.jpg" alt="Cálculo por quantidade de pontos">
                     <p>Cálculo por quantidade de pontos</p>
                 </div>
-
                 <div class="galeria-item">
                     <img src="tela5.jpg" alt="Organização por bastidor">
                     <p>Organização por bastidor</p>
                 </div>
-
                 <div class="galeria-item">
                     <img src="tela6.jpg" alt="Relatório em HTML personalizado">
                     <p>Relatório em HTML personalizado</p>
                 </div>
 
-                <!-- ✅ TEXTO JÁ TROCADO AQUI! -->
+                <!-- LINHA 3 -->
                 <div class="galeria-item">
-                    <img src="tela7.jpg" alt="Ajuste de Tarifa de Energia v5.1">
+                    <img src="tela7.jpg" alt="Ajuste de Tarifa de Energia — v5.1">
                     <p>Ajuste de Tarifa de Energia — v5.1</p>
                 </div>
-
                 <div class="galeria-item">
                     <img src="tela8.jpg" alt="Lista de materiais usados">
                     <p>Lista de materiais usados</p>
                 </div>
-
                 <div class="galeria-item">
                     <img src="tela9.jpg" alt="Escolha de cores e logo">
                     <p>Escolha de cores e logo</p>
                 </div>
-
-                <!-- É SÓ COPIAR AQUI PARA MAIS IMAGENS -->
-
             </div>
         </div>
 

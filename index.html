@@ -169,7 +169,8 @@
             color: #000;
         }
 
-        .telas-secao {
+        /* === GALERIA DE TELAS — AJUSTADA PARA PRINTS DE TELA === */
+        .galeria-secao {
             background: rgba(255,255,255,0.05);
             border-radius: 16px;
             padding: 35px;
@@ -178,24 +179,54 @@
             text-align: center;
         }
 
-        .telas-secao h2 {
+        .galeria-secao h2 {
             color: #00d4ff;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
+            font-size: 26px;
         }
 
-        .telas-secao p {
+        .galeria-secao > p {
             color: #ccc;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
-        .em-breve {
-            padding: 30px;
-            color: #888;
-            font-style: italic;
-            border: 2px dashed rgba(0,200,255,0.2);
-            border-radius: 10px;
+        /* SEMPRE 3 IMAGENS POR LINHA */
+        .galeria-grade {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
         }
 
+        .galeria-item {
+            background: rgba(0,0,0,0.25);
+            border-radius: 12px;
+            padding: 10px;
+            border: 1px solid rgba(0,200,255,0.2);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .galeria-item:hover {
+            transform: translateY(-5px);
+            border-color: #00d4ff;
+        }
+
+        /* AJUSTADO PARA PRINTS DE TELA — NÃO DISTORCE */
+        .galeria-item img {
+            width: 100%;
+            height: 110px; /* Altura ideal para capturas de tela */
+            object-fit: contain; /* ← MOSTRA A IMAGEM INTEIRA, SEM CORTAR! */
+            border-radius: 6px;
+            margin-bottom: 8px;
+            background: #fff;
+        }
+
+        .galeria-item p {
+            font-size: 12px;
+            color: #e0e0e0;
+            line-height: 1.3;
+        }
+
+        /* === SERVIÇOS === */
         .servicos-secao {
             background: rgba(255,255,255,0.05);
             border-radius: 16px;
@@ -236,6 +267,7 @@
             font-size: 14px;
         }
 
+        /* === CONTATO === */
         .contato-secao {
             background: linear-gradient(135deg, rgba(0,150,80,0.3), rgba(0,100,60,0.2));
             border-radius: 16px;
@@ -258,20 +290,9 @@
             margin-top: 15px;
         }
 
-        .botao-whatsapp {
-            background: #25d366;
-            color: #fff;
-        }
-
-        .botao-instagram {
-            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
-            color: #fff;
-        }
-
-        .botao-telegram {
-            background: #0088cc;
-            color: #fff;
-        }
+        .botao-whatsapp { background: #25d366; color: #fff; }
+        .botao-instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: #fff; }
+        .botao-telegram { background: #0088cc; color: #fff; }
 
         .botao-contato {
             display: inline-flex;
@@ -285,9 +306,7 @@
             transition: transform 0.2s;
         }
 
-        .botao-contato:hover {
-            transform: scale(1.05);
-        }
+        .botao-contato:hover { transform: scale(1.05); }
 
         .download-teste {
             margin-top: 25px;
@@ -303,6 +322,7 @@
             text-decoration: none;
         }
 
+        /* === QUEM SOMOS === */
         .quem-somos {
             background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,179,0,0.05));
             border-radius: 16px;
@@ -333,20 +353,16 @@
             margin-top: 10px;
         }
 
-        @media (max-width: 900px) {
-            .grade-produtos {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
+        /* === CELULAR === */
         @media (max-width: 600px) {
             .cabecalho h1 { font-size: 20px; }
-            .grade-produtos {
-                grid-template-columns: 1fr;
+            .grade-produtos { grid-template-columns: 1fr; }
+            .galeria-grade { 
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
             }
-            .produto-imagem {
-                height: 220px;
-            }
+            .galeria-item img { height: 80px; }
+            .produto-imagem { height: 220px; }
         }
     </style>
 </head>
@@ -369,10 +385,8 @@
             <p>Duas calculadoras que geram orçamentos em PDF e HTML com a sua marca, e um organizador de matrizes por tamanho de bastidor!</p>
         </div>
 
-        <!-- GRADE DE PRODUTOS CLICÁVEIS -->
+        <!-- PRODUTOS -->
         <div class="grade-produtos">
-
-            <!-- PRODUTO 1: BordadoPreço Pro v5.1 -->
             <a href="https://tecnologiadelta8-beep.github.io/bordadopreco-pro-v5-1/" style="text-decoration: none;">
                 <div class="produto-card">
                     <div class="produto-imagem">
@@ -387,7 +401,6 @@
                 </div>
             </a>
 
-            <!-- PRODUTO 2: Borda Fácil Pro v1.0 -->
             <a href="https://tecnologiadelta8-beep.github.io/borda-facil-pro-v1-0/" style="text-decoration: none;">
                 <div class="produto-card">
                     <div class="produto-imagem">
@@ -402,7 +415,6 @@
                 </div>
             </a>
 
-            <!-- PRODUTO 3: Extrator de Matrizes Pro -->
             <a href="https://tecnologiadelta8-beep.github.io/extrator-matrizes-bastidor-pro/" style="text-decoration: none;">
                 <div class="produto-card">
                     <div class="produto-imagem">
@@ -416,22 +428,69 @@
                     </div>
                 </div>
             </a>
-
         </div>
 
-        <!-- SEÇÃO: FOTOS DAS TELAS EM BREVE -->
-        <div class="telas-secao">
-            <h2>📸 Veja o Programa em Funcionamento</h2>
-            <p>Em breve: telas reais de cada ferramenta mostrando passo a passo como usar!</p>
-            <div class="em-breve">
-                🚧 Área em construção — Em breve você verá telas de cada programa! 🚧
+        <!-- GALERIA DE TELAS — SEMPRE 3 POR LINHA, AJUSTADA PARA PRINTS -->
+        <div class="galeria-secao">
+            <h2>📷 Veja o Programa em Funcionamento</h2>
+            <p>Cada imagem mostra uma tela ou funcionalidade das ferramentas:</p>
+
+            <div class="galeria-grade">
+
+                <div class="galeria-item">
+                    <img src="tela1.jpg" alt="Tela principal — cálculo completo">
+                    <p>Tela principal — cálculo completo</p>
+                </div>
+
+                <div class="galeria-item">
+                    <img src="tela2.jpg" alt="Configuração de custos">
+                    <p>Configuração de custos</p>
+                </div>
+
+                <div class="galeria-item">
+                    <img src="tela3.jpg" alt="Orçamento em PDF gerado">
+                    <p>Orçamento em PDF gerado</p>
+                </div>
+
+                <div class="galeria-item">
+                    <img src="tela4.jpg" alt="Cálculo por quantidade de pontos">
+                    <p>Cálculo por quantidade de pontos</p>
+                </div>
+
+                <div class="galeria-item">
+                    <img src="tela5.jpg" alt="Organização por bastidor">
+                    <p>Organização por bastidor</p>
+                </div>
+
+                <div class="galeria-item">
+                    <img src="tela6.jpg" alt="Relatório em HTML personalizado">
+                    <p>Relatório em HTML personalizado</p>
+                </div>
+
+                <!-- ✅ TEXTO JÁ TROCADO AQUI! -->
+                <div class="galeria-item">
+                    <img src="tela7.jpg" alt="Ajuste de Tarifa de Energia v5.1">
+                    <p>Ajuste de Tarifa de Energia — v5.1</p>
+                </div>
+
+                <div class="galeria-item">
+                    <img src="tela8.jpg" alt="Lista de materiais usados">
+                    <p>Lista de materiais usados</p>
+                </div>
+
+                <div class="galeria-item">
+                    <img src="tela9.jpg" alt="Escolha de cores e logo">
+                    <p>Escolha de cores e logo</p>
+                </div>
+
+                <!-- É SÓ COPIAR AQUI PARA MAIS IMAGENS -->
+
             </div>
         </div>
 
-        <!-- SEÇÃO DE SERVIÇOS -->
+        <!-- SERVIÇOS -->
         <div class="servicos-secao">
             <h2>🔧 Serviços e Manutenção</h2>
-
             <div class="servico-item">
                 <span class="servico-icone">🔄</span>
                 <div class="servico-texto">
@@ -439,7 +498,6 @@
                     <p>Garanta que suas ferramentas estejam sempre com as últimas melhorias, tarifas de energia atualizadas e compatibilidade com novos sistemas operacionais.</p>
                 </div>
             </div>
-
             <div class="servico-item">
                 <span class="servico-icone">🛠️</span>
                 <div class="servico-texto">
@@ -447,7 +505,6 @@
                     <p>Dificuldades na instalação, funcionamento ou dúvidas de uso? Conte com suporte dedicado para resolver rapidamente!</p>
                 </div>
             </div>
-
             <div class="servico-item">
                 <span class="servico-icone">💡</span>
                 <div class="servico-texto">
@@ -455,7 +512,6 @@
                     <p>Precisa de regras específicas, cálculos extras ou relatórios personalizados? Podemos adaptar às necessidades do seu ateliê!</p>
                 </div>
             </div>
-
             <div class="servico-item">
                 <span class="servico-icone">📚</span>
                 <div class="servico-texto">
@@ -465,30 +521,22 @@
             </div>
         </div>
 
-        <!-- CONTATO E DOWNLOAD -->
+        <!-- CONTATO -->
         <div class="contato-secao">
             <h2>📞 Fale Conosco e Baixe Gratuitamente!</h2>
             <p>Experimente qualquer ferramenta sem compromisso. Teste, avalie e depois decida!</p>
-
             <div class="download-teste">
                 <h3>⬇️ Baixe para Testar — Sem Compromisso!</h3>
                 <a href="https://t.me/EmbroGestPro" target="_blank">✈️ t.me/EmbroGestPro</a>
             </div>
-
             <div class="botoes-contato">
-                <a class="botao-contato botao-whatsapp" href="https://wa.me/5565999460391" target="_blank">
-                    💬 WhatsApp: +55 65 99946-0391
-                </a>
-                <a class="botao-contato botao-instagram" href="https://instagram.com/juarez.tec.compt" target="_blank">
-                    📷 Instagram: @juarez.tec.compt
-                </a>
-                <a class="botao-contato botao-telegram" href="https://t.me/Juarezcunha" target="_blank">
-                    ✈️ Telegram: @Juarezcunha
-                </a>
+                <a class="botao-contato botao-whatsapp" href="https://wa.me/5565999460391" target="_blank">💬 WhatsApp: +55 65 99946-0391</a>
+                <a class="botao-contato botao-instagram" href="https://instagram.com/juarez.tec.compt" target="_blank">📷 Instagram: @juarez.tec.compt</a>
+                <a class="botao-contato botao-telegram" href="https://t.me/Juarezcunha" target="_blank">✈️ Telegram: @Juarezcunha</a>
             </div>
         </div>
 
-        <!-- QUEM SOMOS — NO FINAL, ANTES DO RODAPÉ -->
+        <!-- QUEM SOMOS -->
         <div class="quem-somos">
             <h2>🏆 Quem Somos</h2>
             <p>Com mais de 10 anos de experiência no mercado, somos referência em desenvolvimento de softwares, manutenção, instalação e suporte técnico para o ramo de bordados. Atendemos milhares de clientes no Brasil e no mundo, com atendimento dedicado e confiança conquistada através de resultados e indicações. Do bordado à gestão, oferecemos soluções práticas e inteligentes para facilitar o seu dia a dia e impulsionar o seu ateliê!</p>

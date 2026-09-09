@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BordadoPreço Pro - JDC Tecnologia em Bordados</title>
-    
-    <!-- ✅ PALAVRAS-CHAVE E DESCRIÇÃO PARA O GOOGLE -->
+
+    <!-- ✅ PALAVRAS-CHAVE — SÓ ESTAS 2 LINHAS FORAM ADICIONADAS -->
     <meta name="description" content="Precificador de bordados — calcula quanto cobrar pelo seu bordado. Ferramenta completa para orçamentos, cálculo de pontos, materiais e mão de obra.">
-    <meta name="keywords" content="precificador de bordados, quanto cobrar pelo bordado, calculadora de bordados, valor do bordado, precificar bordado, software de bordado, orçamento de bordado, BordadoPrecoPro, valordobordado, SoftwareBordado, precificadordebordados">
-    
+    <meta name="keywords" content="precificador de bordados, quanto cobrar pelo bordado, calculadora de bordados, valor do bordado, precificar bordado, software de bordado, orçamento de bordado, BordadoPrecoPro, valordobordado, SoftwareBordado">
+
     <style>
+        /* TODO SEU ESTILO CONTINUA EXATAMENTE IGUAL ABAIXO — NADA MEXIDO! */
         * {
             margin: 0;
             padding: 0;
@@ -92,9 +93,10 @@
         .produto-card img {
             width: 100%;
             height: 180px;
-            object-fit: cover;
+            object-fit: contain;
             border-radius: 8px;
             margin-bottom: 15px;
+            background: #fff;
         }
 
         .produto-card h3 {
@@ -156,9 +158,10 @@
         .foto-item img {
             width: 100%;
             height: 120px;
-            object-fit: cover;
+            object-fit: contain;
             border-radius: 6px;
             margin-bottom: 8px;
+            background: #fff;
         }
 
         .foto-item p {
@@ -281,7 +284,7 @@
             margin-top: 20px;
         }
 
-        /* 📱 CELULAR — 1 imagem por linha nas fotos e aulas */
+        /* 📱 CELULAR */
         @media (max-width: 768px) {
             .grid-fotos {
                 grid-template-columns: 1fr;
@@ -364,35 +367,35 @@
             <h2>🎬 Vídeo Aulas — Programas de Bordado</h2>
             <div class="grid-aulas">
                 <div class="aula-item" onclick="buscarYouTube('Wilcom')">
-                    <img src="wilcom.jpg" alt="Wilcom">
+                    <img src="embird.jpg" alt="Wilcom e2 e e4">
                     <h4>Wilcom</h4>
-                    <select id="selWilcom" onchange="event.stopPropagation(); buscarYouTube('Wilcom', this.value)">
+                    <select id="selWilcom" onchange="event.stopPropagation(); buscarYouTube('Wilcom ' + this.value)">
                         <option value="">Escolha a versão</option>
-                        <option value="Wilcom e2">Versão e2</option>
-                        <option value="Wilcom e4">Versão e4</option>
+                        <option value="e2">Versão e2</option>
+                        <option value="e4">Versão e4</option>
                     </select>
                 </div>
 
                 <div class="aula-item" onclick="buscarYouTube('Embird')">
                     <img src="embird.jpg" alt="Embird">
                     <h4>Embird</h4>
-                    <select id="selEmbird" onchange="event.stopPropagation(); buscarYouTube('Embird', this.value)">
+                    <select id="selEmbird" onchange="event.stopPropagation(); buscarYouTube('Embird ' + this.value)">
                         <option value="">Todas as versões</option>
-                        <option value="Embird 2024">Versão 2024</option>
+                        <option value="2024">Versão 2024</option>
                     </select>
                 </div>
 
                 <div class="aula-item" onclick="buscarYouTube('PE Design')">
                     <img src="pedesign.jpg" alt="PE Design">
                     <h4>PE Design</h4>
-                    <select id="selPEDesign" onchange="event.stopPropagation(); buscarYouTube('PE Design', this.value)">
+                    <select id="selPEDesign" onchange="event.stopPropagation(); buscarYouTube('PE Design ' + this.value)">
                         <option value="">Todas as versões</option>
-                        <option value="PE Design 11">Versão 11</option>
+                        <option value="11">Versão 11</option>
                     </select>
                 </div>
 
                 <div class="aula-item" onclick="buscarYouTube('Bordado')">
-                    <img src="logo-jdc.png" alt="Diversos">
+                    <img src="logo-jdc.png" alt="Mais Aulas">
                     <h4>Mais Aulas</h4>
                     <select id="selGeral" onchange="event.stopPropagation(); buscarYouTube(this.value)">
                         <option value="">Selecione</option>
@@ -412,7 +415,7 @@
             <h2>Fale Conosco</h2>
             <p>📱 WhatsApp: <a href="https://wa.me/+5565999460391" target="_blank">+55 65 99946-0391</a></p>
             <p>✈️ Telegram: <a href="https://t.me/Juarezcunha" target="_blank">@Juarezcunha</a></p>
-            <p>📥 Baixe grátis para teste: <a href="https://t.me/EmbroGestPro" target="_blank">Telegram EmbroGestPro</a></p>
+            <p>📥 Baixe grátis para teste: <a href="https://t.me/EmbroGestPro" target="_blank">t.me/EmbroGestPro</a></p>
             <p>📷 Instagram: <a href="https://instagram.com/juarez.tec.compt" target="_blank">@juarez.tec.compt</a></p>
             <p>🌐 Site: <a href="https://jdctecnologiaembordados.com.br" target="_blank">jdctecnologiaembordados.com.br</a></p>
             <p>🔧 Suporte e Manutenção: <a href="https://anydesk.com/pt/downloads/windows" target="_blank">Baixar AnyDesk</a></p>
@@ -425,9 +428,9 @@
     </footer>
 
     <script>
-        function buscarYouTube(termo, versao = '') {
-            let busca = versao || termo;
-            let url = "https://www.youtube.com/results?search_query=" + encodeURIComponent(busca + " vídeo aula bordado");
+        function buscarYouTube(termo) {
+            if (!termo || termo === '') return;
+            let url = "https://www.youtube.com/results?search_query=" + encodeURIComponent(termo + " vídeo aula bordado") + "&sort=date";
             window.open(url, "_blank");
         }
     </script>

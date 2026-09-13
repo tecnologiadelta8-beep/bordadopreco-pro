@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Precificador de bordados — calcula quanto cobrar pelo seu bordado. Ferramenta completa para orçamentos, cálculo de pontos, materiais e mão de obra.">
     <meta name="keywords" content="precificador de bordados, quanto cobrar pelo bordado, calculadora de bordados, valor do bordado, precificar bordado, software de bordado, orçamento de bordado, BordadoPrecoPro, valordobordado, SoftwareBordado">
-    <meta name="description" content="JDC Tecnologia em Bordados — BordadoPreço Pro v5.1 completo com variáveis ajustáveis + Borda Fácil simples + Extrator de Matrizes + Vídeo Aulas Wilcom e2, e4, Embird e PE-DESIGN. Suporte remoto via AnyDesk.">
-    <meta name="keywords" content="precificadordebordados, BordadoPrecoPro, valordobordado, SoftwareBordado, precificar bordado, calculadora de bordados, ajuste tarifa energia, orçamento PDF, orçamento personalizado, Borda Fácil, Extrator de Matrizes, Wilcom e2, Wilcom e4, Embird, PE-DESIGN, vídeo aulas bordado, suporte remoto, AnyDesk">
+    <meta name="description" content="JDC Tecnologia em Bordados — BordadoPreço Pro v5.1 completo com variáveis ajustáveis + Borda Fácil simples + Extrator de Matrizes + Organizador de Matrizes + Vídeo Aulas Wilcom e2, e4, Embird e PE-DESIGN. Suporte remoto via AnyDesk.">
+    <meta name="keywords" content="precificadordebordados, BordadoPrecoPro, valordobordado, SoftwareBordado, precificar bordado, calculadora de bordados, ajuste tarifa energia, orçamento PDF, orçamento personalizado, Borda Fácil, Extrator de Matrizes, Organizador de Matrizes, Wilcom e2, Wilcom e4, Embird, PE-DESIGN, vídeo aulas bordado, suporte remoto, AnyDesk">
     <title>JDC Tecnologia em Bordados — Precificação, Organização e Vídeo Aulas</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
@@ -40,10 +40,90 @@
         .destaque-principal { text-align: center; margin-bottom: 40px; }
         .destaque-principal h2 { font-size: 28px; color: #ffd700; margin-bottom: 15px; }
         .destaque-principal p { font-size: 17px; color: #f0f0f0; max-width: 800px; margin: 0 auto; }
+
+        /* 🎉 POPUP DE PROMOÇÃO */
+        .popup-fundo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 9999;
+        }
+        .popup-conteudo {
+            background: linear-gradient(135deg, #1a2744, #0f1729);
+            border: 4px solid #ffd700;
+            border-radius: 20px;
+            padding: 40px 30px;
+            max-width: 520px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(255,215,0,0.35);
+            animation: aparece 0.4s ease-out;
+            position: relative;
+        }
+        @keyframes aparece {
+            from { transform: scale(0.7); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .popup-fechar {
+            position: absolute;
+            top: 12px;
+            right: 18px;
+            font-size: 28px;
+            color: #ffd700;
+            cursor: pointer;
+            font-weight: bold;
+            transition: color 0.2s;
+        }
+        .popup-fechar:hover { color: #fff; }
+        .popup-conteudo h2 {
+            color: #ffd700;
+            font-size: 28px;
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .popup-item {
+            background: rgba(0,0,0,0.35);
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin: 10px 0;
+            font-size: 18px;
+        }
+        .popup-valor {
+            color: #00ff88;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        .popup-brinde {
+            color: #ff6b6b;
+            font-weight: bold;
+            font-size: 22px;
+            text-shadow: 0 0 8px rgba(255,107,107,0.5);
+            margin-top: 15px;
+        }
+        .popup-botao {
+            margin-top: 25px;
+            background: linear-gradient(90deg, #ffd700, #ffb300);
+            color: #000;
+            font-weight: bold;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-size: 17px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .popup-botao:hover { transform: scale(1.05); background: #fff; }
+
         .grade-produtos {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 25px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
             margin-bottom: 60px;
         }
         .produto-card {
@@ -96,7 +176,6 @@
             font-size: 15px;
         }
         .botao-acessar:hover { background: #fff; color: #000; }
-
         .galeria-secao {
             background: rgba(255,255,255,0.05);
             border-radius: 16px;
@@ -139,7 +218,6 @@
         .link-recentes:hover { text-decoration: underline; }
         .link-vistos { color: #ffd700; font-weight: bold; text-decoration: none; }
         .link-vistos:hover { text-decoration: underline; }
-
         /* 🆕 SUPORTE ANYDESK */
         .suporte-secao {
             background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(220,38,38,0.05));
@@ -163,7 +241,6 @@
             transition: transform 0.2s;
         }
         .botao-anydesk:hover { transform: scale(1.05); }
-
         .servicos-secao {
             background: rgba(255,255,255,0.05);
             border-radius: 16px;
@@ -184,7 +261,6 @@
         .servico-icone { font-size: 28px; }
         .servico-texto h4 { color: #ffd700; font-size: 17px; margin-bottom: 5px; }
         .servico-texto p { color: #ccc; font-size: 14px; }
-
         .contato-secao {
             background: linear-gradient(135deg, rgba(0,150,80,0.3), rgba(0,100,60,0.2));
             border-radius: 16px;
@@ -216,7 +292,6 @@
             font-size: 15px;
         }
         .botao-contato:hover { transform: scale(1.05); }
-
         .download-teste {
             margin-top: 25px;
             padding: 18px;
@@ -224,7 +299,6 @@
             border-radius: 10px;
         }
         .download-teste a { color: #00d4ff; font-weight: bold; font-size: 17px; text-decoration: none; }
-
         .quem-somos {
             background: linear-gradient(135deg, rgba(255,215,0,0.15), rgba(255,179,0,0.05));
             border-radius: 16px;
@@ -235,7 +309,6 @@
         }
         .quem-somos h2 { font-size: 24px; color: #ffd700; margin-bottom: 12px; }
         .quem-somos p { font-size: 16px; color: #fff; line-height: 1.7; }
-
         .rodape {
             text-align: center;
             padding: 25px;
@@ -244,14 +317,12 @@
             border-top: 1px solid rgba(255,255,255,0.1);
             margin-top: 10px;
         }
-
         /* TABLET */
         @media (max-width: 900px) {
             .grade-produtos { grid-template-columns: repeat(2, 1fr); }
             .galeria-videos { grid-template-columns: repeat(2, 1fr); }
         }
-
-        /* 📱 CELULAR — 1 IMAGEM POR LINHA */
+        /* 📱 CELULAR — 2 por linha → 1 por linha */
         @media (max-width: 600px) {
             .cabecalho h1 { font-size: 20px; }
             .grade-produtos { grid-template-columns: 1fr; }
@@ -259,10 +330,31 @@
             .galeria-videos { grid-template-columns: 1fr; gap: 15px; }
             .galeria-item img { height: 200px; }
             .produto-imagem { height: 220px; }
+            .popup-conteudo h2 { font-size: 22px; }
+            .popup-item { font-size: 16px; }
         }
     </style>
 </head>
 <body>
+
+    <!-- 🎉 POPUP DE PROMOÇÃO — Aparece automaticamente ao abrir a página -->
+    <div id="popupPromocao" class="popup-fundo">
+        <div class="popup-conteudo">
+            <span class="popup-fechar" onclick="fecharPopup()">&times;</span>
+            <h2>🎉 PROMOÇÃO DE LANÇAMENTO 🎉</h2>
+            <div class="popup-item">
+                1 Precificador → <span class="popup-valor">R$ 100,00</span>
+            </div>
+            <div class="popup-item">
+                Precificador + Organizador → <span class="popup-valor">R$ 200,00</span>
+            </div>
+            <div class="popup-brinde">
+                🎁 O TERCEIRO PRODUTO É DE BRINDE! 🎁
+            </div>
+            <button class="popup-botao" onclick="fecharPopup()">Conhecer Produtos</button>
+        </div>
+    </div>
+
     <div class="cabecalho">
         <div class="logo-area">
             <img src="logo-jdc.png" alt="Logo JDC Tecnologia em Bordados">
@@ -270,14 +362,13 @@
         </div>
         <p>Precificação Inteligente, Organização Prática e Vídeo Aulas para o Seu Ateliê!</p>
     </div>
-
     <div class="container">
         <div class="destaque-principal">
-            <h2>🚀 2 Formas de Precificar + 1 Para Organizar!</h2>
+            <h2>🚀 2 Formas de Precificar + 2 Para Organizar!</h2>
             <p><strong>BordadoPreço Pro v5.1</strong> — completo e configurável. <strong>Borda Fácil</strong> — simples e direto. As duas calculam pontos automaticamente e geram orçamentos em PDF e HTML!</p>
         </div>
 
-        <!-- PRODUTOS -->
+        <!-- PRODUTOS — 4 Produtos -->
         <div class="grade-produtos">
             <a href="https://tecnologiadelta8-beep.github.io/bordadopreco-pro-v5-1/" style="text-decoration: none;">
                 <div class="produto-card">
@@ -292,7 +383,6 @@
                     </div>
                 </div>
             </a>
-
             <a href="https://tecnologiadelta8-beep.github.io/borda-facil-pro-v1-0/" style="text-decoration: none;">
                 <div class="produto-card">
                     <div class="produto-imagem">
@@ -306,22 +396,35 @@
                     </div>
                 </div>
             </a>
-
             <a href="https://tecnologiadelta8-beep.github.io/extrator-matrizes-bastidor-pro/" style="text-decoration: none;">
                 <div class="produto-card">
                     <div class="produto-imagem">
-                        <img src="imagem3.jpg" alt="Extrator de Matrizes — Organização">
+                        <img src="imagem3.jpg" alt="Extrator de Matrizes Pro — Por Bastidor">
                     </div>
                     <div class="produto-conteudo">
-                        <span class="produto-tag">🗂️ Organização</span>
+                        <span class="produto-tag">📁 Por Bastidor</span>
                         <h3>Extrator de Matrizes Pro</h3>
                         <p>Separa e organiza automaticamente seus arquivos de bordado em pastas, de acordo com o tamanho do bastidor compatível com cada matriz.</p>
                         <span class="botao-acessar">👉 Conheça →</span>
                     </div>
                 </div>
             </a>
+            <a href="https://tecnologiadelta8-beep.github.io/organizador-de-matrizes/" style="text-decoration: none;">
+                <div class="produto-card">
+                    <div class="produto-imagem">
+                        <img src="imagem4.jpg" alt="Organizador de Matrizes — Organização Inteligente">
+                    </div>
+                    <div class="produto-conteudo">
+                        <span class="produto-tag">🗂️ Organização Inteligente</span>
+                        <h3>Organizador de Matrizes</h3>
+                        <p>Reúna e organize automaticamente arquivos de bordado em pastas. Detecta duplicatas, separa por formato e gera relatório completo com log de operações.</p>
+                        <span class="botao-acessar">👉 Conheça →</span>
+                    </div>
+                </div>
+            </a>
         </div>
 
+        <!-- O RESTANTE DO SEU SITE CONTINUA IGUAL ABAIXO -->
         <!-- GALERIA DE TELAS -->
         <div class="galeria-secao">
             <h2>📷 Principais Telas e Funcionalidades</h2>
@@ -365,7 +468,6 @@
                 </div>
             </div>
         </div>
-
         <!-- 📺 VÍDEO AULAS -->
         <div class="galeria-secao">
             <h2>📺 Vídeo Aulas — Programas de Bordado</h2>
@@ -405,7 +507,6 @@
                 </div>
             </div>
         </div>
-
         <!-- SERVIÇOS -->
         <div class="servicos-secao">
             <h2>🔧 Serviços e Manutenção</h2>
@@ -438,14 +539,12 @@
                 </div>
             </div>
         </div>
-
         <!-- 🆕 SUPORTE ANYDESK -->
         <div class="suporte-secao">
             <h2>🛠️ Suporte e Manutenção Remota</h2>
             <p>Precisa de ajuda com instalação, configuração ou dúvidas de uso?<br>Baixe o AnyDesk e entre em contato conosco — acessamos seu computador remotamente e resolvemos na hora!</p>
             <a href="https://anydesk.com/pt/downloads/windows" target="_blank" class="botao-anydesk">📥 Baixar AnyDesk para Windows</a>
         </div>
-
         <!-- CONTATO -->
         <div class="contato-secao">
             <h2>📞 Fale Conosco e Conheça Nossos Canais!</h2>
@@ -461,18 +560,21 @@
                 <a href="https://t.me/EmbroGestPro" target="_blank">✈️ t.me/EmbroGestPro</a>
             </div>
         </div>
-
         <!-- QUEM SOMOS -->
         <div class="quem-somos">
             <h2>🏆 Quem Somos</h2>
             <p>Com mais de 10 anos de experiência no mercado, somos referência em desenvolvimento de softwares, manutenção, instalação e suporte técnico para o ramo de bordados. Atendemos milhares de clientes no Brasil e no mundo, com atendimento dedicado e confiança conquistada através de resultados e indicações. Do bordado à gestão, oferecemos soluções práticas e inteligentes para facilitar o seu dia a dia e impulsionar o seu ateliê!</p>
         </div>
-
     </div>
-
     <div class="rodape">
         <p>JDC Tecnologia em Bordados — Precificação, Organização, Vídeo Aulas e Suporte Remoto via AnyDesk. © 2026 Todos os direitos reservados.</p>
     </div>
 
+    <!-- ⚙️ SCRIPT PARA FECHAR O POPUP -->
+    <script>
+        function fecharPopup() {
+            document.getElementById('popupPromocao').style.display = 'none';
+        }
+    </script>
 </body>
 </html>

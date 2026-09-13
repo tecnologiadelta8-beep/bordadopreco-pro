@@ -41,7 +41,9 @@
         .destaque-principal h2 { font-size: 28px; color: #ffd700; margin-bottom: 15px; }
         .destaque-principal p { font-size: 17px; color: #f0f0f0; max-width: 800px; margin: 0 auto; }
 
-        /* 🎉 POPUP DE PROMOÇÃO */
+        /* =====================================================
+           🎉 POPUP DE PROMOÇÃO — ESTILO FOLDER/ANÚNCIO
+           ===================================================== */
         .popup-fundo {
             display: flex;
             align-items: center;
@@ -51,75 +53,148 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.85);
+            background: rgba(0,0,0,0.88);
             z-index: 9999;
         }
         .popup-conteudo {
-            background: linear-gradient(135deg, #1a2744, #0f1729);
-            border: 4px solid #ffd700;
-            border-radius: 20px;
-            padding: 40px 30px;
-            max-width: 520px;
-            width: 90%;
+            background: linear-gradient(180deg, #0f1729 0%, #1a2744 50%, #0f1729 100%);
+            border: 5px solid #ffd700;
+            border-radius: 24px;
+            padding: 0;
+            max-width: 540px;
+            width: 92%;
             text-align: center;
-            box-shadow: 0 0 50px rgba(255,215,0,0.35);
-            animation: aparece 0.4s ease-out;
+            box-shadow: 0 0 60px rgba(255,215,0,0.4), inset 0 0 30px rgba(255,215,0,0.1);
+            animation: aparece 0.5s ease-out;
             position: relative;
+            overflow: hidden;
         }
         @keyframes aparece {
-            from { transform: scale(0.7); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+            from { transform: scale(0.6) translateY(30px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
         }
         .popup-fechar {
             position: absolute;
-            top: 12px;
-            right: 18px;
-            font-size: 28px;
+            top: 14px;
+            right: 20px;
+            font-size: 32px;
             color: #ffd700;
             cursor: pointer;
             font-weight: bold;
-            transition: color 0.2s;
+            transition: all 0.2s;
+            z-index: 10;
+            line-height: 1;
         }
-        .popup-fechar:hover { color: #fff; }
-        .popup-conteudo h2 {
-            color: #ffd700;
-            font-size: 28px;
-            margin-bottom: 25px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-        .popup-item {
-            background: rgba(0,0,0,0.35);
-            border-radius: 12px;
-            padding: 14px 18px;
-            margin: 10px 0;
-            font-size: 18px;
-        }
-        .popup-valor {
-            color: #00ff88;
-            font-weight: bold;
-            font-size: 20px;
-        }
-        .popup-gratis {
-            color: #ff6b6b;
-            font-weight: bold;
-            font-size: 22px;
-            text-shadow: 0 0 8px rgba(255,107,107,0.5);
-            margin-top: 15px;
-        }
-        .popup-botao {
-            margin-top: 25px;
-            background: linear-gradient(90deg, #ffd700, #ffb300);
-            color: #000;
-            font-weight: bold;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 10px;
-            font-size: 17px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .popup-botao:hover { transform: scale(1.05); background: #fff; }
+        .popup-fechar:hover { color: #fff; transform: scale(1.2); }
 
+        /* Faixa superior vermelha chamativa */
+        .popup-faixa-topo {
+            background: linear-gradient(90deg, #dc143c, #ff2442, #dc143c);
+            padding: 16px 20px;
+        }
+        .popup-faixa-topo h2 {
+            color: #fff;
+            font-size: 26px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+            margin: 0;
+        }
+
+        /* Conteúdo interno */
+        .popup-corpo {
+            padding: 30px 25px 25px;
+        }
+        .popup-texto {
+            font-size: 18px;
+            color: #fff;
+            margin-bottom: 18px;
+            line-height: 1.6;
+        }
+
+        /* Caixa do PREÇO — destaque máximo */
+        .popup-caixa-preco {
+            background: linear-gradient(180deg, #ffd700, #ffb300);
+            border-radius: 16px;
+            padding: 20px 25px;
+            margin: 20px 0;
+            box-shadow: 0 6px 20px rgba(255,179,0,0.4);
+        }
+        .popup-etiqueta {
+            color: #000;
+            font-size: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .popup-valor-grande {
+            color: #000;
+            font-size: 48px;
+            font-weight: 900;
+            line-height: 1.2;
+            text-shadow: 2px 2px 0 rgba(255,255,255,0.5);
+        }
+        .popup-por {
+            font-size: 20px;
+            color: #222;
+            font-weight: bold;
+        }
+
+        /* Validade */
+        .popup-validade {
+            display: inline-block;
+            background: rgba(255,255,255,0.12);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 10px 20px;
+            margin: 10px 0 20px;
+            font-size: 17px;
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        /* Contato */
+        .popup-contato {
+            font-size: 17px;
+            color: #93c5fd;
+            margin-bottom: 25px;
+        }
+        .popup-contato strong {
+            color: #00ff88;
+            font-size: 19px;
+        }
+
+        /* Botão */
+        .popup-botao {
+            background: linear-gradient(90deg, #ffd700, #ffb300, #ffd700);
+            color: #000;
+            font-weight: 900;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 12px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(255,215,0,0.4);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .popup-botao:hover {
+            transform: translateY(-3px) scale(1.03);
+            background: #fff;
+            box-shadow: 0 6px 25px rgba(255,215,0,0.5);
+        }
+
+        /* Responsivo */
+        @media (max-width: 500px) {
+            .popup-faixa-topo h2 { font-size: 20px; }
+            .popup-valor-grande { font-size: 38px; }
+            .popup-texto { font-size: 16px; }
+            .popup-corpo { padding: 25px 18px 20px; }
+        }
+
+        /* RESTANTE DO SITE — SEM ALTERAÇÕES */
         .grade-produtos {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -218,7 +293,6 @@
         .link-recentes:hover { text-decoration: underline; }
         .link-vistos { color: #ffd700; font-weight: bold; text-decoration: none; }
         .link-vistos:hover { text-decoration: underline; }
-        /* 🆕 SUPORTE ANYDESK */
         .suporte-secao {
             background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(220,38,38,0.05));
             border: 2px solid rgba(239,68,68,0.4);
@@ -317,12 +391,10 @@
             border-top: 1px solid rgba(255,255,255,0.1);
             margin-top: 10px;
         }
-        /* TABLET */
         @media (max-width: 900px) {
             .grade-produtos { grid-template-columns: repeat(2, 1fr); }
             .galeria-videos { grid-template-columns: repeat(2, 1fr); }
         }
-        /* 📱 CELULAR — 2 por linha → 1 por linha */
         @media (max-width: 600px) {
             .cabecalho h1 { font-size: 20px; }
             .grade-produtos { grid-template-columns: 1fr; }
@@ -330,31 +402,55 @@
             .galeria-videos { grid-template-columns: 1fr; gap: 15px; }
             .galeria-item img { height: 200px; }
             .produto-imagem { height: 220px; }
-            .popup-conteudo h2 { font-size: 22px; }
-            .popup-item { font-size: 16px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- 🎉 POPUP DE PROMOÇÃO — Aparece automaticamente ao abrir a página -->
+    <!-- =====================================================
+         🎉 POPUP DE PROMOÇÃO — ESTILO FOLDER/ANÚNCIO
+         ===================================================== -->
     <div id="popupPromocao" class="popup-fundo">
         <div class="popup-conteudo">
             <span class="popup-fechar" onclick="fecharPopup()">&times;</span>
-            <h2>🎉 PROMOÇÃO DE LANÇAMENTO 🎉</h2>
-            <div class="popup-item">
-                1 Precificador → <span class="popup-valor">R$ 100,00</span>
+
+            <!-- Faixa vermelha chamativa no topo -->
+            <div class="popup-faixa-topo">
+                <h2>📢 APROVEITE E ATIVE HOJE!</h2>
             </div>
-            <div class="popup-item">
-                Precificador + Organizador → <span class="popup-valor">R$ 200,00</span>
+
+            <div class="popup-corpo">
+                <p class="popup-texto">
+                    Toda e qualquer ativação até o dia<br>
+                    <strong style="color:#ffd700; font-size:20px;">20 de Setembro de 2026</strong>
+                </p>
+
+                <!-- Caixa dourada com preço — DESTAQUE MÁXIMO -->
+                <div class="popup-caixa-preco">
+                    <div class="popup-etiqueta">PROMOÇÃO ESPECIAL</div>
+                    <div class="popup-valor-grande">R$ 75,00</div>
+                    <div class="popup-por">CADA ATIVAÇÃO</div>
+                </div>
+
+                <!-- Validade -->
+                <div class="popup-validade">
+                    📅 Validade até: 20/09/2026
+                </div>
+
+                <!-- Contato -->
+                <p class="popup-contato">
+                    💬 Informações pelo WhatsApp:<br>
+                    <strong>+55 (65) 99946-0391</strong>
+                </p>
+
+                <button class="popup-botao" onclick="fecharPopup()">
+                    ✅ Conhecer Produtos
+                </button>
             </div>
-            <div class="popup-gratis">
-                🎁 O SEGUNDO ORGANIZADOR É GRÁTIS! 🎁
-            </div>
-            <button class="popup-botao" onclick="fecharPopup()">Conhecer Produtos</button>
         </div>
     </div>
 
+    <!-- RESTO DO SITE — INTACTO -->
     <div class="cabecalho">
         <div class="logo-area">
             <img src="logo-jdc.png" alt="Logo JDC Tecnologia em Bordados">
@@ -367,8 +463,6 @@
             <h2>🚀 2 Formas de Precificar + 2 Para Organizar!</h2>
             <p><strong>BordadoPreço Pro v5.1</strong> — completo e configurável. <strong>Borda Fácil</strong> — simples e direto. As duas calculam pontos automaticamente e geram orçamentos em PDF e HTML!</p>
         </div>
-
-        <!-- PRODUTOS — 4 Produtos -->
         <div class="grade-produtos">
             <a href="https://tecnologiadelta8-beep.github.io/bordadopreco-pro-v5-1/" style="text-decoration: none;">
                 <div class="produto-card">
@@ -423,8 +517,6 @@
                 </div>
             </a>
         </div>
-
-        <!-- GALERIA DE TELAS -->
         <div class="galeria-secao">
             <h2>📷 Principais Telas e Funcionalidades</h2>
             <p>Veja o que cada ferramenta faz na prática:</p>
@@ -467,7 +559,6 @@
                 </div>
             </div>
         </div>
-        <!-- 📺 VÍDEO AULAS -->
         <div class="galeria-secao">
             <h2>📺 Vídeo Aulas — Programas de Bordado</h2>
             <p>Clique na opção abaixo de cada imagem para ver os tutoriais no YouTube:</p>
@@ -506,7 +597,11 @@
                 </div>
             </div>
         </div>
-        <!-- SERVIÇOS -->
+        <div class="suporte-secao">
+            <h2>🛠️ Suporte e Manutenção Remota</h2>
+            <p>Precisa de ajuda com instalação, configuração ou dúvidas de uso?<br>Baixe o AnyDesk e entre em contato conosco — acessamos seu computador remotamente e resolvemos na hora!</p>
+            <a href="https://anydesk.com/pt/downloads/windows" target="_blank" class="botao-anydesk">📥 Baixar AnyDesk para Windows</a>
+        </div>
         <div class="servicos-secao">
             <h2>🔧 Serviços e Manutenção</h2>
             <div class="servico-item">
@@ -538,13 +633,6 @@
                 </div>
             </div>
         </div>
-        <!-- 🆕 SUPORTE ANYDESK -->
-        <div class="suporte-secao">
-            <h2>🛠️ Suporte e Manutenção Remota</h2>
-            <p>Precisa de ajuda com instalação, configuração ou dúvidas de uso?<br>Baixe o AnyDesk e entre em contato conosco — acessamos seu computador remotamente e resolvemos na hora!</p>
-            <a href="https://anydesk.com/pt/downloads/windows" target="_blank" class="botao-anydesk">📥 Baixar AnyDesk para Windows</a>
-        </div>
-        <!-- CONTATO -->
         <div class="contato-secao">
             <h2>📞 Fale Conosco e Conheça Nossos Canais!</h2>
             <p>Entre em contato para informações sobre aquisição, licença e suporte.</p>
@@ -559,7 +647,6 @@
                 <a href="https://t.me/EmbroGestPro" target="_blank">✈️ t.me/EmbroGestPro</a>
             </div>
         </div>
-        <!-- QUEM SOMOS -->
         <div class="quem-somos">
             <h2>🏆 Quem Somos</h2>
             <p>Com mais de 10 anos de experiência no mercado, somos referência em desenvolvimento de softwares, manutenção, instalação e suporte técnico para o ramo de bordados. Atendemos milhares de clientes no Brasil e no mundo, com atendimento dedicado e confiança conquistada através de resultados e indicações. Do bordado à gestão, oferecemos soluções práticas e inteligentes para facilitar o seu dia a dia e impulsionar o seu ateliê!</p>
@@ -569,7 +656,6 @@
         <p>JDC Tecnologia em Bordados — Precificação, Organização, Vídeo Aulas e Suporte Remoto via AnyDesk. © 2026 Todos os direitos reservados.</p>
     </div>
 
-    <!-- ⚙️ SCRIPT PARA FECHAR O POPUP -->
     <script>
         function fecharPopup() {
             document.getElementById('popupPromocao').style.display = 'none';

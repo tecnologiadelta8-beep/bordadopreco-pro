@@ -7,7 +7,7 @@
   <meta name="description" content="Softwares JDC para bordadeiras - BordadoPreço Pro, Borda Fácil e Organizador de Matrizes.">
   <title>Softwares | JDC Tecnologia em Bordados</title>
   
-  <link rel="manifest" href="manifest.json">
+  <!-- manifest injetado só quando logado (ver app.js / auth.js) -->
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="stylesheet" href="styles.css">
@@ -33,9 +33,16 @@
         <a href="index.html#contato" class="nav-link">Contato</a>
       </nav>
       
-      <a href="https://wa.me/5565999460391" class="btn-whatsapp-header" target="_blank" rel="noopener">
-        <i class="fab fa-whatsapp"></i> WhatsApp
-      </a>
+      <div class="header-actions">
+        <div id="auth-area">
+          <a href="login.html" class="btn-entrar">
+            <i class="fas fa-sign-in-alt"></i> Entrar
+          </a>
+        </div>
+        <a href="https://wa.me/5565999460391" class="btn-whatsapp-header" target="_blank" rel="noopener">
+          <i class="fab fa-whatsapp"></i> <span>WhatsApp</span>
+        </a>
+      </div>
       
       <button class="menu-toggle" id="menu-toggle" aria-label="Menu">
         <i class="fas fa-bars"></i>
@@ -159,6 +166,9 @@
     <i class="fab fa-whatsapp"></i>
   </a>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="auth.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

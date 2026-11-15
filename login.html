@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#0a1f4d">
   <meta name="robots" content="noindex, nofollow">
-  <title>Login Gestor | JDC Tecnologia em Bordados</title>
+  <title>Entrar | JDC Tecnologia em Bordados</title>
   
-  <link rel="manifest" href="manifest-gestor.json">
+  <!-- manifest injetado só quando logado (ver app.js / auth.js) -->
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="stylesheet" href="styles.css">
@@ -33,7 +33,7 @@
     }
     .login-header {
       text-align: center;
-      margin-bottom: 32px;
+      margin-bottom: 28px;
     }
     .login-header img {
       width: 80px;
@@ -53,7 +53,7 @@
       font-size: 0.95rem;
     }
     .form-group {
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
     .form-group label {
       display: block;
@@ -75,34 +75,67 @@
       border-color: #2a5a9e;
       box-shadow: 0 0 0 4px rgba(42,90,158,0.15);
     }
+    .password-wrap {
+      position: relative;
+    }
+    .password-wrap .toggle-pass {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #64748b;
+      cursor: pointer;
+      font-size: 1rem;
+    }
     .btn-login {
       width: 100%;
       padding: 14px;
-      background: #f5c518;
-      color: #0a1f4d;
+      background: #0a1f4d;
+      color: #fff;
       border: none;
-      border-radius: 50px;
+      border-radius: 12px;
       font-size: 1.05rem;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.3s;
       margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
     .btn-login:hover {
-      background: #d4a80f;
-      transform: translateY(-2px);
+      background: #1a3a6e;
+      transform: translateY(-1px);
+    }
+    .btn-login:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
     }
     .login-error {
       background: #fef2f2;
       color: #b91c1c;
       padding: 12px 16px;
       border-radius: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       font-size: 0.9rem;
       display: none;
       text-align: center;
     }
     .login-error.show { display: block; }
+    .login-hint {
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 0.85rem;
+      color: #64748b;
+      text-align: center;
+      line-height: 1.5;
+    }
+    .login-hint strong { color: #0a1f4d; }
     .back-link {
       text-align: center;
       margin-top: 24px;
@@ -113,12 +146,6 @@
       text-decoration: none;
     }
     .back-link a:hover { color: #f5c518; }
-    .pwa-hint {
-      text-align: center;
-      margin-top: 20px;
-      color: rgba(255,255,255,0.6);
-      font-size: 0.8rem;
-    }
   </style>
 </head>
 <body>
@@ -126,53 +153,101 @@
     <div class="login-card">
       <div class="login-header">
         <img src="icon-192.png" alt="JDC">
-        <h1>Área do Gestor</h1>
+        <h1>Acesso</h1>
         <p>JDC Tecnologia em Bordados</p>
       </div>
 
-      <div class="login-error" id="login-error">
-        Usuário ou senha incorretos
-      </div>
+      <div class="login-error" id="login-error"></div>
 
       <form id="login-form">
         <div class="form-group">
-          <label for="username"><i class="fas fa-user"></i> Usuário</label>
-          <input type="text" id="username" name="username" placeholder="Digite o usuário" autocomplete="username" required>
+          <label for="username"><i class="fas fa-user"></i> E-mail, telefone ou usuário</label>
+          <input type="text" id="username" name="username" placeholder="seu@email.com ou telefone" autocomplete="username" required>
         </div>
         <div class="form-group">
           <label for="password"><i class="fas fa-lock"></i> Senha</label>
-          <input type="password" id="password" name="password" placeholder="Digite a senha" autocomplete="current-password" required>
+          <div class="password-wrap">
+            <input type="password" id="password" name="password" placeholder="Digite a senha" autocomplete="current-password" required>
+            <button type="button" class="toggle-pass" id="toggle-pass" aria-label="Mostrar senha">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
         </div>
-        <button type="submit" class="btn-login">
+        <button type="submit" class="btn-login" id="btn-login">
           <i class="fas fa-sign-in-alt"></i> Entrar
         </button>
       </form>
+
+      <div class="login-hint">
+        <strong>Cliente:</strong> use o e-mail ou telefone cadastrado.<br>
+        Senha padrão = últimos 4 dígitos do telefone (se não tiver senha definida).<br><br>
+        <strong>Gestor:</strong> usuário <code>admin</code> · senha <code>jdc2026</code>
+      </div>
     </div>
 
     <div class="back-link">
       <a href="index.html"><i class="fas fa-arrow-left"></i> Voltar ao site</a>
     </div>
-    <p class="pwa-hint">PWA do Gestor — instale no celular para acesso rápido</p>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
   <script src="auth.js"></script>
   <script>
-    // Se já estiver logado, redireciona
-    if (isGestorLoggedIn()) {
-      window.location.href = 'admin.html';
-    }
+    // Se já estiver logado, redireciona conforme o papel
+    (function () {
+      const s = getSession();
+      if (s) {
+        if (s.role === 'gestor') window.location.href = 'admin.html';
+        else window.location.href = 'download.html';
+      }
+    })();
 
-    document.getElementById('login-form').addEventListener('submit', function(e) {
+    // Mostrar / ocultar senha
+    document.getElementById('toggle-pass').addEventListener('click', function () {
+      const input = document.getElementById('password');
+      const icon = this.querySelector('i');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+      }
+    });
+
+    document.getElementById('login-form').addEventListener('submit', async function (e) {
       e.preventDefault();
       const user = document.getElementById('username').value.trim();
       const pass = document.getElementById('password').value;
       const errorEl = document.getElementById('login-error');
+      const btn = document.getElementById('btn-login');
 
-      if (loginGestor(user, pass)) {
-        window.location.href = 'admin.html';
-      } else {
+      errorEl.classList.remove('show');
+      errorEl.textContent = '';
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
+
+      try {
+        const result = await loginUnificado(user, pass);
+
+        if (result.ok) {
+          if (result.role === 'gestor') {
+            window.location.href = 'admin.html';
+          } else {
+            window.location.href = 'download.html';
+          }
+        } else {
+          errorEl.textContent = result.msg || 'Não foi possível entrar.';
+          errorEl.classList.add('show');
+        }
+      } catch (err) {
+        console.error(err);
+        errorEl.textContent = 'Erro inesperado. Tente novamente.';
         errorEl.classList.add('show');
-        setTimeout(() => errorEl.classList.remove('show'), 3000);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar';
       }
     });
   </script>

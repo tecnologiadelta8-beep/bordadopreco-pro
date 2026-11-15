@@ -1,14 +1,5 @@
 // ===== JDC Tecnologia em Bordados - App JS =====
 
-// Service Worker básico (sem prompt de instalação para cliente)
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("sw.js").catch(err => {
-      console.log("SW registration failed:", err);
-    });
-  });
-}
-
 // Mobile Menu
 const menuToggle = document.getElementById("menu-toggle");
 const nav = document.getElementById("nav");
@@ -49,3 +40,34 @@ if (header) {
     }
   });
 }
+
+// ===== PWA só para usuários logados =====
+// Visitante não recebe manifest nem service worker → não aparece "Instalar app"
+function enablePwaForLoggedUser() {
+  // Só roda se auth.js estiver disponível e houver sessão
+  if (typeof getSession !== "function") return;
+  const session = getSession();
+  if (!session) return;
+
+  // Adiciona / garante o manifest
+  let link = document.querySelector('link[rel="manifest"]');
+  if (!link) {
+    link = document.createElement("link");
+    link.rel = "manifest";
+    document.head.appendChild(link);
+  }
+  // Gestor usa o manifest do gestor; cliente usa o público
+  link.href = session.role === "gestor" ? "manifest-gestor.json" : "manifest.json";
+
+  // Registra o service worker correspondente
+  if ("serviceWorker" in navigator) {
+    const swFile = session.role === "gestor" ? "sw-gestor.js" : "sw.js";
+    navigator.serviceWorker.register(swFile).catch(() => {});
+  }
+}
+
+// Chamado depois do auth inicializar
+window.addEventListener("load", () => {
+  // Pequeno delay para auth.js ter rodado
+  setTimeout(enablePwaForLoggedUser, 100);
+});

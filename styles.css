@@ -1458,3 +1458,147 @@ ul { list-style: none; }
     padding-bottom: max(14px, env(safe-area-inset-bottom));
   }
 }
+
+/* ===== AUTH HEADER / BANNER ===== */
+.auth-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1100;
+  background: #dcfce7;
+  color: #166534;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  text-align: center;
+  border-bottom: 1px solid #bbf7d0;
+}
+body.has-auth-banner .header {
+  top: 40px;
+}
+body.has-auth-banner {
+  padding-top: 40px;
+}
+.auth-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.auth-banner-actions a,
+.auth-banner-actions button {
+  background: transparent;
+  border: 1px solid #16a34a;
+  color: #166534;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.auth-banner-actions a:hover,
+.auth-banner-actions button:hover {
+  background: #16a34a;
+  color: #fff;
+}
+
+.btn-entrar {
+  background: #f5c518;
+  color: #0a1f4d;
+  padding: 8px 18px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.btn-entrar:hover {
+  background: #d4a80f;
+  transform: translateY(-1px);
+}
+
+.auth-logged {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.auth-greeting {
+  color: rgba(255,255,255,0.95);
+  font-size: 0.88rem;
+  white-space: nowrap;
+}
+.auth-greeting strong {
+  color: #f5c518;
+}
+.btn-area-gestor,
+.btn-area-cliente {
+  background: rgba(245,197,24,0.15);
+  color: #f5c518;
+  border: 1px solid rgba(245,197,24,0.4);
+  padding: 6px 12px;
+  border-radius: 50px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.btn-area-gestor:hover,
+.btn-area-cliente:hover {
+  background: #f5c518;
+  color: #0a1f4d;
+}
+.btn-sair {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.3);
+  color: rgba(255,255,255,0.85);
+  padding: 6px 12px;
+  border-radius: 50px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-sair:hover {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+
+/* Header adjustments for auth area */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+@media (max-width: 900px) {
+  .auth-greeting {
+    display: none;
+  }
+  .header-actions .btn-whatsapp-header span {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .auth-banner {
+    font-size: 0.8rem;
+    padding: 8px 12px;
+  }
+  .btn-area-gestor,
+  .btn-area-cliente {
+    display: none;
+  }
+}

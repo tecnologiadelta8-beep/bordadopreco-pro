@@ -1,13 +1,16 @@
 // Service Worker - JDC Parte 1 (estrutura flat)
-const CACHE_NAME = 'jdc-bordados-v1-part1';
+const CACHE_NAME = 'jdc-bordados-v2';
 const ASSETS = [
   './',
   './index.html',
   './softwares.html',
   './download.html',
+  './login.html',
   './styles.css',
   './app.js',
+  './auth.js',
   './download.js',
+  './supabase-config.js',
   './manifest.json',
   './icon-192.png',
   './icon-512.png'

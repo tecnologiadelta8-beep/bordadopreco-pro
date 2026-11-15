@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0a1f4d">
+  <meta name="description" content="Área de Download JDC - Ative sua licença e baixe os softwares.">
+  <title>Área de Download | JDC Tecnologia em Bordados</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <header class="header" id="header">
+    <div class="container header-content">
+      <a href="index.html" class="logo">
+        <div class="logo-icon"><img src="icon-192.png" alt="JDC" style="width:100%;height:100%;object-fit:contain;border-radius:50%;"></div>
+        <div class="logo-text">
+          <span class="logo-main">JDC</span>
+          <span class="logo-sub">Tecnologia em Bordados</span>
+        </div>
+      </a>
+      
+      <nav class="nav" id="nav">
+        <a href="index.html" class="nav-link">Início</a>
+        <a href="index.html#servicos" class="nav-link">Serviços</a>
+        <a href="softwares.html" class="nav-link">Softwares</a>
+        <a href="index.html#video-aulas" class="nav-link">Vídeo Aulas</a>
+        <a href="download.html" class="nav-link active">Download</a>
+        <a href="index.html#contato" class="nav-link">Contato</a>
+      </nav>
+      
+      <a href="https://wa.me/5565999460391" class="btn-whatsapp-header" target="_blank" rel="noopener">
+        <i class="fab fa-whatsapp"></i> WhatsApp
+      </a>
+      
+      <button class="menu-toggle" id="menu-toggle" aria-label="Menu">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </header>
+
+  <main class="page-main">
+    <div class="page-hero">
+      <div class="container">
+        <h1><i class="fas fa-key"></i> Área de Download</h1>
+        <p>Digite sua chave de licença para liberar o download do software</p>
+      </div>
+    </div>
+
+    <section class="download-section">
+      <div class="container">
+        <div class="download-box">
+          
+          <!-- Form de Licença -->
+          <div class="license-form-card" id="license-form-card">
+            <div class="form-header">
+              <i class="fas fa-shield-alt"></i>
+              <h2>Ativar Licença</h2>
+              <p>Insira a chave de licença que você recebeu após a compra</p>
+            </div>
+            
+            <form id="license-form" class="license-form">
+              <div class="form-group">
+                <label for="license-key">Chave de Licença</label>
+                <input 
+                  type="text" 
+                  id="license-key" 
+                  name="license-key" 
+                  placeholder="Ex: JDC-XXXX-XXXX-XXXX"
+                  autocomplete="off"
+                  required
+                >
+              </div>
+              
+              <button type="submit" class="btn btn-primary btn-block" id="btn-validate">
+                <i class="fas fa-unlock"></i> Validar e Liberar Download
+              </button>
+            </form>
+            
+            <div class="form-help">
+              <p><i class="fas fa-info-circle"></i> Ainda não tem uma chave?</p>
+              <a href="https://wa.me/5565999460391?text=Olá! Quero comprar um software da JDC" class="btn btn-outline" target="_blank" rel="noopener">
+                <i class="fab fa-whatsapp"></i> Comprar agora
+              </a>
+            </div>
+          </div>
+
+          <!-- Resultado (escondido por padrão) -->
+          <div class="download-result" id="download-result" style="display: none;">
+            <div class="result-success">
+              <i class="fas fa-check-circle"></i>
+              <h2>Licença válida!</h2>
+              <p id="result-message">Seu software está liberado para download.</p>
+            </div>
+            
+            <div class="download-files" id="download-files">
+              <!-- Os links de download serão inseridos aqui via JS na Parte 3 -->
+              <div class="file-item">
+                <div class="file-info">
+                  <i class="fas fa-file-archive"></i>
+                  <div>
+                    <strong id="software-name">Software</strong>
+                    <span id="software-version">Versão</span>
+                  </div>
+                </div>
+                <a href="#" class="btn btn-primary" id="btn-download" download>
+                  <i class="fas fa-download"></i> Baixar
+                </a>
+              </div>
+            </div>
+            
+            <button class="btn btn-outline" id="btn-new-license">
+              <i class="fas fa-redo"></i> Usar outra chave
+            </button>
+          </div>
+
+          <!-- Mensagem de erro -->
+          <div class="download-error" id="download-error" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>Chave inválida ou expirada</h3>
+            <p id="error-message">Verifique se digitou corretamente ou entre em contato conosco.</p>
+            <a href="https://wa.me/5565999460391?text=Olá! Estou com problema na minha chave de licença" class="btn btn-primary" target="_blank" rel="noopener">
+              <i class="fab fa-whatsapp"></i> Falar no WhatsApp
+            </a>
+          </div>
+
+        </div>
+
+        <!-- Instruções -->
+        <div class="download-info">
+          <h3><i class="fas fa-question-circle"></i> Como funciona?</h3>
+          <div class="info-steps">
+            <div class="info-step">
+              <span class="step-num">1</span>
+              <p>Compre o software pelo WhatsApp</p>
+            </div>
+            <div class="info-step">
+              <span class="step-num">2</span>
+              <p>Receba sua chave de licença</p>
+            </div>
+            <div class="info-step">
+              <span class="step-num">3</span>
+              <p>Digite a chave aqui e baixe o programa</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom" style="border: none; padding-top: 0;">
+        <p>© 2026 JDC Tecnologia em Bordados. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <a href="https://wa.me/5565999460391?text=Olá! Vim pelo site da JDC." class="whatsapp-float" target="_blank" rel="noopener" aria-label="WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+
+  <script src="app.js"></script>
+  <script src="download.js"></script>
+</body>
+</html>

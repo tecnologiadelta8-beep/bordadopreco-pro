@@ -84,6 +84,7 @@ function loginGestor(usuarioOuEmail, senha) {
 }
 
 // ===== Login Cliente (busca no Supabase) =====
+// Cliente entra com e-mail OU telefone + senha definida no cadastro
 async function loginCliente(emailOuTelefone, senha) {
   if (!window.supabase && typeof initSupabase === 'function') {
     initSupabase();
@@ -94,17 +95,19 @@ async function loginCliente(emailOuTelefone, senha) {
 
   const termo = (emailOuTelefone || '').trim();
   if (!termo || !senha) {
-    return { ok: false, msg: 'Preencha e-mail/telefone e senha' };
+    return { ok: false, msg: 'Preencha e-mail ou telefone e a senha' };
   }
 
   // Busca por e-mail ou telefone/whatsapp
   let query = supabase.from('clientes').select('*');
 
   if (termo.includes('@')) {
-    query = query.eq('email', termo);
+    query = query.ilike('email', termo);
   } else {
-    // tenta telefone ou whatsapp (só números)
     const digits = termo.replace(/\D/g, '');
+    if (!digits) {
+      return { ok: false, msg: 'Informe um e-mail ou telefone válido' };
+    }
     query = query.or(`telefone.ilike.%${digits}%,whatsapp.ilike.%${digits}%`);
   }
 
@@ -116,24 +119,18 @@ async function loginCliente(emailOuTelefone, senha) {
   }
 
   if (!data) {
-    return { ok: false, msg: 'Cliente não encontrado. Verifique os dados.' };
+    return { ok: false, msg: 'Cliente não encontrado. Verifique e-mail ou telefone.' };
   }
 
-  // Senha: se a tabela tiver coluna "senha", usa ela.
-  // Caso contrário, usa os últimos 4 dígitos do telefone/whatsapp como senha padrão
-  // (você pode cadastrar uma senha real depois adicionando a coluna)
-  let senhaOk = false;
-
-  if (data.senha) {
-    senhaOk = String(data.senha) === String(senha);
-  } else {
-    // fallback: últimos 4 dígitos do telefone ou whatsapp
-    const tel = (data.telefone || data.whatsapp || '').replace(/\D/g, '');
-    const ultimos4 = tel.slice(-4);
-    senhaOk = ultimos4 && ultimos4 === String(senha).replace(/\D/g, '');
+  // Senha definida pelo cliente no cadastro (coluna senha)
+  if (!data.senha) {
+    return {
+      ok: false,
+      msg: 'Este cadastro ainda não tem senha. Peça ao gestor para definir uma senha.'
+    };
   }
 
-  if (!senhaOk) {
+  if (String(data.senha) !== String(senha)) {
     return { ok: false, msg: 'Senha incorreta' };
   }
 
@@ -283,7 +280,11 @@ function renderAuthBanner() {
 // Inicializa UI de auth quando a página carregar
 function initAuthUI() {
   renderAuthHeader('auth-area');
-  renderAuthBanner();
+  // Faixa verde desativada — o cabeçalho já mostra o login
+  const oldBanner = document.getElementById('auth-banner');
+  if (oldBanner) oldBanner.remove();
+  document.body.classList.remove('has-auth-banner');
+
   // PWA só para quem está logado
   if (typeof enablePwaForLoggedUser === 'function') {
     enablePwaForLoggedUser();

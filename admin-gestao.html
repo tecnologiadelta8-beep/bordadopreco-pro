@@ -301,7 +301,7 @@
       <div id="msg-clientes" class="msg"></div>
       <div class="form-grid">
         <div>
-          <label>Nome</label>
+          <label>Nome completo</label>
           <input type="text" id="cli-nome" placeholder="Nome completo">
         </div>
         <div>
@@ -316,7 +316,19 @@
           <label>WhatsApp</label>
           <input type="text" id="cli-whatsapp" placeholder="5565999999999">
         </div>
+        <div>
+          <label>Data de nascimento</label>
+          <input type="date" id="cli-nascimento">
+        </div>
+        <div>
+          <label>Senha de acesso</label>
+          <input type="text" id="cli-senha" placeholder="Senha que o cliente vai usar no login" autocomplete="off">
+        </div>
       </div>
+      <p style="font-size:0.85rem;color:#64748b;margin:8px 0 16px;">
+        O cliente entra com <strong>e-mail ou telefone</strong> + esta senha.
+        Data de nascimento será usada na recuperação de senha.
+      </p>
       <button class="btn btn-primary" onclick="salvarCliente()">
         <i class="fas fa-plus"></i> Salvar Cliente
       </button>
@@ -326,7 +338,8 @@
           <tr>
             <th>Nome</th>
             <th>E-mail</th>
-            <th>WhatsApp</th>
+            <th>Telefone</th>
+            <th>Senha</th>
           </tr>
         </thead>
         <tbody id="lista-clientes"></tbody>
@@ -486,9 +499,10 @@
       tbody.innerHTML = '';
       (data || []).forEach(c => {
         tbody.innerHTML += `<tr>
-          <td>${c.nome}</td>
-          <td>${c.email}</td>
-          <td>${c.whatsapp || c.telefone || '—'}</td>
+          <td>${c.nome || '—'}</td>
+          <td>${c.email || '—'}</td>
+          <td>${c.telefone || c.whatsapp || '—'}</td>
+          <td>${c.senha ? '••••••' : '<span style="color:#b91c1c">sem senha</span>'}</td>
         </tr>`;
       });
     }
@@ -496,21 +510,36 @@
     async function salvarCliente() {
       const nome = document.getElementById('cli-nome').value.trim();
       const email = document.getElementById('cli-email').value.trim();
-      if (!nome || !email) return showMsg('msg-clientes', 'Nome e e-mail são obrigatórios', false);
+      const telefone = document.getElementById('cli-telefone').value.trim();
+      const whatsapp = document.getElementById('cli-whatsapp').value.trim();
+      const nascimento = document.getElementById('cli-nascimento').value || null;
+      const senha = document.getElementById('cli-senha').value.trim();
+
+      if (!nome) return showMsg('msg-clientes', 'Nome é obrigatório', false);
+      if (!email && !telefone && !whatsapp) {
+        return showMsg('msg-clientes', 'Informe e-mail ou telefone (o cliente usa um deles no login)', false);
+      }
+      if (!senha || senha.length < 4) {
+        return showMsg('msg-clientes', 'Defina uma senha com pelo menos 4 caracteres', false);
+      }
 
       const { error } = await supabase.from('clientes').insert({
         nome,
-        email,
-        telefone: document.getElementById('cli-telefone').value || null,
-        whatsapp: document.getElementById('cli-whatsapp').value || null
+        email: email || null,
+        telefone: telefone || null,
+        whatsapp: whatsapp || null,
+        data_nascimento: nascimento,
+        senha
       });
 
       if (error) return showMsg('msg-clientes', error.message, false);
-      showMsg('msg-clientes', 'Cliente salvo!');
+      showMsg('msg-clientes', 'Cliente salvo! Ele entra com e-mail ou telefone + a senha definida.');
       document.getElementById('cli-nome').value = '';
       document.getElementById('cli-email').value = '';
       document.getElementById('cli-telefone').value = '';
       document.getElementById('cli-whatsapp').value = '';
+      document.getElementById('cli-nascimento').value = '';
+      document.getElementById('cli-senha').value = '';
       carregarClientes();
     }
 

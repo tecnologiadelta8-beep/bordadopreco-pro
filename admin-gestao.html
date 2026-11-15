@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestão | JDC Bordados</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --blue-dark: #0a1f4d;
+      --blue-mid: #1a3a6e;
+      --yellow: #f5c518;
+      --gray-100: #f8fafc;
+      --gray-200: #e2e8f0;
+      --gray-600: #64748b;
+      --gray-800: #1e293b;
+      --green: #22c55e;
+      --red: #ef4444;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--gray-100);
+      color: var(--gray-800);
+      min-height: 100vh;
+    }
+    .topbar {
+      background: var(--blue-dark);
+      color: white;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .topbar a { color: var(--yellow); text-decoration: none; font-weight: 600; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 24px 16px; }
+    h1 { font-size: 1.5rem; margin-bottom: 8px; color: var(--blue-dark); }
+    .subtitle { color: var(--gray-600); margin-bottom: 28px; }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .tab {
+      padding: 10px 18px;
+      border-radius: 50px;
+      border: 1px solid var(--gray-200);
+      background: white;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .tab.active {
+      background: var(--blue-dark);
+      color: white;
+      border-color: var(--blue-dark);
+    }
+    .panel {
+      background: white;
+      border-radius: var(--radius);
+      padding: 24px;
+      border: 1px solid var(--gray-200);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+      display: none;
+    }
+    .panel.active { display: block; }
+    .panel h2 {
+      font-size: 1.15rem;
+      margin-bottom: 18px;
+      color: var(--blue-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 700px) {
+      .form-grid { grid-template-columns: 1fr; }
+    }
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--gray-600);
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
+      font-size: 0.95rem;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: 2px solid var(--blue-mid);
+      border-color: transparent;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 22px;
+      border-radius: 50px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    .btn-primary {
+      background: var(--blue-dark);
+      color: white;
+    }
+    .btn-primary:hover { background: var(--blue-mid); }
+    .btn-yellow {
+      background: var(--yellow);
+      color: var(--blue-dark);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      font-size: 0.9rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    th { color: var(--gray-600); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .badge-ativa { background: #dcfce7; color: #166534; }
+    .badge-expirada { background: #fee2e2; color: #991b1b; }
+    .msg {
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .msg.ok { background: #dcfce7; color: #166534; display: block; }
+    .msg.err { background: #fee2e2; color: #991b1b; display: block; }
+    .full { grid-column: 1 / -1; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <strong>JDC · Gestão de Licenças</strong>
+    <div>
+      <a href="admin.html">← Voltar ao painel</a>
+      &nbsp;|&nbsp;
+      <a href="#" onclick="logoutGestor(); return false;">Sair</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>Gestão do Sistema</h1>
+    <p class="subtitle">Cadastre softwares, chaves de licença e links de download.</p>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="softwares">Softwares</button>
+      <button class="tab" data-tab="licencas">Licenças</button>
+      <button class="tab" data-tab="downloads">Downloads</button>
+      <button class="tab" data-tab="clientes">Clientes</button>
+    </div>
+
+    <!-- SOFTWARES -->
+    <div class="panel active" id="panel-softwares">
+      <h2><i class="fas fa-box"></i> Cadastrar Software</h2>
+      <div id="msg-softwares" class="msg"></div>
+      <div class="form-grid">
+        <div>
+          <label>Nome do software</label>
+          <input type="text" id="sw-nome" placeholder="Ex: Wilcom E4, Embird...">
+        </div>
+        <div>
+          <label>Preço (opcional)</label>
+          <input type="number" id="sw-preco" step="0.01" placeholder="0.00">
+        </div>
+        <div class="full">
+          <label>Descrição</label>
+          <textarea id="sw-desc" rows="2" placeholder="Breve descrição"></textarea>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="salvarSoftware()">
+        <i class="fas fa-plus"></i> Salvar Software
+      </button>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Preço</th>
+            <th>Status</th>
+            <th>ID</th>
+          </tr>
+        </thead>
+        <tbody id="lista-softwares"></tbody>
+      </table>
+    </div>
+
+    <!-- LICENÇAS -->
+    <div class="panel" id="panel-licencas">
+      <h2><i class="fas fa-key"></i> Cadastrar Licença</h2>
+      <div id="msg-licencas" class="msg"></div>
+      <div class="form-grid">
+        <div>
+          <label>Chave de licença</label>
+          <input type="text" id="lic-chave" placeholder="Ex: JDC-XXXX-YYYY" style="text-transform:uppercase">
+        </div>
+        <div>
+          <label>Software</label>
+          <select id="lic-software"></select>
+        </div>
+        <div>
+          <label>Status</label>
+          <select id="lic-status">
+            <option value="ativa">Ativa</option>
+            <option value="expirada">Expirada</option>
+            <option value="cancelada">Cancelada</option>
+          </select>
+        </div>
+        <div>
+          <label>Data de expiração (opcional)</label>
+          <input type="date" id="lic-expiracao">
+        </div>
+        <div class="full">
+          <label>Observações</label>
+          <input type="text" id="lic-obs" placeholder="Nome do cliente, WhatsApp, etc.">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="salvarLicenca()">
+        <i class="fas fa-plus"></i> Salvar Licença
+      </button>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Chave</th>
+            <th>Software</th>
+            <th>Status</th>
+            <th>Obs</th>
+          </tr>
+        </thead>
+        <tbody id="lista-licencas"></tbody>
+      </table>
+    </div>
+
+    <!-- DOWNLOADS -->
+    <div class="panel" id="panel-downloads">
+      <h2><i class="fas fa-cloud-download-alt"></i> Link de Download</h2>
+      <div id="msg-downloads" class="msg"></div>
+      <div class="form-grid">
+        <div>
+          <label>Software</label>
+          <select id="dl-software"></select>
+        </div>
+        <div>
+          <label>Versão</label>
+          <input type="text" id="dl-versao" placeholder="Ex: 2024.1">
+        </div>
+        <div class="full">
+          <label>Nome do arquivo</label>
+          <input type="text" id="dl-nome" placeholder="Ex: WilcomE4_Setup.exe">
+        </div>
+        <div class="full">
+          <label>URL do arquivo (R2, Drive, etc.)</label>
+          <input type="url" id="dl-url" placeholder="https://...">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="salvarDownload()">
+        <i class="fas fa-plus"></i> Salvar Download
+      </button>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Arquivo</th>
+            <th>Software</th>
+            <th>Versão</th>
+            <th>Link</th>
+          </tr>
+        </thead>
+        <tbody id="lista-downloads"></tbody>
+      </table>
+    </div>
+
+    <!-- CLIENTES -->
+    <div class="panel" id="panel-clientes">
+      <h2><i class="fas fa-users"></i> Cadastrar Cliente</h2>
+      <div id="msg-clientes" class="msg"></div>
+      <div class="form-grid">
+        <div>
+          <label>Nome</label>
+          <input type="text" id="cli-nome" placeholder="Nome completo">
+        </div>
+        <div>
+          <label>E-mail</label>
+          <input type="email" id="cli-email" placeholder="email@exemplo.com">
+        </div>
+        <div>
+          <label>Telefone</label>
+          <input type="text" id="cli-telefone" placeholder="(65) 99999-9999">
+        </div>
+        <div>
+          <label>WhatsApp</label>
+          <input type="text" id="cli-whatsapp" placeholder="5565999999999">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="salvarCliente()">
+        <i class="fas fa-plus"></i> Salvar Cliente
+      </button>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>E-mail</th>
+            <th>WhatsApp</th>
+          </tr>
+        </thead>
+        <tbody id="lista-clientes"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="auth.js"></script>
+  <script>
+    requireGestorAuth();
+    initSupabase();
+
+    // Tabs
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    function showMsg(id, text, ok = true) {
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.className = 'msg ' + (ok ? 'ok' : 'err');
+      setTimeout(() => el.className = 'msg', 4000);
+    }
+
+    // ===== Softwares =====
+    async function carregarSoftwares() {
+      const { data } = await supabase.from('softwares').select('*').order('nome');
+      const tbody = document.getElementById('lista-softwares');
+      const selects = [document.getElementById('lic-software'), document.getElementById('dl-software')];
+      
+      tbody.innerHTML = '';
+      selects.forEach(s => s.innerHTML = '<option value="">Selecione...</option>');
+
+      (data || []).forEach(s => {
+        tbody.innerHTML += `<tr>
+          <td><strong>${s.nome}</strong></td>
+          <td>${s.preco ? 'R$ ' + Number(s.preco).toFixed(2) : '—'}</td>
+          <td>${s.ativo ? 'Ativo' : 'Inativo'}</td>
+          <td style="font-size:0.75rem;color:#64748b">${s.id.slice(0,8)}...</td>
+        </tr>`;
+        selects.forEach(sel => {
+          sel.innerHTML += `<option value="${s.id}">${s.nome}</option>`;
+        });
+      });
+    }
+
+    async function salvarSoftware() {
+      const nome = document.getElementById('sw-nome').value.trim();
+      if (!nome) return showMsg('msg-softwares', 'Digite o nome', false);
+      
+      const { error } = await supabase.from('softwares').insert({
+        nome,
+        preco: document.getElementById('sw-preco').value || null,
+        descricao: document.getElementById('sw-desc').value || null
+      });
+      
+      if (error) return showMsg('msg-softwares', error.message, false);
+      showMsg('msg-softwares', 'Software salvo!');
+      document.getElementById('sw-nome').value = '';
+      document.getElementById('sw-preco').value = '';
+      document.getElementById('sw-desc').value = '';
+      carregarSoftwares();
+    }
+
+    // ===== Licenças =====
+    async function carregarLicencas() {
+      const { data } = await supabase
+        .from('licencas')
+        .select('*, softwares(nome)')
+        .order('criado_em', { ascending: false })
+        .limit(50);
+      
+      const tbody = document.getElementById('lista-licencas');
+      tbody.innerHTML = '';
+      (data || []).forEach(l => {
+        const badge = l.status === 'ativa' ? 'badge-ativa' : 'badge-expirada';
+        tbody.innerHTML += `<tr>
+          <td><code>${l.chave_licenca}</code></td>
+          <td>${l.softwares?.nome || '—'}</td>
+          <td><span class="badge ${badge}">${l.status}</span></td>
+          <td>${l.observacoes || '—'}</td>
+        </tr>`;
+      });
+    }
+
+    async function salvarLicenca() {
+      const chave = document.getElementById('lic-chave').value.trim().toUpperCase();
+      const software_id = document.getElementById('lic-software').value;
+      if (!chave || !software_id) return showMsg('msg-licencas', 'Preencha chave e software', false);
+
+      const { error } = await supabase.from('licencas').insert({
+        chave_licenca: chave,
+        software_id,
+        status: document.getElementById('lic-status').value,
+        data_expiracao: document.getElementById('lic-expiracao').value || null,
+        observacoes: document.getElementById('lic-obs').value || null
+      });
+
+      if (error) return showMsg('msg-licencas', error.message, false);
+      showMsg('msg-licencas', 'Licença salva!');
+      document.getElementById('lic-chave').value = '';
+      document.getElementById('lic-obs').value = '';
+      carregarLicencas();
+    }
+
+    // ===== Downloads =====
+    async function carregarDownloads() {
+      const { data } = await supabase
+        .from('downloads')
+        .select('*, softwares(nome)')
+        .order('criado_em', { ascending: false });
+      
+      const tbody = document.getElementById('lista-downloads');
+      tbody.innerHTML = '';
+      (data || []).forEach(d => {
+        tbody.innerHTML += `<tr>
+          <td>${d.nome_arquivo}</td>
+          <td>${d.softwares?.nome || '—'}</td>
+          <td>${d.versao || '—'}</td>
+          <td><a href="${d.url_arquivo}" target="_blank" style="color:#1a3a6e">Abrir</a></td>
+        </tr>`;
+      });
+    }
+
+    async function salvarDownload() {
+      const software_id = document.getElementById('dl-software').value;
+      const nome = document.getElementById('dl-nome').value.trim();
+      const url = document.getElementById('dl-url').value.trim();
+      if (!software_id || !nome || !url) return showMsg('msg-downloads', 'Preencha todos os campos', false);
+
+      const { error } = await supabase.from('downloads').insert({
+        software_id,
+        nome_arquivo: nome,
+        url_arquivo: url,
+        versao: document.getElementById('dl-versao').value || null
+      });
+
+      if (error) return showMsg('msg-downloads', error.message, false);
+      showMsg('msg-downloads', 'Download salvo!');
+      document.getElementById('dl-nome').value = '';
+      document.getElementById('dl-url').value = '';
+      document.getElementById('dl-versao').value = '';
+      carregarDownloads();
+    }
+
+    // ===== Clientes =====
+    async function carregarClientes() {
+      const { data } = await supabase.from('clientes').select('*').order('nome');
+      const tbody = document.getElementById('lista-clientes');
+      tbody.innerHTML = '';
+      (data || []).forEach(c => {
+        tbody.innerHTML += `<tr>
+          <td>${c.nome}</td>
+          <td>${c.email}</td>
+          <td>${c.whatsapp || c.telefone || '—'}</td>
+        </tr>`;
+      });
+    }
+
+    async function salvarCliente() {
+      const nome = document.getElementById('cli-nome').value.trim();
+      const email = document.getElementById('cli-email').value.trim();
+      if (!nome || !email) return showMsg('msg-clientes', 'Nome e e-mail são obrigatórios', false);
+
+      const { error } = await supabase.from('clientes').insert({
+        nome,
+        email,
+        telefone: document.getElementById('cli-telefone').value || null,
+        whatsapp: document.getElementById('cli-whatsapp').value || null
+      });
+
+      if (error) return showMsg('msg-clientes', error.message, false);
+      showMsg('msg-clientes', 'Cliente salvo!');
+      document.getElementById('cli-nome').value = '';
+      document.getElementById('cli-email').value = '';
+      document.getElementById('cli-telefone').value = '';
+      document.getElementById('cli-whatsapp').value = '';
+      carregarClientes();
+    }
+
+    // Carrega tudo ao iniciar
+    carregarSoftwares();
+    carregarLicencas();
+    carregarDownloads();
+    carregarClientes();
+  </script>
+</body>
+</html>

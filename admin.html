@@ -79,6 +79,14 @@
       border-right: 3px solid var(--yellow);
     }
     .sidebar-nav a i { width: 22px; text-align: center; }
+    .nav-badge {
+      margin-left: auto;
+      min-width: 20px; height: 20px; padding: 0 6px;
+      border-radius: 50px; background: #ef4444; color: #fff;
+      font-size: 0.7rem; font-weight: 800;
+      display: none; align-items: center; justify-content: center;
+    }
+    .nav-badge.show { display: inline-flex; }
     .sidebar-footer {
       margin-top: auto;
       padding: 20px;
@@ -298,9 +306,10 @@
         <a href="admin.html" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
         <a href="admin-gestao.html?tab=softwares"><i class="fas fa-box"></i> Softwares</a>
         <a href="admin-gestao.html?tab=downloads"><i class="fas fa-download"></i> Downloads</a>
-        <a href="admin-gestao.html?tab=licencas"><i class="fas fa-key"></i> Licenças</a>
+        <a href="admin-gestao.html?tab=licencas"><i class="fas fa-key"></i> Licenças <span class="nav-badge" id="badge-licencas">0</span></a>
         <a href="index.html#video-aulas"><i class="fas fa-play-circle"></i> Vídeo Aulas</a>
-        <a href="admin-gestao.html?tab=clientes"><i class="fas fa-users"></i> Clientes</a>
+        <a href="admin-gestao.html?tab=clientes"><i class="fas fa-users"></i> Clientes <span class="nav-badge" id="badge-clientes">0</span></a>
+        <a href="admin-gestao.html?tab=tiraduvida" id="nav-tiraduvida" style="display:none"><i class="fas fa-comments"></i> Tira-dúvida <span class="nav-badge" id="badge-duvidas">0</span></a>
         <a href="index.html"><i class="fas fa-home"></i> Voltar ao Site</a>
       </nav>
       <div class="sidebar-footer">
@@ -435,6 +444,78 @@
         if (typeof schedulePwaInstallBanner === 'function') schedulePwaInstallBanner();
       }, 400);
     }
+
+    // ===== Notificações (badge estilo WhatsApp/Instagram) — só gestor =====
+    async function atualizarBadgesGestor() {
+      try {
+        if (typeof initSupabase === 'function') initSupabase();
+        if (!window.supabase && typeof supabase === 'undefined') return;
+        const sb = window.supabase || supabase;
+        if (!sb || !sb.from) return;
+
+        // Licenças pendentes
+        const { count: nLic } = await sb.from('licencas')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'pendente');
+
+        // Clientes novos (últimos 7 dias) — se coluna criado_em existir
+        let nCli = 0;
+        try {
+          const desde = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+          const { count } = await sb.from('clientes')
+            .select('*', { count: 'exact', head: true })
+            .gte('criado_em', desde);
+          nCli = count || 0;
+        } catch (_) {}
+
+        // Tira-dúvida pendente
+        let nDuv = 0;
+        try {
+          const { count } = await sb.from('tira_duvida')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'pendente');
+          nDuv = count || 0;
+          const navDuv = document.getElementById('nav-tiraduvida');
+          if (navDuv) navDuv.style.display = '';
+        } catch (_) {}
+
+        function setBadge(id, n) {
+          const el = document.getElementById(id);
+          if (!el) return;
+          if (n > 0) {
+            el.textContent = n > 99 ? '99+' : String(n);
+            el.classList.add('show');
+          } else {
+            el.classList.remove('show');
+          }
+        }
+        setBadge('badge-licencas', nLic || 0);
+        setBadge('badge-clientes', nCli || 0);
+        setBadge('badge-duvidas', nDuv || 0);
+
+        // Badge no ícone do app (PWA instalado) — Chrome/Android/Edge
+        const total = (nLic || 0) + (nDuv || 0);
+        if (navigator.setAppBadge) {
+          if (total > 0) navigator.setAppBadge(total).catch(() => {});
+          else if (navigator.clearAppBadge) navigator.clearAppBadge().catch(() => {});
+        }
+      } catch (e) {
+        console.log('Badges:', e);
+      }
+    }
+
+    // Carrega supabase se ainda não estiver
+    (function () {
+      const s1 = document.createElement('script');
+      s1.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+      s1.onload = function () {
+        const s2 = document.createElement('script');
+        s2.src = 'supabase-config.js';
+        s2.onload = function () { setTimeout(atualizarBadgesGestor, 300); };
+        document.head.appendChild(s2);
+      };
+      document.head.appendChild(s1);
+    })();
   </script>
 </body>
 </html>

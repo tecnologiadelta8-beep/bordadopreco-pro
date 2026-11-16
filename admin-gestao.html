@@ -151,6 +151,20 @@
     .msg.ok { background: #dcfce7; color: #166534; display: block; }
     .msg.err { background: #fee2e2; color: #991b1b; display: block; }
     .full { grid-column: 1 / -1; }
+    .status-bar {
+      padding: 12px 16px; border-radius: 10px; margin-bottom: 20px;
+      font-size: 0.9rem; font-weight: 600;
+    }
+    .status-bar.ok { background: #dcfce7; color: #166534; }
+    .status-bar.err { background: #fee2e2; color: #991b1b; }
+    .status-bar.warn { background: #fef3c7; color: #92400e; }
+    .btn-sm {
+      padding: 8px 14px; font-size: 0.85rem; border-radius: 8px;
+      border: 1px solid var(--gray-200); background: white; cursor: pointer;
+      font-weight: 600; color: var(--blue-dark);
+    }
+    .btn-sm:hover { background: var(--gray-100); }
+    code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; }
   </style>
 </head>
 <body>
@@ -165,7 +179,9 @@
 
   <div class="container">
     <h1>Gestão do Sistema</h1>
-    <p class="subtitle">Cadastre softwares, chaves de licença e links de download.</p>
+    <p class="subtitle">Cadastre softwares, chaves de licença e links de download. <strong>Códigos de ativação só aparecem aqui (gestor).</strong></p>
+
+    <div id="status-conexao" class="status-bar warn">Conectando ao banco...</div>
 
     <div class="tabs">
       <button class="tab active" data-tab="softwares">Softwares</button>
@@ -215,8 +231,13 @@
       <div id="msg-licencas" class="msg"></div>
       <div class="form-grid">
         <div>
-          <label>Chave de licença</label>
-          <input type="text" id="lic-chave" placeholder="Ex: JDC-XXXX-YYYY" style="text-transform:uppercase">
+          <label>Chave de licença (só gestão vê e gera)</label>
+          <div style="display:flex;gap:8px;">
+            <input type="text" id="lic-chave" placeholder="Ex: JDC-XXXX-YYYY" style="text-transform:uppercase;flex:1">
+            <button type="button" class="btn-sm" onclick="gerarChaveLicenca()" title="Gerar chave automática">
+              <i class="fas fa-magic"></i> Gerar
+            </button>
+          </div>
         </div>
         <div>
           <label>Software</label>
@@ -354,6 +375,23 @@
     requireGestorAuth();
     initSupabase();
 
+    function setStatus(tipo, texto) {
+      const el = document.getElementById('status-conexao');
+      if (!el) return;
+      el.className = 'status-bar ' + tipo;
+      el.innerHTML = texto;
+    }
+
+    function gerarChaveLicenca() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let r = 'JDC';
+      for (let g = 0; g < 3; g++) {
+        r += '-';
+        for (let i = 0; i < 4; i++) r += chars[Math.floor(Math.random() * chars.length)];
+      }
+      document.getElementById('lic-chave').value = r;
+    }
+
     // Tabs
     function ativarTab(nome) {
       const tab = document.querySelector('.tab[data-tab="' + nome + '"]');
@@ -394,19 +432,34 @@
 
     // ===== Softwares =====
     async function carregarSoftwares() {
-      const { data } = await supabase.from('softwares').select('*').order('nome');
+      if (!supabase) {
+        setStatus('err', '❌ Supabase não conectou. Verifique supabase-config.js');
+        return;
+      }
+      const { data, error } = await supabase.from('softwares').select('*').order('nome');
+      if (error) {
+        setStatus('err', '❌ Erro ao ler softwares: ' + error.message + ' — Rode o arquivo <code>supabase-schema-jdc.sql</code> no SQL Editor do Supabase.');
+        showMsg('msg-softwares', error.message, false);
+        return;
+      }
+      setStatus('ok', '✅ Conectado ao Supabase — ' + (data || []).length + ' software(s) cadastrado(s)');
       const tbody = document.getElementById('lista-softwares');
       const selects = [document.getElementById('lic-software'), document.getElementById('dl-software')];
       
       tbody.innerHTML = '';
       selects.forEach(s => s.innerHTML = '<option value="">Selecione...</option>');
 
-      (data || []).forEach(s => {
+      if (!data || !data.length) {
+        tbody.innerHTML = '<tr><td colspan="4" style="color:#64748b">Nenhum software ainda. Cadastre o primeiro acima.</td></tr>';
+        return;
+      }
+
+      data.forEach(s => {
         tbody.innerHTML += `<tr>
           <td><strong>${s.nome}</strong></td>
           <td>${s.preco ? 'R$ ' + Number(s.preco).toFixed(2) : '—'}</td>
-          <td>${s.ativo ? 'Ativo' : 'Inativo'}</td>
-          <td style="font-size:0.75rem;color:#64748b">${s.id.slice(0,8)}...</td>
+          <td>${s.ativo !== false ? 'Ativo' : 'Inativo'}</td>
+          <td style="font-size:0.75rem;color:#64748b">${(s.id || '').toString().slice(0,8)}...</td>
         </tr>`;
         selects.forEach(sel => {
           sel.innerHTML += `<option value="${s.id}">${s.nome}</option>`;
@@ -564,11 +617,23 @@
       carregarClientes();
     }
 
-    // Carrega tudo ao iniciar
-    carregarSoftwares();
-    carregarLicencas();
-    carregarDownloads();
-    carregarClientes();
+    // Carrega tudo ao iniciar (com tratamento se o banco ainda não tiver tabelas)
+    (async function iniciar() {
+      if (!supabase) initSupabase();
+      if (!supabase) {
+        setStatus('err', '❌ Biblioteca Supabase não carregou. Recarregue a página.');
+        return;
+      }
+      try {
+        await carregarSoftwares();
+        await carregarLicencas();
+        await carregarDownloads();
+        await carregarClientes();
+      } catch (e) {
+        console.error(e);
+        setStatus('err', '❌ Erro: ' + (e.message || e) + ' — Confira se rodou o SQL no Supabase.');
+      }
+    })();
   </script>
 </body>
 </html>

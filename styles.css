@@ -1150,9 +1150,13 @@ ul { list-style: none; }
   border: 2px solid var(--gray-200);
   border-radius: 12px;
   font-size: 1.1rem;
+  transition: var(--transition);
+}
+
+/* Só a chave de licença fica em maiúsculas */
+.form-group input#license-key {
   font-family: monospace;
   letter-spacing: 1px;
-  transition: var(--transition);
   text-transform: uppercase;
 }
 

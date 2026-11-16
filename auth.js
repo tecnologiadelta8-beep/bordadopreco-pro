@@ -65,13 +65,14 @@ function isCliente() {
 // ===== Login Gestor =====
 function loginGestor(usuarioOuEmail, senha) {
   const u = (usuarioOuEmail || '').trim().toLowerCase();
-  const p = senha || '';
+  // Aceita senha em maiúsculas ou minúsculas (jdc2026 = JDC2026)
+  const p = (senha || '').trim().toLowerCase();
 
   const matchUser =
     u === GESTOR_CREDS.usuario.toLowerCase() ||
     u === GESTOR_CREDS.email.toLowerCase();
 
-  if (matchUser && p === GESTOR_CREDS.senha) {
+  if (matchUser && p === GESTOR_CREDS.senha.toLowerCase()) {
     saveSession({
       role: 'gestor',
       nome: GESTOR_CREDS.nome,

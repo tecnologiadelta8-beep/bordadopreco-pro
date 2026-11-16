@@ -355,14 +355,35 @@
     initSupabase();
 
     // Tabs
+    function ativarTab(nome) {
+      const tab = document.querySelector('.tab[data-tab="' + nome + '"]');
+      const panel = document.getElementById('panel-' + nome);
+      if (!tab || !panel) return;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      panel.classList.add('active');
+    }
+
     document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-        tab.classList.add('active');
-        document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+        ativarTab(tab.dataset.tab);
+        // Atualiza a URL sem recarregar
+        try {
+          const url = new URL(window.location.href);
+          url.searchParams.set('tab', tab.dataset.tab);
+          history.replaceState(null, '', url.toString());
+        } catch (_) {}
       });
     });
+
+    // Abre a aba indicada na URL (?tab=licencas)
+    (function () {
+      try {
+        const tab = new URLSearchParams(window.location.search).get('tab');
+        if (tab) ativarTab(tab);
+      } catch (_) {}
+    })();
 
     function showMsg(id, text, ok = true) {
       const el = document.getElementById(id);

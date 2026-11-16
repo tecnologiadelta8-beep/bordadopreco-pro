@@ -231,6 +231,8 @@
         const result = await loginUnificado(user, pass);
 
         if (result.ok) {
+          // Permite o banner de instalar PWA aparecer logo após o login
+          try { sessionStorage.removeItem('jdc_pwa_install_dismissed'); } catch (_) {}
           if (result.role === 'gestor') {
             window.location.href = 'admin.html';
           } else {

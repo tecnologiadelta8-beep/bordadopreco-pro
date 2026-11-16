@@ -64,6 +64,11 @@ function enablePwaForLoggedUser() {
     const swFile = session.role === "gestor" ? "sw-gestor.js" : "sw.js";
     navigator.serviceWorker.register(swFile).catch(() => {});
   }
+
+  // Mostra banner de instalação logo após o login (definido em auth.js)
+  if (typeof schedulePwaInstallBanner === "function") {
+    schedulePwaInstallBanner();
+  }
 }
 
 // Chamado depois do auth inicializar

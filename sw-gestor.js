@@ -1,9 +1,10 @@
 // Service Worker - PWA do Gestor JDC
-const CACHE_NAME = 'jdc-gestor-v1';
+const CACHE_NAME = 'jdc-gestor-v2';
 const ASSETS = [
   './',
   './login.html',
   './admin.html',
+  './admin-gestao.html',
   './auth.js',
   './styles.css',
   './icon-192.png',
@@ -44,7 +45,7 @@ self.addEventListener('fetch', (event) => {
         return caches.match(event.request).then((cached) => {
           if (cached) return cached;
           if (event.request.mode === 'navigate') {
-            return caches.match('./login.html');
+            return caches.match('./admin.html') || caches.match('./login.html');
           }
           return new Response('Offline', { status: 503 });
         });

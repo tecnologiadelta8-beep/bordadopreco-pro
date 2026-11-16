@@ -423,6 +423,15 @@
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw-gestor.js').catch(() => {});
     }
+
+    // Banner de instalar PWA logo após o login
+    if (typeof schedulePwaInstallBanner === 'function') {
+      schedulePwaInstallBanner();
+    } else {
+      setTimeout(function () {
+        if (typeof schedulePwaInstallBanner === 'function') schedulePwaInstallBanner();
+      }, 400);
+    }
   </script>
 </body>
 </html>

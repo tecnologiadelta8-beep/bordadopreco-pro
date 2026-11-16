@@ -2,7 +2,7 @@
   "name": "JDC Gestor",
   "short_name": "JDC Gestor",
   "description": "Painel do Gestor - JDC Tecnologia em Bordados",
-  "start_url": "./login.html",
+  "start_url": "./admin.html",
   "display": "standalone",
   "background_color": "#0a1f4d",
   "theme_color": "#0a1f4d",

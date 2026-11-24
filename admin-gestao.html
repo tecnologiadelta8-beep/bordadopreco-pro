@@ -207,6 +207,13 @@
           <label>Descrição</label>
           <textarea id="sw-desc" rows="2" placeholder="Breve descrição"></textarea>
         </div>
+        <div class="full">
+          <label>URL da imagem (opcional — entra no slideshow da home)</label>
+          <input type="url" id="sw-imagem" placeholder="https://pub-....r2.dev/foto-do-software.jpg">
+          <small style="display:block;margin-top:6px;color:#64748b;font-size:0.8rem;">
+            Suba a foto no R2 e cole o link público aqui. Qualquer software com imagem aparece no slide da tela do hero.
+          </small>
+        </div>
       </div>
       <button class="btn btn-primary" onclick="salvarSoftware()">
         <i class="fas fa-plus"></i> Salvar Software
@@ -512,18 +519,23 @@
       const nome = document.getElementById('sw-nome').value.trim();
       if (!nome) return showMsg('msg-softwares', 'Digite o nome', false);
       
-      const { error } = await sb().from('softwares').insert({
+      const imagem = (document.getElementById('sw-imagem') && document.getElementById('sw-imagem').value.trim()) || '';
+      const payload = {
         nome,
         preco: document.getElementById('sw-preco').value || null,
         descricao: document.getElementById('sw-desc').value || null
-      });
+      };
+      if (imagem) payload.imagem_url = imagem;
+
+      const { error } = await sb().from('softwares').insert(payload);
       
       if (error) return showMsg('msg-softwares', error.message, false);
-      showMsg('msg-softwares', 'Software salvo!');
+      showMsg('msg-softwares', 'Software salvo!' + (imagem ? ' A foto entra no slideshow da home.' : ''));
       if (window.JdcNotif) JdcNotif.add('software', 'Software cadastrado', nome);
       document.getElementById('sw-nome').value = '';
       document.getElementById('sw-preco').value = '';
       document.getElementById('sw-desc').value = '';
+      if (document.getElementById('sw-imagem')) document.getElementById('sw-imagem').value = '';
       carregarSoftwares();
     }
 

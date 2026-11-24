@@ -368,13 +368,11 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="auth.js"></script>
   <script src="notificacoes-gestor.js"></script>
   <script>
     requireGestorAuth();
-    initSupabase();
     if (window.JdcNotif) JdcNotif.init();
 
     function setStatus(tipo, texto) {
@@ -382,6 +380,41 @@
       if (!el) return;
       el.className = 'status-bar ' + tipo;
       el.innerHTML = texto;
+    }
+
+    /** Carrega a lib Supabase com fallback de CDNs */
+    function carregarLibSupabase() {
+      return new Promise(function (resolve, reject) {
+        if (window.supabase && typeof window.supabase.createClient === 'function') {
+          resolve(window.supabase);
+          return;
+        }
+        var urls = [
+          'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js',
+          'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js',
+          'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'
+        ];
+        var i = 0;
+        function tenta() {
+          if (i >= urls.length) {
+            reject(new Error('Nenhum CDN do Supabase respondeu'));
+            return;
+          }
+          var s = document.createElement('script');
+          s.src = urls[i++];
+          s.async = true;
+          s.onload = function () {
+            if (window.supabase && typeof window.supabase.createClient === 'function') {
+              resolve(window.supabase);
+            } else {
+              tenta();
+            }
+          };
+          s.onerror = function () { tenta(); };
+          document.head.appendChild(s);
+        }
+        tenta();
+      });
     }
 
     function gerarChaveLicenca() {
@@ -630,6 +663,14 @@
 
     // Carrega tudo ao iniciar
     (async function iniciar() {
+      setStatus('warn', 'Carregando biblioteca Supabase...');
+      try {
+        await carregarLibSupabase();
+      } catch (e) {
+        setStatus('err', '❌ Não foi possível baixar a biblioteca Supabase (CDN). Verifique a internet, desative bloqueador ou abra em janela anônima. Detalhe: ' + (e.message || e));
+        return;
+      }
+
       setStatus('warn', 'Conectando ao banco...');
       var client = null;
       try {
@@ -639,19 +680,17 @@
         return;
       }
       if (!client) {
-        setStatus('err', '❌ Biblioteca Supabase não carregou. Confira a internet e recarregue com Ctrl+F5.');
+        setStatus('err', '❌ Cliente Supabase não iniciou. Confira supabase-config.js no GitHub.');
         return;
       }
 
-      // Timeout: se em 12s não responder, avisa
       var travou = setTimeout(function () {
-        setStatus('err', '❌ Demorou demais para responder. Projeto Supabase pode estar pausado ou sem policy de leitura. Abra o painel do Supabase e confira.');
+        setStatus('err', '❌ Demorou demais para responder. Projeto Supabase pode estar pausado ou sem policy de leitura.');
       }, 12000);
 
       try {
         await carregarSoftwares();
         clearTimeout(travou);
-        // demais listas (não bloqueiam o status principal)
         try { await carregarLicencas(); } catch (e) { console.warn(e); }
         try { await carregarDownloads(); } catch (e) { console.warn(e); }
         try { await carregarClientes(); } catch (e) { console.warn(e); }

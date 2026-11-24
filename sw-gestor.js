@@ -1,12 +1,9 @@
 // Service Worker - PWA do Gestor JDC
-const CACHE_NAME = 'jdc-gestor-v2';
+const CACHE_NAME = 'jdc-gestor-v3';
 const ASSETS = [
-  './',
   './login.html',
   './admin.html',
-  './admin-gestao.html',
   './auth.js',
-  './styles.css',
   './icon-192.png',
   './icon-512.png',
   './manifest-gestor.json'
@@ -32,6 +29,36 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+
+  const url = new URL(event.request.url);
+
+  // Nunca intercepta CDN / API (Supabase, jsDelivr, unpkg)
+  if (url.origin !== self.location.origin) {
+    return;
+  }
+
+  // HTML e JS de gestão: sempre tenta rede primeiro (evita cache velho sem Supabase)
+  const isHtmlOrConfig =
+    url.pathname.endsWith('.html') ||
+    url.pathname.endsWith('supabase-config.js') ||
+    url.pathname.endsWith('admin-gestao.html') ||
+    url.pathname.endsWith('notificacoes-gestor.js');
+
+  if (isHtmlOrConfig) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response && response.status === 200) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
   event.respondWith(
     fetch(event.request)
       .then((response) => {

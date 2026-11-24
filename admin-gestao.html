@@ -432,15 +432,21 @@
       setTimeout(() => el.className = 'msg', 4000);
     }
 
+    function sb() {
+      return (typeof getSupabase === 'function' ? getSupabase() : null) || supabase || window.jdcSb || null;
+    }
+
     // ===== Softwares =====
     async function carregarSoftwares() {
-      if (!supabase) {
-        setStatus('err', '❌ Supabase não conectou. Verifique supabase-config.js');
+      const client = sb();
+      if (!client) {
+        setStatus('err', '❌ Supabase não conectou. Verifique se o arquivo supabase-config.js está no ar e recarregue com Ctrl+F5.');
         return;
       }
-      const { data, error } = await supabase.from('softwares').select('*').order('nome');
+      setStatus('warn', '⏳ Consultando tabela softwares...');
+      const { data, error } = await client.from('softwares').select('*').order('nome');
       if (error) {
-        setStatus('err', '❌ Erro ao ler softwares: ' + error.message + ' — Rode o arquivo <code>supabase-schema-jdc.sql</code> no SQL Editor do Supabase.');
+        setStatus('err', '❌ Erro ao ler softwares: <code>' + error.message + '</code> — Se for RLS/policy, rode o SQL de policies no Supabase.');
         showMsg('msg-softwares', error.message, false);
         return;
       }
@@ -449,7 +455,7 @@
       const selects = [document.getElementById('lic-software'), document.getElementById('dl-software')];
       
       tbody.innerHTML = '';
-      selects.forEach(s => s.innerHTML = '<option value="">Selecione...</option>');
+      selects.forEach(s => { if (s) s.innerHTML = '<option value="">Selecione...</option>'; });
 
       if (!data || !data.length) {
         tbody.innerHTML = '<tr><td colspan="4" style="color:#64748b">Nenhum software ainda. Cadastre o primeiro acima.</td></tr>';
@@ -464,7 +470,7 @@
           <td style="font-size:0.75rem;color:#64748b">${(s.id || '').toString().slice(0,8)}...</td>
         </tr>`;
         selects.forEach(sel => {
-          sel.innerHTML += `<option value="${s.id}">${s.nome}</option>`;
+          if (sel) sel.innerHTML += `<option value="${s.id}">${s.nome}</option>`;
         });
       });
     }
@@ -473,7 +479,7 @@
       const nome = document.getElementById('sw-nome').value.trim();
       if (!nome) return showMsg('msg-softwares', 'Digite o nome', false);
       
-      const { error } = await supabase.from('softwares').insert({
+      const { error } = await sb().from('softwares').insert({
         nome,
         preco: document.getElementById('sw-preco').value || null,
         descricao: document.getElementById('sw-desc').value || null
@@ -490,7 +496,7 @@
 
     // ===== Licenças =====
     async function carregarLicencas() {
-      const { data } = await supabase
+      const { data } = await sb()
         .from('licencas')
         .select('*, softwares(nome)')
         .order('criado_em', { ascending: false })
@@ -514,7 +520,7 @@
       const software_id = document.getElementById('lic-software').value;
       if (!chave || !software_id) return showMsg('msg-licencas', 'Preencha chave e software', false);
 
-      const { error } = await supabase.from('licencas').insert({
+      const { error } = await sb().from('licencas').insert({
         chave_licenca: chave,
         software_id,
         status: document.getElementById('lic-status').value,
@@ -532,7 +538,7 @@
 
     // ===== Downloads =====
     async function carregarDownloads() {
-      const { data } = await supabase
+      const { data } = await sb()
         .from('downloads')
         .select('*, softwares(nome)')
         .order('criado_em', { ascending: false });
@@ -555,7 +561,7 @@
       const url = document.getElementById('dl-url').value.trim();
       if (!software_id || !nome || !url) return showMsg('msg-downloads', 'Preencha todos os campos', false);
 
-      const { error } = await supabase.from('downloads').insert({
+      const { error } = await sb().from('downloads').insert({
         software_id,
         nome_arquivo: nome,
         url_arquivo: url,
@@ -572,7 +578,7 @@
 
     // ===== Clientes =====
     async function carregarClientes() {
-      const { data } = await supabase.from('clientes').select('*').order('nome');
+      const { data } = await sb().from('clientes').select('*').order('nome');
       const tbody = document.getElementById('lista-clientes');
       tbody.innerHTML = '';
       (data || []).forEach(c => {
@@ -601,7 +607,7 @@
         return showMsg('msg-clientes', 'Defina uma senha com pelo menos 4 caracteres', false);
       }
 
-      const { error } = await supabase.from('clientes').insert({
+      const { error } = await sb().from('clientes').insert({
         nome,
         email: email || null,
         telefone: telefone || null,
@@ -622,21 +628,37 @@
       carregarClientes();
     }
 
-    // Carrega tudo ao iniciar (com tratamento se o banco ainda não tiver tabelas)
+    // Carrega tudo ao iniciar
     (async function iniciar() {
-      if (!supabase) initSupabase();
-      if (!supabase) {
-        setStatus('err', '❌ Biblioteca Supabase não carregou. Recarregue a página.');
+      setStatus('warn', 'Conectando ao banco...');
+      var client = null;
+      try {
+        client = (typeof initSupabase === 'function' ? initSupabase() : null) || sb();
+      } catch (e) {
+        setStatus('err', '❌ Falha ao iniciar cliente: ' + (e.message || e));
         return;
       }
+      if (!client) {
+        setStatus('err', '❌ Biblioteca Supabase não carregou. Confira a internet e recarregue com Ctrl+F5.');
+        return;
+      }
+
+      // Timeout: se em 12s não responder, avisa
+      var travou = setTimeout(function () {
+        setStatus('err', '❌ Demorou demais para responder. Projeto Supabase pode estar pausado ou sem policy de leitura. Abra o painel do Supabase e confira.');
+      }, 12000);
+
       try {
         await carregarSoftwares();
-        await carregarLicencas();
-        await carregarDownloads();
-        await carregarClientes();
+        clearTimeout(travou);
+        // demais listas (não bloqueiam o status principal)
+        try { await carregarLicencas(); } catch (e) { console.warn(e); }
+        try { await carregarDownloads(); } catch (e) { console.warn(e); }
+        try { await carregarClientes(); } catch (e) { console.warn(e); }
       } catch (e) {
+        clearTimeout(travou);
         console.error(e);
-        setStatus('err', '❌ Erro: ' + (e.message || e) + ' — Confira se rodou o SQL no Supabase.');
+        setStatus('err', '❌ Erro: ' + (e.message || e));
       }
     })();
   </script>

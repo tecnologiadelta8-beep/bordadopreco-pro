@@ -371,9 +371,11 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="auth.js"></script>
+  <script src="notificacoes-gestor.js"></script>
   <script>
     requireGestorAuth();
     initSupabase();
+    if (window.JdcNotif) JdcNotif.init();
 
     function setStatus(tipo, texto) {
       const el = document.getElementById('status-conexao');
@@ -479,6 +481,7 @@
       
       if (error) return showMsg('msg-softwares', error.message, false);
       showMsg('msg-softwares', 'Software salvo!');
+      if (window.JdcNotif) JdcNotif.add('software', 'Software cadastrado', nome);
       document.getElementById('sw-nome').value = '';
       document.getElementById('sw-preco').value = '';
       document.getElementById('sw-desc').value = '';
@@ -521,6 +524,7 @@
 
       if (error) return showMsg('msg-licencas', error.message, false);
       showMsg('msg-licencas', 'Licença salva!');
+      if (window.JdcNotif) JdcNotif.add('licenca', 'Nova licença', chave);
       document.getElementById('lic-chave').value = '';
       document.getElementById('lic-obs').value = '';
       carregarLicencas();
@@ -608,6 +612,7 @@
 
       if (error) return showMsg('msg-clientes', error.message, false);
       showMsg('msg-clientes', 'Cliente salvo! Ele entra com e-mail ou telefone + a senha definida.');
+      if (window.JdcNotif) JdcNotif.add('novo_cliente', 'Novo cliente', nome);
       document.getElementById('cli-nome').value = '';
       document.getElementById('cli-email').value = '';
       document.getElementById('cli-telefone').value = '';

@@ -337,7 +337,6 @@
     <i class="fab fa-whatsapp"></i>
   </a>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="auth.js"></script>
   <script src="app.js"></script>
@@ -346,16 +345,55 @@
   const params = new URLSearchParams(window.location.search);
   const id = params.get('id');
   let software = null;
+  let _client = null;
 
-  function sb() {
-    if (typeof initSupabase === 'function') {
-      try { initSupabase(); } catch (e) {}
+  function loadScript(src) {
+    return new Promise(function (resolve, reject) {
+      var s = document.createElement('script');
+      s.src = src;
+      s.async = true;
+      s.onload = function () { resolve(); };
+      s.onerror = function () { reject(new Error(src)); };
+      document.head.appendChild(s);
+    });
+  }
+
+  async function ensureClient() {
+    if (_client) return _client;
+    if (window.jdcSb && typeof window.jdcSb.from === 'function') {
+      _client = window.jdcSb;
+      return _client;
     }
     if (typeof getSupabase === 'function') {
-      var c = getSupabase();
-      if (c) return c;
+      var c0 = getSupabase();
+      if (c0) { _client = c0; return _client; }
     }
-    return window.jdcSb || window.supabaseClient || null;
+    var lib = window.supabase;
+    if (!lib || typeof lib.createClient !== 'function') {
+      var urls = [
+        'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js',
+        'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js'
+      ];
+      for (var i = 0; i < urls.length; i++) {
+        try {
+          await loadScript(urls[i]);
+          lib = window.supabase;
+          if (lib && typeof lib.createClient === 'function') break;
+        } catch (e) {}
+      }
+    }
+    if (!lib || typeof lib.createClient !== 'function') return null;
+    var url = (typeof SUPABASE_URL !== 'undefined') ? SUPABASE_URL : null;
+    var key = (typeof SUPABASE_ANON_KEY !== 'undefined') ? SUPABASE_ANON_KEY : null;
+    if (!url || !key) return null;
+    _client = lib.createClient(url, key);
+    window.jdcSb = _client;
+    window.supabaseClient = _client;
+    return _client;
+  }
+
+  function sb() {
+    return _client || window.jdcSb || window.supabaseClient || null;
   }
 
   function showMsg(elId, texto, ok) {
@@ -587,10 +625,15 @@
     preencherUsuarioLogado();
   });
 
-  // Aguarda Supabase
-  function iniciar() {
-    if (sb()) carregarSoftware();
-    else setTimeout(iniciar, 200);
+  async function iniciar() {
+    try {
+      await ensureClient();
+      await carregarSoftware();
+    } catch (e) {
+      console.error(e);
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('erro').style.display = 'block';
+    }
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', iniciar);

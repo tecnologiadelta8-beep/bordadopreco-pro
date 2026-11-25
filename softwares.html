@@ -93,23 +93,11 @@
     <i class="fab fa-whatsapp"></i>
   </a>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script src="auth.js"></script>
   <script src="app.js"></script>
   <script>
 (function () {
-  var tentativas = 0;
-  function sb() {
-    if (typeof initSupabase === 'function') {
-      try { initSupabase(); } catch (e) {}
-    }
-    if (typeof getSupabase === 'function') {
-      var c = getSupabase();
-      if (c) return c;
-    }
-    return window.jdcSb || window.supabaseClient || null;
-  }
   function esc(s) {
     return String(s || '')
       .replace(/&/g, '&amp;')
@@ -117,6 +105,7 @@
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
   }
+
   function fallbackHtml(msg) {
     return (
       '<div class="software-card">' +
@@ -151,27 +140,25 @@
         : '')
     );
   }
+
   function renderLista(data) {
-    const box = document.getElementById('lista-softwares-pub');
+    var box = document.getElementById('lista-softwares-pub');
     if (!box) return;
     box.innerHTML = data.map(function (s) {
-      const img = s.imagem_url || s.foto_url || '';
-      const badge = s.badge
-        ? '<div class="software-badge">' + esc(s.badge) + '</div>'
-        : '';
-      const desc = s.resumo || s.descricao || '';
-      const preco = (s.preco != null && s.preco !== '')
+      var img = s.imagem_url || s.foto_url || '';
+      var badge = s.badge ? '<div class="software-badge">' + esc(s.badge) + '</div>' : '';
+      var desc = s.resumo || s.descricao || '';
+      var preco = (s.preco != null && s.preco !== '')
         ? '<p style="font-weight:700;color:#0a1f4d;margin:8px 0;">R$ ' + Number(s.preco).toFixed(2).replace('.', ',') + '</p>'
         : '';
-      const imgHtml = img
+      var imgHtml = img
         ? '<div style="border-radius:12px;overflow:hidden;margin-bottom:14px;aspect-ratio:16/10;background:#f1f5f9;">' +
             '<img src="' + esc(img) + '" alt="' + esc(s.nome) + '" style="width:100%;height:100%;object-fit:cover;">' +
           '</div>'
         : '<div class="software-icon"><i class="fas fa-laptop-code"></i></div>';
-      const link = s.id
+      var link = s.id
         ? 'software.html?id=' + encodeURIComponent(s.id)
         : 'https://wa.me/5565999460391?text=' + encodeURIComponent('Olá! Quero saber sobre ' + (s.nome || 'o software'));
-
       return (
         '<a href="' + link + '" class="software-card" style="text-decoration:none;color:inherit;display:block;cursor:pointer;">' +
           badge + imgHtml +
@@ -185,35 +172,73 @@
       );
     }).join('');
   }
+
+  function loadScript(src) {
+    return new Promise(function (resolve, reject) {
+      var s = document.createElement('script');
+      s.src = src;
+      s.async = true;
+      s.onload = function () { resolve(); };
+      s.onerror = function () { reject(new Error('Falha CDN: ' + src)); };
+      document.head.appendChild(s);
+    });
+  }
+
+  async function ensureClient() {
+    // Já tem cliente?
+    if (window.jdcSb && typeof window.jdcSb.from === 'function') return window.jdcSb;
+    if (typeof getSupabase === 'function') {
+      var c0 = getSupabase();
+      if (c0) return c0;
+    }
+
+    // Carrega a lib UMD se necessário
+    var lib = window.supabase;
+    if (!lib || typeof lib.createClient !== 'function') {
+      var urls = [
+        'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js',
+        'https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js'
+      ];
+      var ok = false;
+      for (var i = 0; i < urls.length; i++) {
+        try {
+          await loadScript(urls[i]);
+          lib = window.supabase;
+          if (lib && typeof lib.createClient === 'function') { ok = true; break; }
+        } catch (e) {}
+      }
+      if (!ok) return null;
+    }
+
+    var url = (typeof SUPABASE_URL !== 'undefined') ? SUPABASE_URL : null;
+    var key = (typeof SUPABASE_ANON_KEY !== 'undefined') ? SUPABASE_ANON_KEY : null;
+    if (!url || !key) return null;
+
+    var client = lib.createClient(url, key);
+    window.jdcSb = client;
+    window.supabaseClient = client;
+    if (typeof initSupabase === 'function') {
+      try { initSupabase(); } catch (e) {}
+    }
+    return client;
+  }
+
   async function carregar() {
-    const box = document.getElementById('lista-softwares-pub');
+    var box = document.getElementById('lista-softwares-pub');
     if (!box) return;
-    const client = sb();
-    if (!client) {
-      tentativas++;
-      if (tentativas < 25) {
-        setTimeout(carregar, 200);
+    try {
+      var client = await ensureClient();
+      if (!client) {
+        box.innerHTML = fallbackHtml('Não conectou ao banco. Confira supabase-config.js (URL/chave) e se o CDN do Supabase abre no navegador.');
         return;
       }
-      box.innerHTML = fallbackHtml('Não conectou ao banco. Confira supabase-config.js e a internet.');
-      return;
-    }
-    try {
-      // Consulta simples (sem colunas novas) — funciona mesmo antes do SQL extra
-      var res = await client
-        .from('softwares')
-        .select('*')
-        .order('nome', { ascending: true });
-
+      var res = await client.from('softwares').select('*').order('nome', { ascending: true });
       if (res.error) {
         box.innerHTML = fallbackHtml('Erro Supabase: ' + res.error.message);
-        console.error('softwares', res.error);
+        console.error(res.error);
         return;
       }
-      var data = (res.data || []).filter(function (s) {
-        return s.ativo !== false;
-      });
-      // Ordena por ordem se existir
+      var data = (res.data || []).filter(function (s) { return s.ativo !== false; });
       data.sort(function (a, b) {
         var oa = a.ordem != null ? Number(a.ordem) : 0;
         var ob = b.ordem != null ? Number(b.ordem) : 0;
@@ -230,6 +255,7 @@
       box.innerHTML = fallbackHtml('Falha ao carregar: ' + (e.message || e));
     }
   }
+
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', carregar);
   } else {

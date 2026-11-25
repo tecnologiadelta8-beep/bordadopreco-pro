@@ -348,7 +348,14 @@
   let software = null;
 
   function sb() {
-    return (typeof getSupabase === 'function' && getSupabase()) || window.jdcSb || window.supabaseClient;
+    if (typeof initSupabase === 'function') {
+      try { initSupabase(); } catch (e) {}
+    }
+    if (typeof getSupabase === 'function') {
+      var c = getSupabase();
+      if (c) return c;
+    }
+    return window.jdcSb || window.supabaseClient || null;
   }
 
   function showMsg(elId, texto, ok) {

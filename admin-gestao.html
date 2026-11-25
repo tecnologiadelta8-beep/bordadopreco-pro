@@ -188,6 +188,8 @@
       <button class="tab" data-tab="licencas">Licenças</button>
       <button class="tab" data-tab="downloads">Downloads</button>
       <button class="tab" data-tab="clientes">Clientes</button>
+      <button class="tab" data-tab="tiraduvida">Tira-dúvidas</button>
+      <button class="tab" data-tab="leads">Leads</button>
     </div>
 
     <!-- SOFTWARES -->
@@ -197,21 +199,40 @@
       <div class="form-grid">
         <div>
           <label>Nome do software</label>
-          <input type="text" id="sw-nome" placeholder="Ex: Wilcom E4, Embird...">
+          <input type="text" id="sw-nome" placeholder="Ex: BordadoPreço Pro v6.0">
         </div>
         <div>
           <label>Preço (opcional)</label>
           <input type="number" id="sw-preco" step="0.01" placeholder="0.00">
         </div>
+        <div>
+          <label>Badge (opcional)</label>
+          <input type="text" id="sw-badge" placeholder="Ex: Mais Completo, Mais Simples">
+        </div>
+        <div>
+          <label>Ordem de exibição</label>
+          <input type="number" id="sw-ordem" value="0" placeholder="0">
+        </div>
         <div class="full">
-          <label>Descrição</label>
+          <label>Resumo (aparece no card da lista)</label>
+          <textarea id="sw-resumo" rows="2" placeholder="Texto curto do card"></textarea>
+        </div>
+        <div class="full">
+          <label>Descrição curta</label>
           <textarea id="sw-desc" rows="2" placeholder="Breve descrição"></textarea>
         </div>
         <div class="full">
-          <label>URL da imagem (opcional — entra no slideshow da home)</label>
+          <label>Como funciona (passo a passo — um por linha)</label>
+          <textarea id="sw-como" rows="6" placeholder="1. Clique em Selecionar Matriz...&#10;2. O preço é calculado na hora...&#10;3. Use Itens Adicionais..."></textarea>
+          <small style="display:block;margin-top:6px;color:#64748b;font-size:0.8rem;">
+            Cada linha vira um passo numerado na página do software.
+          </small>
+        </div>
+        <div class="full">
+          <label>URL da imagem (card + página + slideshow)</label>
           <input type="url" id="sw-imagem" placeholder="https://pub-....r2.dev/foto-do-software.jpg">
           <small style="display:block;margin-top:6px;color:#64748b;font-size:0.8rem;">
-            Suba a foto no R2 e cole o link público aqui. Qualquer software com imagem aparece no slide da tela do hero.
+            Suba a foto no R2 e cole o link público aqui.
           </small>
         </div>
       </div>
@@ -224,8 +245,9 @@
           <tr>
             <th>Nome</th>
             <th>Preço</th>
+            <th>Badge</th>
             <th>Status</th>
-            <th>ID</th>
+            <th>Página</th>
           </tr>
         </thead>
         <tbody id="lista-softwares"></tbody>
@@ -373,6 +395,39 @@
         <tbody id="lista-clientes"></tbody>
       </table>
     </div>
+
+    <!-- TIRA-DÚVIDAS -->
+    <div class="panel" id="panel-tiraduvida">
+      <h2><i class="fas fa-comments"></i> Tira-dúvidas</h2>
+      <div id="msg-duvidas" class="msg"></div>
+      <p style="color:#64748b;margin-bottom:16px;font-size:0.9rem;">
+        Responda as perguntas dos visitantes. Só as <strong>respondidas</strong> aparecem na página do software.
+      </p>
+      <div id="lista-duvidas-admin"></div>
+    </div>
+
+    <!-- LEADS -->
+    <div class="panel" id="panel-leads">
+      <h2><i class="fas fa-user-plus"></i> Leads (Tenho interesse)</h2>
+      <div id="msg-leads" class="msg"></div>
+      <p style="color:#64748b;margin-bottom:16px;font-size:0.9rem;">
+        Pessoas que clicaram em “Tenho interesse” ou enviaram dúvida.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Nome</th>
+            <th>Telefone</th>
+            <th>Origem</th>
+            <th>Software</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="lista-leads"></tbody>
+      </table>
+    </div>
   </div>
 
   <script src="supabase-config.js"></script>
@@ -484,7 +539,7 @@
         return;
       }
       setStatus('warn', '⏳ Consultando tabela softwares...');
-      const { data, error } = await client.from('softwares').select('*').order('nome');
+      const { data, error } = await client.from('softwares').select('*').order('ordem').order('nome');
       if (error) {
         setStatus('err', '❌ Erro ao ler softwares: <code>' + error.message + '</code> — Se for RLS/policy, rode o SQL de policies no Supabase.');
         showMsg('msg-softwares', error.message, false);
@@ -498,7 +553,7 @@
       selects.forEach(s => { if (s) s.innerHTML = '<option value="">Selecione...</option>'; });
 
       if (!data || !data.length) {
-        tbody.innerHTML = '<tr><td colspan="4" style="color:#64748b">Nenhum software ainda. Cadastre o primeiro acima.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" style="color:#64748b">Nenhum software ainda. Cadastre o primeiro acima.</td></tr>';
         return;
       }
 
@@ -506,8 +561,9 @@
         tbody.innerHTML += `<tr>
           <td><strong>${s.nome}</strong></td>
           <td>${s.preco ? 'R$ ' + Number(s.preco).toFixed(2) : '—'}</td>
+          <td>${s.badge || '—'}</td>
           <td>${s.ativo !== false ? 'Ativo' : 'Inativo'}</td>
-          <td style="font-size:0.75rem;color:#64748b">${(s.id || '').toString().slice(0,8)}...</td>
+          <td><a href="software.html?id=${s.id}" target="_blank" style="color:#1a3a6e;font-weight:600">Abrir página</a></td>
         </tr>`;
         selects.forEach(sel => {
           if (sel) sel.innerHTML += `<option value="${s.id}">${s.nome}</option>`;
@@ -523,20 +579,134 @@
       const payload = {
         nome,
         preco: document.getElementById('sw-preco').value || null,
-        descricao: document.getElementById('sw-desc').value || null
+        descricao: document.getElementById('sw-desc').value || null,
+        resumo: (document.getElementById('sw-resumo') && document.getElementById('sw-resumo').value.trim()) || null,
+        badge: (document.getElementById('sw-badge') && document.getElementById('sw-badge').value.trim()) || null,
+        como_funciona: (document.getElementById('sw-como') && document.getElementById('sw-como').value.trim()) || null,
+        ordem: parseInt((document.getElementById('sw-ordem') && document.getElementById('sw-ordem').value) || '0', 10) || 0,
+        ativo: true
       };
       if (imagem) payload.imagem_url = imagem;
 
       const { error } = await sb().from('softwares').insert(payload);
       
       if (error) return showMsg('msg-softwares', error.message, false);
-      showMsg('msg-softwares', 'Software salvo!' + (imagem ? ' A foto entra no slideshow da home.' : ''));
+      showMsg('msg-softwares', 'Software salvo! Página: software.html?id=... (veja na tabela)');
       if (window.JdcNotif) JdcNotif.add('software', 'Software cadastrado', nome);
-      document.getElementById('sw-nome').value = '';
-      document.getElementById('sw-preco').value = '';
-      document.getElementById('sw-desc').value = '';
-      if (document.getElementById('sw-imagem')) document.getElementById('sw-imagem').value = '';
+      ['sw-nome','sw-preco','sw-desc','sw-resumo','sw-badge','sw-como','sw-imagem'].forEach(function(id) {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      if (document.getElementById('sw-ordem')) document.getElementById('sw-ordem').value = '0';
       carregarSoftwares();
+    }
+
+    // ===== Tira-dúvidas =====
+    async function carregarDuvidas() {
+      const box = document.getElementById('lista-duvidas-admin');
+      if (!box) return;
+      const { data, error } = await sb()
+        .from('tira_duvida')
+        .select('*, softwares(nome)')
+        .order('criado_em', { ascending: false })
+        .limit(80);
+      if (error) {
+        box.innerHTML = '<p style="color:#b91c1c">' + error.message + '</p>';
+        return;
+      }
+      if (!data || !data.length) {
+        box.innerHTML = '<p style="color:#64748b">Nenhuma dúvida ainda.</p>';
+        return;
+      }
+      box.innerHTML = data.map(function (d) {
+        const sw = (d.softwares && d.softwares.nome) || '—';
+        const foto = d.foto_url
+          ? '<div style="margin:8px 0"><img src="' + d.foto_url + '" alt="" style="max-width:160px;border-radius:8px;border:1px solid #e2e8f0"></div>'
+          : '';
+        const pendente = d.status === 'pendente';
+        return (
+          '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:12px">' +
+            '<div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px">' +
+              '<strong style="color:#0a1f4d">' + (d.nome || 'Visitante') + '</strong>' +
+              '<span style="font-size:0.8rem;color:#64748b">' + sw + ' · ' + (d.status || '') + '</span>' +
+            '</div>' +
+            '<p style="margin-bottom:6px">' + (d.pergunta || '') + '</p>' +
+            '<p style="font-size:0.8rem;color:#94a3b8;margin-bottom:8px">' + (d.telefone || '') +
+              (d.criado_em ? ' · ' + new Date(d.criado_em).toLocaleString('pt-BR') : '') + '</p>' +
+            foto +
+            (d.resposta
+              ? '<div style="background:#fff;border-left:3px solid #22c55e;padding:8px 12px;border-radius:0 8px 8px 0;margin-bottom:10px"><strong>Resposta:</strong> ' + d.resposta + '</div>'
+              : '') +
+            (pendente
+              ? '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start">' +
+                  '<textarea id="resp-' + d.id + '" rows="2" placeholder="Sua resposta..." style="flex:1;min-width:200px;padding:10px;border:1px solid #e2e8f0;border-radius:8px"></textarea>' +
+                  '<button class="btn btn-primary" onclick="responderDuvida(\'' + d.id + '\')">Responder</button>' +
+                  '<button class="btn" style="background:#e2e8f0" onclick="arquivarDuvida(\'' + d.id + '\')">Arquivar</button>' +
+                '</div>'
+              : '') +
+          '</div>'
+        );
+      }).join('');
+    }
+
+    async function responderDuvida(id) {
+      const ta = document.getElementById('resp-' + id);
+      const texto = ta ? ta.value.trim() : '';
+      if (!texto) return showMsg('msg-duvidas', 'Digite a resposta', false);
+      const { error } = await sb().from('tira_duvida').update({
+        resposta: texto,
+        status: 'respondida',
+        respondido_em: new Date().toISOString()
+      }).eq('id', id);
+      if (error) return showMsg('msg-duvidas', error.message, false);
+      showMsg('msg-duvidas', 'Resposta publicada na página do software!');
+      carregarDuvidas();
+    }
+
+    async function arquivarDuvida(id) {
+      const { error } = await sb().from('tira_duvida').update({ status: 'arquivada' }).eq('id', id);
+      if (error) return showMsg('msg-duvidas', error.message, false);
+      carregarDuvidas();
+    }
+
+    // ===== Leads =====
+    async function carregarLeads() {
+      const tbody = document.getElementById('lista-leads');
+      if (!tbody) return;
+      const { data, error } = await sb()
+        .from('leads')
+        .select('*, softwares(nome)')
+        .order('criado_em', { ascending: false })
+        .limit(100);
+      if (error) {
+        tbody.innerHTML = '<tr><td colspan="7" style="color:#b91c1c">' + error.message + '</td></tr>';
+        return;
+      }
+      if (!data || !data.length) {
+        tbody.innerHTML = '<tr><td colspan="7" style="color:#64748b">Nenhum lead ainda.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data.map(function (l) {
+        const dataStr = l.criado_em ? new Date(l.criado_em).toLocaleString('pt-BR') : '—';
+        const tel = (l.telefone || '').replace(/\D/g, '');
+        const wa = tel ? '<a href="https://wa.me/55' + tel.replace(/^55/, '') + '" target="_blank" style="color:#16a34a;font-weight:600">WhatsApp</a>' : '';
+        return '<tr>' +
+          '<td style="font-size:0.85rem">' + dataStr + '</td>' +
+          '<td><strong>' + (l.nome || '') + '</strong>' +
+            (l.mensagem ? '<br><span style="font-size:0.8rem;color:#64748b">' + l.mensagem + '</span>' : '') +
+          '</td>' +
+          '<td>' + (l.telefone || '') + '<br>' + wa + '</td>' +
+          '<td>' + (l.origem || '') + '</td>' +
+          '<td>' + ((l.softwares && l.softwares.nome) || '—') + '</td>' +
+          '<td>' + (l.status || '') + '</td>' +
+          '<td><button class="btn-sm" onclick="marcarLead(\'' + l.id + '\',\'contatado\')">Contatado</button></td>' +
+        '</tr>';
+      }).join('');
+    }
+
+    async function marcarLead(id, status) {
+      await sb().from('leads').update({ status: status }).eq('id', id);
+      carregarLeads();
     }
 
     // ===== Licenças =====
@@ -706,6 +876,8 @@
         try { await carregarLicencas(); } catch (e) { console.warn(e); }
         try { await carregarDownloads(); } catch (e) { console.warn(e); }
         try { await carregarClientes(); } catch (e) { console.warn(e); }
+        try { await carregarDuvidas(); } catch (e) { console.warn(e); }
+        try { await carregarLeads(); } catch (e) { console.warn(e); }
       } catch (e) {
         clearTimeout(travou);
         console.error(e);

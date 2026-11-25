@@ -21,9 +21,6 @@ Site oficial + Área do Gestor e Cliente (PWA).
 ## Login
 
 ### Gestor
-- **Usuário:** `admin`
-- **Senha:** `jdc2026`
-- Acesso: Painel + Gestão completa
 
 ### Cliente
 - Use o **e-mail** ou **telefone** cadastrado na tabela `clientes`

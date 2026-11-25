@@ -232,20 +232,24 @@
       <div class="bloco-cadastro" style="background:#fff;border:2px solid #1a3a6e;border-radius:12px;padding:16px 18px;margin-bottom:16px;">
         <h3 style="margin:0 0 8px;color:#0a1f4d;font-size:1rem;"><i class="fas fa-book"></i> 2. LEIA-ME / Apresentação do programa</h3>
         <p style="font-size:0.85rem;color:#64748b;margin-bottom:10px;">
-          Carregue um arquivo <strong>.txt / .md</strong> do LEIA-ME <strong>ou</strong> cole o texto abaixo.
-          <strong>Cada linha vira um passo numerado</strong> na página do produto.
+          Carregue o <strong>LEIA-ME nativo</strong> do programa (.txt / .md). O sistema limpa e organiza automaticamente
+          (remove cabeçalhos, copyright, traços etc.) e monta a seção <strong>“Como funciona”</strong> da página do produto.
+          Você ainda pode revisar e ajustar o texto antes de salvar.
         </p>
         <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-bottom:10px;">
           <div style="flex:1;min-width:200px;">
-            <label>Carregar LEIA-ME do computador</label>
+            <label>Carregar LEIA-ME nativo do computador</label>
             <input type="file" id="sw-leia-file" accept=".txt,.md,.text,text/plain" style="padding:8px;border:1px solid #e2e8f0;border-radius:8px;width:100%;background:#f8fafc;">
           </div>
           <button type="button" class="btn btn-primary" onclick="carregarLeiaMeArquivo()" style="white-space:nowrap;">
-            <i class="fas fa-file-alt"></i> Carregar no texto
+            <i class="fas fa-magic"></i> Processar LEIA-ME
           </button>
         </div>
         <small id="sw-leia-status" style="display:block;margin-bottom:8px;color:#64748b;font-size:0.8rem;"></small>
-        <textarea id="sw-como" rows="10" placeholder="1. Clique em Selecionar Matriz e escolha o arquivo de bordado.&#10;2. O preço é calculado na hora (pontos, cores, tempo e valor sugerido).&#10;3. Use Itens Adicionais para materiais, serviços e cores do fio.&#10;4. Clique em Gerar Orçamento e salve em HTML ou PDF.&#10;5. Controle pedidos e pagamentos na Gestão de Pedidos."></textarea>
+        <textarea id="sw-como" rows="14" placeholder="## O que o programa faz&#10;Descrição geral...&#10;&#10;## Como usar&#10;1. Clique em Selecionar Matriz...&#10;2. ...&#10;&#10;## Ferramentas principais&#10;### Globo&#10;O que o Globo faz...&#10;### Cubo&#10;O que o Cubo faz..."></textarea>
+        <p style="font-size:0.78rem;color:#94a3b8;margin:8px 0 0;">
+          Dica: use <code>## Título</code> e <code>### Subtítulo</code> para organizar seções. O site renderiza isso automaticamente.
+        </p>
       </div>
 
       <!-- BLOCO 3: FOTO -->
@@ -275,10 +279,10 @@
 
       <!-- BLOCO 4: INSTALADOR (opcional no cadastro; também na aba Downloads) -->
       <div class="bloco-cadastro" style="background:#f0fdf4;border:2px solid #22c55e;border-radius:12px;padding:16px 18px;margin-bottom:16px;">
-        <h3 style="margin:0 0 8px;color:#0a1f4d;font-size:1rem;"><i class="fas fa-download"></i> 4. Arquivo do programa (.exe / .zip) — opcional</h3>
+        <h3 style="margin:0 0 8px;color:#0a1f4d;font-size:1rem;"><i class="fas fa-download"></i> 4. Arquivo do programa (.zip recomendado) — opcional</h3>
         <p style="font-size:0.85rem;color:#64748b;margin-bottom:10px;">
-          Envie o instalador agora (fica na aba Downloads) <strong>ou</strong> faça depois na aba Downloads.
-          Arquivos grandes podem falhar no Storage gratuito — nesse caso use link do R2/Drive.
+          Prefira <strong>.zip</strong> (melhor compatibilidade). Envie o instalador agora (fica na aba Downloads)
+          <strong>ou</strong> faça depois. Arquivos grandes / bloqueados: suba no <strong>R2</strong> e cole a URL pública.
         </p>
         <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-bottom:8px;">
           <div style="flex:1;min-width:200px;">
@@ -377,7 +381,7 @@
     <div class="panel" id="panel-downloads">
       <h2><i class="fas fa-cloud-download-alt"></i> Arquivo do programa (Download)</h2>
       <p style="font-size:0.9rem;color:#64748b;margin-bottom:12px;">
-        Cadastre o <strong>.exe / .zip</strong>: envie do computador (Storage Supabase) <strong>ou</strong> cole o link público (R2 / Drive).
+        Prefira <strong>.zip</strong>. Envie do computador (Storage Supabase) <strong>ou</strong> cole o link público do R2 / Drive (recomendado para arquivos grandes).
       </p>
       <div id="msg-downloads" class="msg"></div>
       <div class="form-grid">
@@ -663,30 +667,167 @@
       });
     }
 
+    /**
+     * Processa LEIA-ME nativo do software:
+     * - remove ruído típico (copyright, versão, separadores, linhas vazias excessivas)
+     * - detecta e normaliza seções comuns
+     * - mantém estrutura legível com ## e ### quando possível
+     * - deixa o texto pronto para a página do produto
+     */
+    function processarLeiaMeNativo(raw) {
+      let linhas = String(raw || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+
+      // 1) Limpeza de ruído típico de LEIA-ME / README
+      const ruido = [
+        /^={3,}$/,
+        /^-{3,}$/,
+        /^_{3,}$/,
+        /^\*{3,}$/,
+        /^#{4,}/,                          // #### ou mais
+        /copyright/i,
+        /todos os direitos/i,
+        /all rights reserved/i,
+        /^versão\s*[:.]?\s*\d/i,
+        /^version\s*[:.]?\s*\d/i,
+        /^v\d+\.\d+/i,
+        /^©/,
+        /^\(c\)/i,
+        /^licen[cç]a\s/i,
+        /^license\s/i,
+        /^arquivo\s*:\s*/i,
+        /^nome do programa\s*[:.]/i,
+        /^programa\s*:\s*/i,
+        /^data\s*[:.]?\s*\d/i,
+        /^autor\s*[:.]/i,
+        /^desenvolvido por/i,
+        /^jdc\s*(tecnologia|bordados)/i,
+        /^www\./i,
+        /^https?:\/\//i,
+        /^e-?mail\s*[:.]/i,
+        /^contato\s*[:.]/i,
+        /^whatsapp\s*[:.]/i,
+        /^instruções de instalação/i,
+        /^requisitos (do sistema|mínimos)/i,
+        /^instalação$/i,
+        /^desinstalação$/i,
+        /^suporte técnico$/i
+      ];
+
+      linhas = linhas.map(function (l) { return l.replace(/\t/g, '  ').trimEnd(); });
+
+      // Remove linhas de ruído e separadores
+      linhas = linhas.filter(function (l) {
+        const t = l.trim();
+        if (!t) return true; // mantém vazias por enquanto (vamos compactar depois)
+        for (let i = 0; i < ruido.length; i++) {
+          if (ruido[i].test(t)) return false;
+        }
+        // Linhas só com símbolos
+        if (/^[\-=_*#.~•·]+$/.test(t)) return false;
+        return true;
+      });
+
+      // Compacta múltiplas linhas vazias em no máximo 1
+      const limpas = [];
+      let vaziaAnterior = false;
+      for (let i = 0; i < linhas.length; i++) {
+        const t = linhas[i].trim();
+        if (!t) {
+          if (!vaziaAnterior && limpas.length > 0) {
+            limpas.push('');
+            vaziaAnterior = true;
+          }
+          continue;
+        }
+        vaziaAnterior = false;
+        limpas.push(linhas[i].trim());
+      }
+
+      // 2) Normaliza títulos comuns de LEIA-ME para Markdown simples
+      const mapaTitulos = [
+        { re: /^(o que (o programa|este software|ele) faz|descrição|sobre o programa|funcionalidades|recursos)/i, md: '## O que o programa faz' },
+        { re: /^(como usar|como utilizar|modo de uso|instruções de uso|passo a passo|utilização)/i, md: '## Como usar' },
+        { re: /^(ferramentas|ferramentas principais|módulos|funções|botões|recursos principais)/i, md: '## Ferramentas principais' },
+        { re: /^(dicas|observações|notas|atenção|importante)/i, md: '## Dicas e observações' },
+        { re: /^(requisitos|sistema necessário)/i, md: '## Requisitos' }
+      ];
+
+      const resultado = [];
+      for (let i = 0; i < limpas.length; i++) {
+        let linha = limpas[i];
+        const lower = linha.toLowerCase();
+
+        // Já é markdown heading? mantém
+        if (/^#{1,3}\s+/.test(linha)) {
+          resultado.push(linha);
+          continue;
+        }
+
+        // Título isolado em maiúsculas ou terminado com :
+        let virouTitulo = false;
+        for (let m = 0; m < mapaTitulos.length; m++) {
+          if (mapaTitulos[m].re.test(linha.replace(/[:.\-–—]+$/, '').trim())) {
+            resultado.push(mapaTitulos[m].md);
+            virouTitulo = true;
+            break;
+          }
+        }
+        if (virouTitulo) continue;
+
+        // Possível nome de ferramenta (linha curta, começa com maiúscula, sem ponto final longo)
+        if (
+          linha.length < 40 &&
+          /^[A-ZÁÉÍÓÚÂÊÔÃÕÇ]/.test(linha) &&
+          !/[.!?]$/.test(linha) &&
+          !/^\d+[\).\-]/.test(linha) &&
+          !/^(o |a |os |as |um |uma |para |com |de |do |da )/i.test(linha)
+        ) {
+          // Se a próxima linha parece descrição, transforma em ###
+          const prox = (limpas[i + 1] || '').trim();
+          if (prox && !/^#{1,3}\s/.test(prox) && !/^\d+[\).\-]/.test(prox) && prox.length > 15) {
+            resultado.push('### ' + linha.replace(/[:.\-–—]+$/, '').trim());
+            continue;
+          }
+        }
+
+        // Normaliza numeração de passos (1) 1. 1- etc.)
+        linha = linha.replace(/^(\d+)[\).\-\:]\s*/, '$1. ');
+
+        resultado.push(linha);
+      }
+
+      // Remove linhas vazias no início/fim
+      while (resultado.length && !resultado[0].trim()) resultado.shift();
+      while (resultado.length && !resultado[resultado.length - 1].trim()) resultado.pop();
+
+      return resultado.join('\n');
+    }
+
     function carregarLeiaMeArquivo() {
       const input = document.getElementById('sw-leia-file');
       const status = document.getElementById('sw-leia-status');
       const ta = document.getElementById('sw-como');
       if (!input || !input.files || !input.files[0]) {
-        if (status) status.textContent = 'Escolha um arquivo .txt ou .md primeiro.';
+        if (status) status.textContent = 'Escolha um arquivo .txt ou .md do LEIA-ME nativo primeiro.';
         return;
       }
       const file = input.files[0];
       const reader = new FileReader();
       reader.onload = function () {
-        let texto = String(reader.result || '');
-        // Remove linhas só de traços / iguais (decoração de LEIA-ME)
-        texto = texto.split(/\r?\n/).filter(function (l) {
-          const t = l.trim();
-          if (!t) return false;
-          if (/^[\-=_*]{3,}$/.test(t)) return false;
-          return true;
-        }).join('\n');
-        if (ta) ta.value = texto;
-        if (status) status.textContent = 'LEIA-ME carregado (' + file.name + '). Revise e salve o software.';
+        const bruto = String(reader.result || '');
+        const processado = processarLeiaMeNativo(bruto);
+        if (ta) ta.value = processado;
+        if (status) {
+          status.innerHTML = 'LEIA-ME processado com sucesso (<strong>' + file.name + '</strong>). ' +
+            'Revise o texto abaixo e salve o software. A página do produto vai organizar automaticamente as seções.';
+          status.style.color = '#166534';
+        }
       };
       reader.onerror = function () {
-        if (status) status.textContent = 'Não foi possível ler o arquivo.';
+        if (status) {
+          status.textContent = 'Não foi possível ler o arquivo.';
+          status.style.color = '#b91c1c';
+        }
       };
       reader.readAsText(file, 'UTF-8');
     }
@@ -848,13 +989,25 @@
         if (!client) throw new Error('Supabase offline');
         const safeName = (file.name || 'instalador.bin').replace(/[^\w.\-]+/g, '_');
         const path = 'instaladores/' + Date.now() + '-' + safeName;
+        // Força MIME type seguro (evita rejeição de application/x-zip-compressed etc.)
+        const ext = (file.name.split('.').pop() || '').toLowerCase();
+        const mimeMap = {
+          zip: 'application/zip',
+          rar: 'application/vnd.rar',
+          '7z': 'application/x-7z-compressed',
+          exe: 'application/octet-stream',
+          msi: 'application/octet-stream',
+          bin: 'application/octet-stream'
+        };
+        const contentType = mimeMap[ext] || 'application/octet-stream';
         const { error: upErr } = await client.storage.from('softwares').upload(path, file, {
           cacheControl: '3600',
           upsert: true,
-          contentType: file.type || 'application/octet-stream'
+          contentType: contentType
         });
         if (upErr) {
-          if (status) status.innerHTML = 'Falha no upload do instalador: <code>' + upErr.message + '</code>. Cole a URL manualmente ou use a aba Downloads.';
+          if (status) status.innerHTML = 'Falha no upload do instalador: <code>' + upErr.message + '</code>. ' +
+            'Arquivos grandes ou bloqueados: suba no R2 e cole a URL pública abaixo, ou use a aba Downloads.';
           return;
         }
         const { data: pub } = client.storage.from('softwares').getPublicUrl(path);
@@ -898,13 +1051,23 @@
       const safeName = (file.name || 'arquivo.bin').replace(/[^\w.\-]+/g, '_');
       const path = 'instaladores/' + Date.now() + '-' + safeName;
       try {
+        const ext = (file.name.split('.').pop() || '').toLowerCase();
+        const mimeMap = {
+          zip: 'application/zip',
+          rar: 'application/vnd.rar',
+          '7z': 'application/x-7z-compressed',
+          exe: 'application/octet-stream',
+          msi: 'application/octet-stream',
+          bin: 'application/octet-stream'
+        };
+        const contentType = mimeMap[ext] || 'application/octet-stream';
         const { error: upErr } = await client.storage.from('softwares').upload(path, file, {
           cacheControl: '3600',
           upsert: true,
-          contentType: file.type || 'application/octet-stream'
+          contentType: contentType
         });
         if (upErr) {
-          if (status) status.innerHTML = 'Falha: <code>' + upErr.message + '</code> — use link do R2 se o arquivo for muito grande.';
+          if (status) status.innerHTML = 'Falha: <code>' + upErr.message + '</code> — use link do R2 se o arquivo for muito grande ou o tipo for bloqueado.';
           return;
         }
         const { data: pub } = client.storage.from('softwares').getPublicUrl(path);

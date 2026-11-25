@@ -102,7 +102,7 @@
     .como-lista {
       list-style: none;
       padding: 0;
-      margin: 0;
+      margin: 0 0 16px;
       counter-reset: passo;
     }
     .como-lista li {
@@ -132,7 +132,49 @@
       align-items: center;
       justify-content: center;
     }
-    .como-texto { white-space: pre-wrap; color: #334155; line-height: 1.6; }
+    .como-texto { white-space: pre-wrap; color: #334155; line-height: 1.6; margin-bottom: 12px; }
+    .como-secao { margin-bottom: 22px; }
+    .como-secao-titulo {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #0a1f4d;
+      margin: 0 0 12px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #f5c518;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .como-subsecao {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+    .como-subsecao-titulo {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #1a3a6e;
+      margin: 0 0 6px;
+    }
+    .como-subsecao p {
+      margin: 0;
+      color: #475569;
+      line-height: 1.55;
+      font-size: 0.92rem;
+    }
+    .como-paragrafo {
+      color: #334155;
+      line-height: 1.6;
+      margin: 0 0 10px;
+    }
+    .como-bullets {
+      margin: 0 0 12px;
+      padding-left: 20px;
+      color: #334155;
+    }
+    .como-bullets li { margin-bottom: 6px; line-height: 1.5; }
     .form-grid-sw {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -449,31 +491,161 @@
     } catch (e) {}
   }
 
+  /**
+   * Renderiza o LEIA-ME processado de forma estruturada.
+   * Suporta:
+   *   ## Título de seção
+   *   ### Nome da ferramenta / subtítulo
+   *   1. Passos numerados
+   *   - ou * bullets
+   *   Parágrafos normais
+   */
   function renderComoFunciona(texto) {
     const box = document.getElementById('como-conteudo');
     if (!texto || !texto.trim()) {
       box.innerHTML = '<p style="color:#94a3b8">Descrição em breve. Enquanto isso, use o tira-dúvidas ou o WhatsApp.</p>';
       return;
     }
-    // Linhas do LEIA-ME → passos numerados (ignora traços decorativos)
-    const linhas = texto.split(/\r?\n/).map(function (l) { return l.trim(); }).filter(function (l) {
-      if (!l) return false;
-      if (/^[\-=_*#]{3,}$/.test(l)) return false;
-      return true;
-    });
-    const parecePassos = linhas.length > 1 && linhas.some(function (l) {
-      return /^\d+[\).\-\:]?\s/.test(l) || /^(passo|clique|abra|use|selecione)/i.test(l);
-    });
-    if (parecePassos || linhas.length > 1) {
-      const itens = linhas.map(function (l) {
-        return l.replace(/^\d+[\).\-\:]?\s*/, '');
-      }).filter(Boolean);
-      box.innerHTML = '<ol class="como-lista">' + itens.map(function (t) {
-        return '<li>' + escapeHtml(t) + '</li>';
-      }).join('') + '</ol>';
-    } else {
-      box.innerHTML = '<div class="como-texto">' + escapeHtml(texto) + '</div>';
+
+    const linhas = texto.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+    let html = '';
+    let i = 0;
+
+    function ehVazia(l) { return !l || !l.trim(); }
+    function ehH2(l) { return /^##\s+/.test(l.trim()); }
+    function ehH3(l) { return /^###\s+/.test(l.trim()); }
+    function ehPasso(l) { return /^\d+[\.\)]\s+/.test(l.trim()); }
+    function ehBullet(l) { return /^[-*•]\s+/.test(l.trim()); }
+
+    function tituloSecao(txt) {
+      const t = txt.replace(/^##\s+/, '').trim();
+      let icone = 'fa-info-circle';
+      const low = t.toLowerCase();
+      if (/como usar|passo|utiliz|instru/i.test(low)) icone = 'fa-list-ol';
+      else if (/ferramenta|módulo|função|recurso|botão/i.test(low)) icone = 'fa-tools';
+      else if (/o que|descri|sobre|faz/i.test(low)) icone = 'fa-lightbulb';
+      else if (/dica|observa|nota|atenção/i.test(low)) icone = 'fa-exclamation-circle';
+      return '<div class="como-secao-titulo"><i class="fas ' + icone + '"></i> ' + escapeHtml(t) + '</div>';
     }
+
+    while (i < linhas.length) {
+      const raw = linhas[i];
+      const linha = raw.trim();
+
+      if (ehVazia(raw)) { i++; continue; }
+
+      // ## Seção
+      if (ehH2(linha)) {
+        html += '<div class="como-secao">' + tituloSecao(linha);
+        i++;
+        // Conteúdo da seção até o próximo ##
+        while (i < linhas.length && !ehH2(linhas[i].trim())) {
+          const l = linhas[i].trim();
+          if (ehVazia(linhas[i])) { i++; continue; }
+
+          // ### Subseção / ferramenta
+          if (ehH3(l)) {
+            const nome = l.replace(/^###\s+/, '').trim();
+            i++;
+            let desc = [];
+            while (i < linhas.length) {
+              const n = linhas[i].trim();
+              if (ehVazia(linhas[i])) { i++; break; }
+              if (ehH2(n) || ehH3(n)) break;
+              if (ehPasso(n) || ehBullet(n)) break;
+              desc.push(n);
+              i++;
+            }
+            html += '<div class="como-subsecao"><div class="como-subsecao-titulo">' +
+              escapeHtml(nome) + '</div>';
+            if (desc.length) {
+              html += '<p>' + escapeHtml(desc.join(' ')) + '</p>';
+            }
+            html += '</div>';
+            continue;
+          }
+
+          // Lista de passos numerados
+          if (ehPasso(l)) {
+            html += '<ol class="como-lista">';
+            while (i < linhas.length && ehPasso(linhas[i].trim())) {
+              const passo = linhas[i].trim().replace(/^\d+[\.\)]\s+/, '');
+              html += '<li>' + escapeHtml(passo) + '</li>';
+              i++;
+            }
+            html += '</ol>';
+            continue;
+          }
+
+          // Bullets
+          if (ehBullet(l)) {
+            html += '<ul class="como-bullets">';
+            while (i < linhas.length && ehBullet(linhas[i].trim())) {
+              const item = linhas[i].trim().replace(/^[-*•]\s+/, '');
+              html += '<li>' + escapeHtml(item) + '</li>';
+              i++;
+            }
+            html += '</ul>';
+            continue;
+          }
+
+          // Parágrafo normal
+          html += '<p class="como-paragrafo">' + escapeHtml(l) + '</p>';
+          i++;
+        }
+        html += '</div>';
+        continue;
+      }
+
+      // ### solto (sem ## pai)
+      if (ehH3(linha)) {
+        const nome = linha.replace(/^###\s+/, '').trim();
+        i++;
+        let desc = [];
+        while (i < linhas.length) {
+          const n = linhas[i].trim();
+          if (ehVazia(linhas[i])) { i++; break; }
+          if (ehH2(n) || ehH3(n) || ehPasso(n)) break;
+          desc.push(n);
+          i++;
+        }
+        html += '<div class="como-subsecao"><div class="como-subsecao-titulo">' +
+          escapeHtml(nome) + '</div>';
+        if (desc.length) html += '<p>' + escapeHtml(desc.join(' ')) + '</p>';
+        html += '</div>';
+        continue;
+      }
+
+      // Passos numerados no topo (sem ##)
+      if (ehPasso(linha)) {
+        html += '<ol class="como-lista">';
+        while (i < linhas.length && ehPasso(linhas[i].trim())) {
+          const passo = linhas[i].trim().replace(/^\d+[\.\)]\s+/, '');
+          html += '<li>' + escapeHtml(passo) + '</li>';
+          i++;
+        }
+        html += '</ol>';
+        continue;
+      }
+
+      // Bullet solto
+      if (ehBullet(linha)) {
+        html += '<ul class="como-bullets">';
+        while (i < linhas.length && ehBullet(linhas[i].trim())) {
+          const item = linhas[i].trim().replace(/^[-*•]\s+/, '');
+          html += '<li>' + escapeHtml(item) + '</li>';
+          i++;
+        }
+        html += '</ul>';
+        continue;
+      }
+
+      // Texto normal
+      html += '<p class="como-paragrafo">' + escapeHtml(linha) + '</p>';
+      i++;
+    }
+
+    box.innerHTML = html || '<p style="color:#94a3b8">Conteúdo não disponível.</p>';
   }
 
   function escapeHtml(s) {

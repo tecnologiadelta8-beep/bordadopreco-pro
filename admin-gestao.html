@@ -256,7 +256,7 @@
       <div class="bloco-cadastro" style="background:#fff;border:2px solid #f5c518;border-radius:12px;padding:16px 18px;margin-bottom:16px;">
         <h3 style="margin:0 0 8px;color:#0a1f4d;font-size:1rem;"><i class="fas fa-image"></i> 3. Foto do produto (card + página)</h3>
         <p style="font-size:0.85rem;color:#64748b;margin-bottom:10px;">
-          Escolha a imagem no computador <strong>ou</strong> cole o link público (R2 / outro host).
+          Envie a imagem (vai para o <strong>Cloudflare R2</strong>) <strong>ou</strong> cole o link público.
         </p>
         <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-bottom:10px;">
           <div style="flex:1;min-width:200px;">
@@ -281,8 +281,8 @@
       <div class="bloco-cadastro" style="background:#f0fdf4;border:2px solid #22c55e;border-radius:12px;padding:16px 18px;margin-bottom:16px;">
         <h3 style="margin:0 0 8px;color:#0a1f4d;font-size:1rem;"><i class="fas fa-download"></i> 4. Arquivo do programa (.zip recomendado) — opcional</h3>
         <p style="font-size:0.85rem;color:#64748b;margin-bottom:10px;">
-          Prefira <strong>.zip</strong> (melhor compatibilidade). Envie o instalador agora (fica na aba Downloads)
-          <strong>ou</strong> faça depois. Arquivos grandes / bloqueados: suba no <strong>R2</strong> e cole a URL pública.
+          Prefira <strong>.zip</strong>. O arquivo é enviado automaticamente para o <strong>Cloudflare R2</strong>
+          (ou cole a URL pública se já tiver).
         </p>
         <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-bottom:8px;">
           <div style="flex:1;min-width:200px;">
@@ -381,7 +381,7 @@
     <div class="panel" id="panel-downloads">
       <h2><i class="fas fa-cloud-download-alt"></i> Arquivo do programa (Download)</h2>
       <p style="font-size:0.9rem;color:#64748b;margin-bottom:12px;">
-        Prefira <strong>.zip</strong>. Envie do computador (Storage Supabase) <strong>ou</strong> cole o link público do R2 / Drive (recomendado para arquivos grandes).
+        Prefira <strong>.zip</strong>. Envie do computador (vai para o <strong>R2</strong>) <strong>ou</strong> cole o link público.
       </p>
       <div id="msg-downloads" class="msg"></div>
       <div class="form-grid">
@@ -514,6 +514,8 @@
     </div>
   </div>
 
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1692.0.min.js"></script>
+  <script src="r2-config.js"></script>
   <script src="supabase-config.js"></script>
   <script src="auth.js"></script>
   <script src="notificacoes-gestor.js"></script>
@@ -655,10 +657,13 @@
           <td>${s.badge || '—'}</td>
           <td>${s.ativo !== false ? 'Ativo' : 'Inativo'}</td>
           <td style="white-space:nowrap;">
-            <button type="button" class="btn" onclick="editarSoftware('${idJs}')" style="padding:6px 10px;font-size:0.85rem;background:#1a3a6e;color:#fff;margin-right:6px;">
+            <button type="button" class="btn" onclick="editarSoftware('${idJs}')" style="padding:6px 10px;font-size:0.85rem;background:#1a3a6e;color:#fff;margin-right:4px;">
               <i class="fas fa-edit"></i> Editar
             </button>
-            <a href="software.html?id=${s.id}" target="_blank" style="color:#1a3a6e;font-weight:600">Abrir</a>
+            <a href="software.html?id=${s.id}" target="_blank" class="btn" style="padding:6px 10px;font-size:0.85rem;background:#e2e8f0;color:#0a1f4d;text-decoration:none;margin-right:4px;">Abrir</a>
+            <button type="button" class="btn" onclick="excluirSoftware('${idJs}', '${(s.nome || '').replace(/'/g, "\\'")}')" style="padding:6px 10px;font-size:0.85rem;background:#fee2e2;color:#b91c1c;">
+              <i class="fas fa-trash"></i> Excluir
+            </button>
           </td>
         </tr>`;
         selects.forEach(sel => {
@@ -879,7 +884,7 @@
       showMsg('msg-softwares', 'Edição cancelada. Formulário limpo.');
     }
 
-    /** Sobe a foto para o Storage do Supabase (bucket: softwares) e preenche a URL */
+    /** Sobe a foto para o Cloudflare R2 e preenche a URL pública */
     async function uploadFotoSoftware() {
       const status = document.getElementById('sw-foto-status');
       const fileInput = document.getElementById('sw-foto-file');
@@ -895,37 +900,53 @@
         if (status) status.textContent = 'Selecione uma imagem (JPG, PNG, WEBP).';
         return;
       }
-      const client = sb();
-      if (!client) {
-        if (status) status.textContent = 'Supabase não conectado. Recarregue a página.';
+      if (typeof uploadToR2 !== 'function') {
+        if (status) status.textContent = 'R2 não configurado. Verifique r2-config.js.';
         return;
       }
-      if (status) status.textContent = 'Enviando foto...';
+      if (status) status.textContent = 'Enviando foto para o R2...';
       const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
       const path = 'capas/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
       try {
-        const { error: upErr } = await client.storage.from('softwares').upload(path, file, {
-          cacheControl: '3600',
-          upsert: true,
-          contentType: file.type
-        });
-        if (upErr) {
-          if (status) {
-            status.innerHTML = 'Falha no upload: <code>' + upErr.message + '</code><br>' +
-              'Rode no SQL Editor do Supabase o script de Storage (JDC-STORAGE.sql) ou cole a URL manualmente abaixo.';
-          }
-          return;
-        }
-        const { data: pub } = client.storage.from('softwares').getPublicUrl(path);
-        const publicUrl = pub && pub.publicUrl ? pub.publicUrl : '';
+        const publicUrl = await uploadToR2(file, path, file.type || 'image/jpeg');
         if (urlInput) urlInput.value = publicUrl;
         if (preview && previewImg && publicUrl) {
           previewImg.src = publicUrl;
           preview.style.display = 'block';
         }
-        if (status) status.textContent = 'Foto enviada! URL preenchida. Agora salve o software.';
+        if (status) {
+          status.textContent = 'Foto enviada no R2! URL preenchida. Agora salve o software.';
+          status.style.color = '#166534';
+        }
       } catch (e) {
-        if (status) status.textContent = 'Erro: ' + (e.message || e);
+        console.error(e);
+        if (status) {
+          status.innerHTML = 'Falha no R2: <code>' + (e.message || e) + '</code>. ' +
+            'Confira o CORS do bucket e as chaves. Você ainda pode colar a URL manualmente.';
+          status.style.color = '#b91c1c';
+        }
+      }
+    }
+
+    async function excluirSoftware(id, nome) {
+      const label = nome || 'este software';
+      if (!confirm('Excluir permanentemente "' + label + '"?\n\nIsso remove o cadastro. Downloads e licenças ligados a ele podem ficar órfãos.')) {
+        return;
+      }
+      try {
+        const { error } = await sb().from('softwares').delete().eq('id', id);
+        if (error) {
+          showMsg('msg-softwares', 'Erro ao excluir: ' + error.message, false);
+          return;
+        }
+        showMsg('msg-softwares', 'Software excluído: ' + label);
+        if (window.JdcNotif) JdcNotif.add('software', 'Software excluído', label);
+        const editId = (document.getElementById('sw-edit-id') && document.getElementById('sw-edit-id').value) || '';
+        if (String(editId) === String(id)) cancelarEdicaoSoftware();
+        carregarSoftwares();
+        if (typeof carregarDownloads === 'function') carregarDownloads();
+      } catch (e) {
+        showMsg('msg-softwares', 'Erro: ' + (e.message || e), false);
       }
     }
 
@@ -984,12 +1005,13 @@
       if (!file && !url) return;
 
       if (file && !url) {
-        if (status) status.textContent = 'Enviando instalador...';
-        const client = sb();
-        if (!client) throw new Error('Supabase offline');
+        if (status) status.textContent = 'Enviando instalador para o R2...';
+        if (typeof uploadToR2 !== 'function') {
+          if (status) status.innerHTML = 'R2 não configurado. Cole a URL pública manualmente.';
+          return;
+        }
         const safeName = (file.name || 'instalador.bin').replace(/[^\w.\-]+/g, '_');
         const path = 'instaladores/' + Date.now() + '-' + safeName;
-        // Força MIME type seguro (evita rejeição de application/x-zip-compressed etc.)
         const ext = (file.name.split('.').pop() || '').toLowerCase();
         const mimeMap = {
           zip: 'application/zip',
@@ -1000,19 +1022,22 @@
           bin: 'application/octet-stream'
         };
         const contentType = mimeMap[ext] || 'application/octet-stream';
-        const { error: upErr } = await client.storage.from('softwares').upload(path, file, {
-          cacheControl: '3600',
-          upsert: true,
-          contentType: contentType
-        });
-        if (upErr) {
-          if (status) status.innerHTML = 'Falha no upload do instalador: <code>' + upErr.message + '</code>. ' +
-            'Arquivos grandes ou bloqueados: suba no R2 e cole a URL pública abaixo, ou use a aba Downloads.';
+        try {
+          url = await uploadToR2(file, path, contentType);
+          if (document.getElementById('sw-arquivo-url')) document.getElementById('sw-arquivo-url').value = url;
+          if (status) {
+            status.textContent = 'Instalador enviado no R2. Vinculando...';
+            status.style.color = '#166534';
+          }
+        } catch (e) {
+          console.error(e);
+          if (status) {
+            status.innerHTML = 'Falha no upload R2: <code>' + (e.message || e) + '</code>. ' +
+              'Cole a URL pública manualmente ou use a aba Downloads.';
+            status.style.color = '#b91c1c';
+          }
           return;
         }
-        const { data: pub } = client.storage.from('softwares').getPublicUrl(path);
-        url = pub && pub.publicUrl ? pub.publicUrl : '';
-        if (document.getElementById('sw-arquivo-url')) document.getElementById('sw-arquivo-url').value = url;
       }
 
       if (!url) return;
@@ -1027,7 +1052,8 @@
       if (error) {
         if (status) status.textContent = 'Software ok, mas download não gravou: ' + error.message;
       } else if (status) {
-        status.textContent = 'Instalador vinculado na aba Downloads.';
+        status.textContent = 'Instalador no R2 vinculado na aba Downloads.';
+        status.style.color = '#166534';
       }
       if (fileInput) fileInput.value = '';
     }
@@ -1038,45 +1064,41 @@
       const urlInput = document.getElementById('dl-url');
       const nomeInput = document.getElementById('dl-nome');
       if (!fileInput || !fileInput.files || !fileInput.files[0]) {
-        if (status) status.textContent = 'Escolha o arquivo .exe / .zip primeiro.';
+        if (status) status.textContent = 'Escolha o arquivo .zip / .exe primeiro.';
         return;
       }
       const file = fileInput.files[0];
-      const client = sb();
-      if (!client) {
-        if (status) status.textContent = 'Supabase não conectado.';
+      if (typeof uploadToR2 !== 'function') {
+        if (status) status.textContent = 'R2 não configurado. Verifique r2-config.js.';
         return;
       }
-      if (status) status.textContent = 'Enviando arquivo...';
+      if (status) status.textContent = 'Enviando arquivo para o R2...';
       const safeName = (file.name || 'arquivo.bin').replace(/[^\w.\-]+/g, '_');
       const path = 'instaladores/' + Date.now() + '-' + safeName;
+      const ext = (file.name.split('.').pop() || '').toLowerCase();
+      const mimeMap = {
+        zip: 'application/zip',
+        rar: 'application/vnd.rar',
+        '7z': 'application/x-7z-compressed',
+        exe: 'application/octet-stream',
+        msi: 'application/octet-stream',
+        bin: 'application/octet-stream'
+      };
+      const contentType = mimeMap[ext] || 'application/octet-stream';
       try {
-        const ext = (file.name.split('.').pop() || '').toLowerCase();
-        const mimeMap = {
-          zip: 'application/zip',
-          rar: 'application/vnd.rar',
-          '7z': 'application/x-7z-compressed',
-          exe: 'application/octet-stream',
-          msi: 'application/octet-stream',
-          bin: 'application/octet-stream'
-        };
-        const contentType = mimeMap[ext] || 'application/octet-stream';
-        const { error: upErr } = await client.storage.from('softwares').upload(path, file, {
-          cacheControl: '3600',
-          upsert: true,
-          contentType: contentType
-        });
-        if (upErr) {
-          if (status) status.innerHTML = 'Falha: <code>' + upErr.message + '</code> — use link do R2 se o arquivo for muito grande ou o tipo for bloqueado.';
-          return;
-        }
-        const { data: pub } = client.storage.from('softwares').getPublicUrl(path);
-        const publicUrl = pub && pub.publicUrl ? pub.publicUrl : '';
+        const publicUrl = await uploadToR2(file, path, contentType);
         if (urlInput) urlInput.value = publicUrl;
         if (nomeInput && !nomeInput.value.trim()) nomeInput.value = file.name;
-        if (status) status.textContent = 'Arquivo enviado! URL preenchida. Clique em Salvar Download.';
+        if (status) {
+          status.textContent = 'Arquivo no R2! URL preenchida. Clique em Salvar Download.';
+          status.style.color = '#166534';
+        }
       } catch (e) {
-        if (status) status.textContent = 'Erro: ' + (e.message || e);
+        console.error(e);
+        if (status) {
+          status.innerHTML = 'Falha R2: <code>' + (e.message || e) + '</code> — confira CORS do bucket.';
+          status.style.color = '#b91c1c';
+        }
       }
     }
 

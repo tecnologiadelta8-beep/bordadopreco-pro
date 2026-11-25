@@ -232,8 +232,19 @@
       <div class="bloco-cadastro" style="background:#fff;border:2px solid #1a3a6e;border-radius:12px;padding:16px 18px;margin-bottom:16px;">
         <h3 style="margin:0 0 8px;color:#0a1f4d;font-size:1rem;"><i class="fas fa-book"></i> 2. LEIA-ME / Apresentação do programa</h3>
         <p style="font-size:0.85rem;color:#64748b;margin-bottom:10px;">
-          Cole aqui o conteúdo do LEIA-ME (ou o passo a passo). <strong>Cada linha vira um passo numerado</strong> na página do produto.
+          Carregue um arquivo <strong>.txt / .md</strong> do LEIA-ME <strong>ou</strong> cole o texto abaixo.
+          <strong>Cada linha vira um passo numerado</strong> na página do produto.
         </p>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-bottom:10px;">
+          <div style="flex:1;min-width:200px;">
+            <label>Carregar LEIA-ME do computador</label>
+            <input type="file" id="sw-leia-file" accept=".txt,.md,.text,text/plain" style="padding:8px;border:1px solid #e2e8f0;border-radius:8px;width:100%;background:#f8fafc;">
+          </div>
+          <button type="button" class="btn btn-primary" onclick="carregarLeiaMeArquivo()" style="white-space:nowrap;">
+            <i class="fas fa-file-alt"></i> Carregar no texto
+          </button>
+        </div>
+        <small id="sw-leia-status" style="display:block;margin-bottom:8px;color:#64748b;font-size:0.8rem;"></small>
         <textarea id="sw-como" rows="10" placeholder="1. Clique em Selecionar Matriz e escolha o arquivo de bordado.&#10;2. O preço é calculado na hora (pontos, cores, tempo e valor sugerido).&#10;3. Use Itens Adicionais para materiais, serviços e cores do fio.&#10;4. Clique em Gerar Orçamento e salve em HTML ou PDF.&#10;5. Controle pedidos e pagamentos na Gestão de Pedidos."></textarea>
       </div>
 
@@ -262,18 +273,39 @@
         <small id="sw-foto-status" style="display:block;margin-top:6px;color:#64748b;font-size:0.8rem;"></small>
       </div>
 
-      <!-- BLOCO 4: INSTALADOR -->
+      <!-- BLOCO 4: INSTALADOR (opcional no cadastro; também na aba Downloads) -->
       <div class="bloco-cadastro" style="background:#f0fdf4;border:2px solid #22c55e;border-radius:12px;padding:16px 18px;margin-bottom:16px;">
-        <h3 style="margin:0 0 8px;color:#0a1f4d;font-size:1rem;"><i class="fas fa-download"></i> 4. Arquivo do programa (.exe / .zip)</h3>
-        <p style="font-size:0.9rem;color:#334155;margin:0;">
-          O instalador <strong>não</strong> é cadastrado aqui.<br>
-          Depois de salvar o software, abra a aba <strong style="color:#15803d;">Downloads</strong> no topo → escolha o software → cole o link do arquivo (R2) ou envie o arquivo.
+        <h3 style="margin:0 0 8px;color:#0a1f4d;font-size:1rem;"><i class="fas fa-download"></i> 4. Arquivo do programa (.exe / .zip) — opcional</h3>
+        <p style="font-size:0.85rem;color:#64748b;margin-bottom:10px;">
+          Envie o instalador agora (fica na aba Downloads) <strong>ou</strong> faça depois na aba Downloads.
+          Arquivos grandes podem falhar no Storage gratuito — nesse caso use link do R2/Drive.
         </p>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-bottom:8px;">
+          <div style="flex:1;min-width:200px;">
+            <label>Escolher arquivo do computador</label>
+            <input type="file" id="sw-arquivo-file" accept=".exe,.zip,.msi,.rar,.7z,application/octet-stream,application/zip" style="padding:8px;border:1px solid #e2e8f0;border-radius:8px;width:100%;background:#f8fafc;">
+          </div>
+          <div style="min-width:120px;">
+            <label>Versão</label>
+            <input type="text" id="sw-arquivo-versao" placeholder="6.0" style="padding:8px;border:1px solid #e2e8f0;border-radius:8px;width:100%;">
+          </div>
+        </div>
+        <div>
+          <label>Ou cole a URL pública do instalador</label>
+          <input type="url" id="sw-arquivo-url" placeholder="https://... (R2 / Drive / Storage)">
+        </div>
+        <small id="sw-arquivo-status" style="display:block;margin-top:6px;color:#64748b;font-size:0.8rem;"></small>
       </div>
 
-      <button class="btn btn-primary" onclick="salvarSoftware()" style="font-size:1.05rem;padding:12px 24px;">
-        <i class="fas fa-plus"></i> Salvar Software
-      </button>
+      <input type="hidden" id="sw-edit-id" value="">
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:8px;">
+        <button class="btn btn-primary" id="btn-salvar-software" onclick="salvarSoftware()" style="font-size:1.05rem;padding:12px 24px;">
+          <i class="fas fa-plus"></i> Salvar Software
+        </button>
+        <button type="button" class="btn" id="btn-cancelar-edit" onclick="cancelarEdicaoSoftware()" style="display:none;padding:12px 18px;background:#e2e8f0;color:#0a1f4d;">
+          Cancelar edição
+        </button>
+      </div>
 
       <table style="margin-top:20px;">
         <thead>
@@ -282,7 +314,7 @@
             <th>Preço</th>
             <th>Badge</th>
             <th>Status</th>
-            <th>Página</th>
+            <th>Ações</th>
           </tr>
         </thead>
         <tbody id="lista-softwares"></tbody>
@@ -345,7 +377,7 @@
     <div class="panel" id="panel-downloads">
       <h2><i class="fas fa-cloud-download-alt"></i> Arquivo do programa (Download)</h2>
       <p style="font-size:0.9rem;color:#64748b;margin-bottom:12px;">
-        Aqui você cadastra o <strong>.exe / .zip</strong> do software. Suba o arquivo no R2 (ou Storage) e cole o link público, ou use o campo de URL.
+        Cadastre o <strong>.exe / .zip</strong>: envie do computador (Storage Supabase) <strong>ou</strong> cole o link público (R2 / Drive).
       </p>
       <div id="msg-downloads" class="msg"></div>
       <div class="form-grid">
@@ -355,14 +387,24 @@
         </div>
         <div>
           <label>Versão</label>
-          <input type="text" id="dl-versao" placeholder="Ex: 2024.1">
+          <input type="text" id="dl-versao" placeholder="Ex: 6.0">
         </div>
         <div class="full">
           <label>Nome do arquivo</label>
-          <input type="text" id="dl-nome" placeholder="Ex: WilcomE4_Setup.exe">
+          <input type="text" id="dl-nome" placeholder="Ex: BordadoPrecoPro6_Setup.exe">
         </div>
         <div class="full">
-          <label>URL do arquivo (R2, Drive, etc.)</label>
+          <label>Carregar arquivo do computador</label>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+            <input type="file" id="dl-file" accept=".exe,.zip,.msi,.rar,.7z,application/octet-stream,application/zip" style="padding:8px;border:1px solid #e2e8f0;border-radius:8px;flex:1;min-width:180px;background:#f8fafc;">
+            <button type="button" class="btn btn-primary" onclick="uploadArquivoDownload()" style="white-space:nowrap;">
+              <i class="fas fa-cloud-upload-alt"></i> Enviar arquivo
+            </button>
+          </div>
+          <small id="dl-upload-status" style="display:block;margin-top:6px;color:#64748b;font-size:0.8rem;"></small>
+        </div>
+        <div class="full">
+          <label>URL do arquivo (preenchida após enviar, ou cole manualmente)</label>
           <input type="url" id="dl-url" placeholder="https://...">
         </div>
       </div>
@@ -600,18 +642,100 @@
         return;
       }
 
+      window._jdcSoftwaresCache = data;
       data.forEach(s => {
+        const idJs = String(s.id).replace(/'/g, "\\'");
         tbody.innerHTML += `<tr>
-          <td><strong>${s.nome}</strong></td>
+          <td><strong>${s.nome || ''}</strong></td>
           <td>${s.preco ? 'R$ ' + Number(s.preco).toFixed(2) : '—'}</td>
           <td>${s.badge || '—'}</td>
           <td>${s.ativo !== false ? 'Ativo' : 'Inativo'}</td>
-          <td><a href="software.html?id=${s.id}" target="_blank" style="color:#1a3a6e;font-weight:600">Abrir página</a></td>
+          <td style="white-space:nowrap;">
+            <button type="button" class="btn" onclick="editarSoftware('${idJs}')" style="padding:6px 10px;font-size:0.85rem;background:#1a3a6e;color:#fff;margin-right:6px;">
+              <i class="fas fa-edit"></i> Editar
+            </button>
+            <a href="software.html?id=${s.id}" target="_blank" style="color:#1a3a6e;font-weight:600">Abrir</a>
+          </td>
         </tr>`;
         selects.forEach(sel => {
           if (sel) sel.innerHTML += `<option value="${s.id}">${s.nome}</option>`;
         });
       });
+    }
+
+    function carregarLeiaMeArquivo() {
+      const input = document.getElementById('sw-leia-file');
+      const status = document.getElementById('sw-leia-status');
+      const ta = document.getElementById('sw-como');
+      if (!input || !input.files || !input.files[0]) {
+        if (status) status.textContent = 'Escolha um arquivo .txt ou .md primeiro.';
+        return;
+      }
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = function () {
+        let texto = String(reader.result || '');
+        // Remove linhas só de traços / iguais (decoração de LEIA-ME)
+        texto = texto.split(/\r?\n/).filter(function (l) {
+          const t = l.trim();
+          if (!t) return false;
+          if (/^[\-=_*]{3,}$/.test(t)) return false;
+          return true;
+        }).join('\n');
+        if (ta) ta.value = texto;
+        if (status) status.textContent = 'LEIA-ME carregado (' + file.name + '). Revise e salve o software.';
+      };
+      reader.onerror = function () {
+        if (status) status.textContent = 'Não foi possível ler o arquivo.';
+      };
+      reader.readAsText(file, 'UTF-8');
+    }
+
+    function editarSoftware(id) {
+      const lista = window._jdcSoftwaresCache || [];
+      const s = lista.find(function (x) { return String(x.id) === String(id); });
+      if (!s) {
+        showMsg('msg-softwares', 'Software não encontrado na lista. Recarregue a página.', false);
+        return;
+      }
+      document.getElementById('sw-edit-id').value = s.id;
+      document.getElementById('sw-nome').value = s.nome || '';
+      document.getElementById('sw-preco').value = s.preco != null ? s.preco : '';
+      document.getElementById('sw-badge').value = s.badge || '';
+      document.getElementById('sw-ordem').value = s.ordem != null ? s.ordem : '0';
+      document.getElementById('sw-resumo').value = s.resumo || '';
+      document.getElementById('sw-desc').value = s.descricao || '';
+      document.getElementById('sw-como').value = s.como_funciona || '';
+      document.getElementById('sw-imagem').value = s.imagem_url || s.foto_url || '';
+      const prev = document.getElementById('sw-foto-preview');
+      const prevImg = document.getElementById('sw-foto-preview-img');
+      if (prev && prevImg && (s.imagem_url || s.foto_url)) {
+        prevImg.src = s.imagem_url || s.foto_url;
+        prev.style.display = 'block';
+      }
+      const btn = document.getElementById('btn-salvar-software');
+      if (btn) btn.innerHTML = '<i class="fas fa-save"></i> Atualizar Software';
+      const cancel = document.getElementById('btn-cancelar-edit');
+      if (cancel) cancel.style.display = 'inline-flex';
+      showMsg('msg-softwares', 'Editando: ' + (s.nome || '') + ' — altere o que precisar e clique em Atualizar.');
+      const formTop = document.getElementById('sw-nome');
+      if (formTop) formTop.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function cancelarEdicaoSoftware() {
+      document.getElementById('sw-edit-id').value = '';
+      ['sw-nome','sw-preco','sw-desc','sw-resumo','sw-badge','sw-como','sw-imagem','sw-arquivo-url','sw-arquivo-versao'].forEach(function(id) {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      if (document.getElementById('sw-ordem')) document.getElementById('sw-ordem').value = '1';
+      const prev = document.getElementById('sw-foto-preview');
+      if (prev) prev.style.display = 'none';
+      const btn = document.getElementById('btn-salvar-software');
+      if (btn) btn.innerHTML = '<i class="fas fa-plus"></i> Salvar Software';
+      const cancel = document.getElementById('btn-cancelar-edit');
+      if (cancel) cancel.style.display = 'none';
+      showMsg('msg-softwares', 'Edição cancelada. Formulário limpo.');
     }
 
     /** Sobe a foto para o Storage do Supabase (bucket: softwares) e preenche a URL */
@@ -667,7 +791,8 @@
     async function salvarSoftware() {
       const nome = document.getElementById('sw-nome').value.trim();
       if (!nome) return showMsg('msg-softwares', 'Digite o nome', false);
-      
+
+      const editId = (document.getElementById('sw-edit-id') && document.getElementById('sw-edit-id').value.trim()) || '';
       const imagem = (document.getElementById('sw-imagem') && document.getElementById('sw-imagem').value.trim()) || '';
       const payload = {
         nome,
@@ -681,17 +806,115 @@
       };
       if (imagem) payload.imagem_url = imagem;
 
-      const { error } = await sb().from('softwares').insert(payload);
-      
-      if (error) return showMsg('msg-softwares', error.message, false);
-      showMsg('msg-softwares', 'Software salvo! Página: software.html?id=... (veja na tabela)');
-      if (window.JdcNotif) JdcNotif.add('software', 'Software cadastrado', nome);
-      ['sw-nome','sw-preco','sw-desc','sw-resumo','sw-badge','sw-como','sw-imagem'].forEach(function(id) {
-        const el = document.getElementById(id);
-        if (el) el.value = '';
-      });
-      if (document.getElementById('sw-ordem')) document.getElementById('sw-ordem').value = '0';
+      let softwareId = editId;
+      if (editId) {
+        const { error } = await sb().from('softwares').update(payload).eq('id', editId);
+        if (error) return showMsg('msg-softwares', error.message, false);
+        showMsg('msg-softwares', 'Software atualizado!');
+        if (window.JdcNotif) JdcNotif.add('software', 'Software atualizado', nome);
+      } else {
+        const { data, error } = await sb().from('softwares').insert(payload).select('id').single();
+        if (error) return showMsg('msg-softwares', error.message, false);
+        softwareId = data && data.id ? data.id : null;
+        showMsg('msg-softwares', 'Software salvo! Página: software.html?id=... (veja na tabela)');
+        if (window.JdcNotif) JdcNotif.add('software', 'Software cadastrado', nome);
+      }
+
+      // Instalador opcional (arquivo ou URL)
+      try {
+        await vincularInstaladorOpcional(softwareId, nome);
+      } catch (e) {
+        console.warn('Instalador opcional:', e);
+      }
+
+      cancelarEdicaoSoftware();
       carregarSoftwares();
+      if (typeof carregarDownloads === 'function') carregarDownloads();
+    }
+
+    async function vincularInstaladorOpcional(softwareId, nomeSoftware) {
+      if (!softwareId) return;
+      const status = document.getElementById('sw-arquivo-status');
+      const fileInput = document.getElementById('sw-arquivo-file');
+      let url = (document.getElementById('sw-arquivo-url') && document.getElementById('sw-arquivo-url').value.trim()) || '';
+      const versao = (document.getElementById('sw-arquivo-versao') && document.getElementById('sw-arquivo-versao').value.trim()) || '';
+      const file = fileInput && fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+
+      if (!file && !url) return;
+
+      if (file && !url) {
+        if (status) status.textContent = 'Enviando instalador...';
+        const client = sb();
+        if (!client) throw new Error('Supabase offline');
+        const safeName = (file.name || 'instalador.bin').replace(/[^\w.\-]+/g, '_');
+        const path = 'instaladores/' + Date.now() + '-' + safeName;
+        const { error: upErr } = await client.storage.from('softwares').upload(path, file, {
+          cacheControl: '3600',
+          upsert: true,
+          contentType: file.type || 'application/octet-stream'
+        });
+        if (upErr) {
+          if (status) status.innerHTML = 'Falha no upload do instalador: <code>' + upErr.message + '</code>. Cole a URL manualmente ou use a aba Downloads.';
+          return;
+        }
+        const { data: pub } = client.storage.from('softwares').getPublicUrl(path);
+        url = pub && pub.publicUrl ? pub.publicUrl : '';
+        if (document.getElementById('sw-arquivo-url')) document.getElementById('sw-arquivo-url').value = url;
+      }
+
+      if (!url) return;
+      const nomeArquivo = (file && file.name) || url.split('/').pop() || (nomeSoftware + '.exe');
+      const { error } = await sb().from('downloads').insert({
+        software_id: softwareId,
+        nome_arquivo: nomeArquivo,
+        url_arquivo: url,
+        versao: versao || null,
+        ativo: true
+      });
+      if (error) {
+        if (status) status.textContent = 'Software ok, mas download não gravou: ' + error.message;
+      } else if (status) {
+        status.textContent = 'Instalador vinculado na aba Downloads.';
+      }
+      if (fileInput) fileInput.value = '';
+    }
+
+    async function uploadArquivoDownload() {
+      const status = document.getElementById('dl-upload-status');
+      const fileInput = document.getElementById('dl-file');
+      const urlInput = document.getElementById('dl-url');
+      const nomeInput = document.getElementById('dl-nome');
+      if (!fileInput || !fileInput.files || !fileInput.files[0]) {
+        if (status) status.textContent = 'Escolha o arquivo .exe / .zip primeiro.';
+        return;
+      }
+      const file = fileInput.files[0];
+      const client = sb();
+      if (!client) {
+        if (status) status.textContent = 'Supabase não conectado.';
+        return;
+      }
+      if (status) status.textContent = 'Enviando arquivo...';
+      const safeName = (file.name || 'arquivo.bin').replace(/[^\w.\-]+/g, '_');
+      const path = 'instaladores/' + Date.now() + '-' + safeName;
+      try {
+        const { error: upErr } = await client.storage.from('softwares').upload(path, file, {
+          cacheControl: '3600',
+          upsert: true,
+          contentType: file.type || 'application/octet-stream'
+        });
+        if (upErr) {
+          if (status) status.innerHTML = 'Falha: <code>' + upErr.message + '</code> — use link do R2 se o arquivo for muito grande.';
+          return;
+        }
+        const { data: pub } = client.storage.from('softwares').getPublicUrl(path);
+        const publicUrl = pub && pub.publicUrl ? pub.publicUrl : '';
+        if (urlInput) urlInput.value = publicUrl;
+        if (nomeInput && !nomeInput.value.trim()) nomeInput.value = file.name;
+        if (status) status.textContent = 'Arquivo enviado! URL preenchida. Clique em Salvar Download.';
+      } catch (e) {
+        if (status) status.textContent = 'Erro: ' + (e.message || e);
+      }
     }
 
     // ===== Tira-dúvidas =====

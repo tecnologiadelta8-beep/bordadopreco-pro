@@ -455,15 +455,19 @@
       box.innerHTML = '<p style="color:#94a3b8">Descrição em breve. Enquanto isso, use o tira-dúvidas ou o WhatsApp.</p>';
       return;
     }
-    // Se tiver linhas numeradas ou quebras, vira lista de passos
-    const linhas = texto.split(/\r?\n/).map(function (l) { return l.trim(); }).filter(Boolean);
+    // Linhas do LEIA-ME → passos numerados (ignora traços decorativos)
+    const linhas = texto.split(/\r?\n/).map(function (l) { return l.trim(); }).filter(function (l) {
+      if (!l) return false;
+      if (/^[\-=_*#]{3,}$/.test(l)) return false;
+      return true;
+    });
     const parecePassos = linhas.length > 1 && linhas.some(function (l) {
       return /^\d+[\).\-\:]?\s/.test(l) || /^(passo|clique|abra|use|selecione)/i.test(l);
     });
-    if (parecePassos) {
+    if (parecePassos || linhas.length > 1) {
       const itens = linhas.map(function (l) {
         return l.replace(/^\d+[\).\-\:]?\s*/, '');
-      });
+      }).filter(Boolean);
       box.innerHTML = '<ol class="como-lista">' + itens.map(function (t) {
         return '<li>' + escapeHtml(t) + '</li>';
       }).join('') + '</ol>';

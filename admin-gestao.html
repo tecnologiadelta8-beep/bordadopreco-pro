@@ -196,51 +196,86 @@
     <div class="panel active" id="panel-softwares">
       <h2><i class="fas fa-box"></i> Cadastrar Software</h2>
       <div id="msg-softwares" class="msg"></div>
-      <div class="form-grid">
-        <div>
-          <label>Nome do software</label>
-          <input type="text" id="sw-nome" placeholder="Ex: BordadoPreço Pro v6.0">
-        </div>
-        <div>
-          <label>Preço (opcional)</label>
-          <input type="number" id="sw-preco" step="0.01" placeholder="0.00">
-        </div>
-        <div>
-          <label>Badge (opcional)</label>
-          <input type="text" id="sw-badge" placeholder="Ex: Mais Completo, Mais Simples">
-        </div>
-        <div>
-          <label>Ordem de exibição</label>
-          <input type="number" id="sw-ordem" value="0" placeholder="0">
-        </div>
-        <div class="full">
-          <label>Resumo (aparece no card da lista)</label>
-          <textarea id="sw-resumo" rows="2" placeholder="Texto curto do card"></textarea>
-        </div>
-        <div class="full">
-          <label>Descrição curta</label>
-          <textarea id="sw-desc" rows="2" placeholder="Breve descrição"></textarea>
-        </div>
-        <div class="full">
-          <label>Como funciona (passo a passo — um por linha)</label>
-          <textarea id="sw-como" rows="6" placeholder="1. Clique em Selecionar Matriz...&#10;2. O preço é calculado na hora...&#10;3. Use Itens Adicionais..."></textarea>
-          <small style="display:block;margin-top:6px;color:#64748b;font-size:0.8rem;">
-            Cada linha vira um passo numerado na página do software.
-          </small>
-        </div>
-        <div class="full">
-          <label>URL da imagem (card + página + slideshow)</label>
-          <input type="url" id="sw-imagem" placeholder="https://pub-....r2.dev/foto-do-software.jpg">
-          <small style="display:block;margin-top:6px;color:#64748b;font-size:0.8rem;">
-            Suba a foto no R2 e cole o link público aqui.
-          </small>
+
+      <!-- BLOCO 1: DADOS -->
+      <div class="bloco-cadastro" style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:16px;">
+        <h3 style="margin:0 0 12px;color:#0a1f4d;font-size:1rem;"><i class="fas fa-tag"></i> 1. Dados do produto</h3>
+        <div class="form-grid">
+          <div>
+            <label>Nome do software *</label>
+            <input type="text" id="sw-nome" placeholder="Ex: BordadoPreço Pro 6.0">
+          </div>
+          <div>
+            <label>Preço (R$)</label>
+            <input type="number" id="sw-preco" step="0.01" placeholder="75.00">
+          </div>
+          <div>
+            <label>Badge (selo no card)</label>
+            <input type="text" id="sw-badge" placeholder="Ex: Mais Completo">
+          </div>
+          <div>
+            <label>Ordem de exibição</label>
+            <input type="number" id="sw-ordem" value="1" placeholder="1">
+          </div>
+          <div class="full">
+            <label>Resumo (texto curto do card na lista)</label>
+            <textarea id="sw-resumo" rows="2" placeholder="Cálculo automático de pontos + orçamentos em PDF/HTML."></textarea>
+          </div>
+          <div class="full">
+            <label>Descrição curta</label>
+            <textarea id="sw-desc" rows="2" placeholder="O que o programa faz em 1–2 frases."></textarea>
+          </div>
         </div>
       </div>
-      <button class="btn btn-primary" onclick="salvarSoftware()">
+
+      <!-- BLOCO 2: LEIA-ME / APRESENTAÇÃO -->
+      <div class="bloco-cadastro" style="background:#fff;border:2px solid #1a3a6e;border-radius:12px;padding:16px 18px;margin-bottom:16px;">
+        <h3 style="margin:0 0 8px;color:#0a1f4d;font-size:1rem;"><i class="fas fa-book"></i> 2. LEIA-ME / Apresentação do programa</h3>
+        <p style="font-size:0.85rem;color:#64748b;margin-bottom:10px;">
+          Cole aqui o conteúdo do LEIA-ME (ou o passo a passo). <strong>Cada linha vira um passo numerado</strong> na página do produto.
+        </p>
+        <textarea id="sw-como" rows="10" placeholder="1. Clique em Selecionar Matriz e escolha o arquivo de bordado.&#10;2. O preço é calculado na hora (pontos, cores, tempo e valor sugerido).&#10;3. Use Itens Adicionais para materiais, serviços e cores do fio.&#10;4. Clique em Gerar Orçamento e salve em HTML ou PDF.&#10;5. Controle pedidos e pagamentos na Gestão de Pedidos."></textarea>
+      </div>
+
+      <!-- BLOCO 3: FOTO -->
+      <div class="bloco-cadastro" style="background:#fff;border:2px solid #f5c518;border-radius:12px;padding:16px 18px;margin-bottom:16px;">
+        <h3 style="margin:0 0 8px;color:#0a1f4d;font-size:1rem;"><i class="fas fa-image"></i> 3. Foto do produto (card + página)</h3>
+        <p style="font-size:0.85rem;color:#64748b;margin-bottom:10px;">
+          Escolha a imagem no computador <strong>ou</strong> cole o link público (R2 / outro host).
+        </p>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-bottom:10px;">
+          <div style="flex:1;min-width:200px;">
+            <label>Carregar foto do computador</label>
+            <input type="file" id="sw-foto-file" accept="image/*" style="padding:8px;border:1px solid #e2e8f0;border-radius:8px;width:100%;background:#f8fafc;">
+          </div>
+          <button type="button" class="btn btn-primary" id="btn-upload-foto" onclick="uploadFotoSoftware()" style="white-space:nowrap;">
+            <i class="fas fa-cloud-upload-alt"></i> Enviar foto
+          </button>
+        </div>
+        <div id="sw-foto-preview" style="display:none;margin-bottom:10px;">
+          <img id="sw-foto-preview-img" src="" alt="Preview" style="max-height:120px;border-radius:8px;border:1px solid #e2e8f0;">
+        </div>
+        <div>
+          <label>URL da imagem (preenchida automaticamente após enviar, ou cole manualmente)</label>
+          <input type="url" id="sw-imagem" placeholder="https://... ou envie a foto acima">
+        </div>
+        <small id="sw-foto-status" style="display:block;margin-top:6px;color:#64748b;font-size:0.8rem;"></small>
+      </div>
+
+      <!-- BLOCO 4: INSTALADOR -->
+      <div class="bloco-cadastro" style="background:#f0fdf4;border:2px solid #22c55e;border-radius:12px;padding:16px 18px;margin-bottom:16px;">
+        <h3 style="margin:0 0 8px;color:#0a1f4d;font-size:1rem;"><i class="fas fa-download"></i> 4. Arquivo do programa (.exe / .zip)</h3>
+        <p style="font-size:0.9rem;color:#334155;margin:0;">
+          O instalador <strong>não</strong> é cadastrado aqui.<br>
+          Depois de salvar o software, abra a aba <strong style="color:#15803d;">Downloads</strong> no topo → escolha o software → cole o link do arquivo (R2) ou envie o arquivo.
+        </p>
+      </div>
+
+      <button class="btn btn-primary" onclick="salvarSoftware()" style="font-size:1.05rem;padding:12px 24px;">
         <i class="fas fa-plus"></i> Salvar Software
       </button>
 
-      <table>
+      <table style="margin-top:20px;">
         <thead>
           <tr>
             <th>Nome</th>
@@ -308,7 +343,10 @@
 
     <!-- DOWNLOADS -->
     <div class="panel" id="panel-downloads">
-      <h2><i class="fas fa-cloud-download-alt"></i> Link de Download</h2>
+      <h2><i class="fas fa-cloud-download-alt"></i> Arquivo do programa (Download)</h2>
+      <p style="font-size:0.9rem;color:#64748b;margin-bottom:12px;">
+        Aqui você cadastra o <strong>.exe / .zip</strong> do software. Suba o arquivo no R2 (ou Storage) e cole o link público, ou use o campo de URL.
+      </p>
       <div id="msg-downloads" class="msg"></div>
       <div class="form-grid">
         <div>
@@ -539,9 +577,14 @@
         return;
       }
       setStatus('warn', '⏳ Consultando tabela softwares...');
-      const { data, error } = await client.from('softwares').select('*').order('ordem').order('nome');
+      // Tenta ordenar por "ordem"; se a coluna ainda não existir, cai para "nome"
+      let data, error;
+      ({ data, error } = await client.from('softwares').select('*').order('ordem').order('nome'));
+      if (error && /ordem/i.test(error.message || '')) {
+        ({ data, error } = await client.from('softwares').select('*').order('nome'));
+      }
       if (error) {
-        setStatus('err', '❌ Erro ao ler softwares: <code>' + error.message + '</code> — Se for RLS/policy, rode o SQL de policies no Supabase.');
+        setStatus('err', '❌ Erro ao ler softwares: <code>' + error.message + '</code> — Rode o arquivo JDC-RODAR-NO-SUPABASE.sql no SQL Editor do Supabase.');
         showMsg('msg-softwares', error.message, false);
         return;
       }
@@ -569,6 +612,56 @@
           if (sel) sel.innerHTML += `<option value="${s.id}">${s.nome}</option>`;
         });
       });
+    }
+
+    /** Sobe a foto para o Storage do Supabase (bucket: softwares) e preenche a URL */
+    async function uploadFotoSoftware() {
+      const status = document.getElementById('sw-foto-status');
+      const fileInput = document.getElementById('sw-foto-file');
+      const urlInput = document.getElementById('sw-imagem');
+      const preview = document.getElementById('sw-foto-preview');
+      const previewImg = document.getElementById('sw-foto-preview-img');
+      if (!fileInput || !fileInput.files || !fileInput.files[0]) {
+        if (status) status.textContent = 'Escolha um arquivo de imagem primeiro.';
+        return;
+      }
+      const file = fileInput.files[0];
+      if (!file.type.startsWith('image/')) {
+        if (status) status.textContent = 'Selecione uma imagem (JPG, PNG, WEBP).';
+        return;
+      }
+      const client = sb();
+      if (!client) {
+        if (status) status.textContent = 'Supabase não conectado. Recarregue a página.';
+        return;
+      }
+      if (status) status.textContent = 'Enviando foto...';
+      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+      const path = 'capas/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+      try {
+        const { error: upErr } = await client.storage.from('softwares').upload(path, file, {
+          cacheControl: '3600',
+          upsert: true,
+          contentType: file.type
+        });
+        if (upErr) {
+          if (status) {
+            status.innerHTML = 'Falha no upload: <code>' + upErr.message + '</code><br>' +
+              'Rode no SQL Editor do Supabase o script de Storage (JDC-STORAGE.sql) ou cole a URL manualmente abaixo.';
+          }
+          return;
+        }
+        const { data: pub } = client.storage.from('softwares').getPublicUrl(path);
+        const publicUrl = pub && pub.publicUrl ? pub.publicUrl : '';
+        if (urlInput) urlInput.value = publicUrl;
+        if (preview && previewImg && publicUrl) {
+          previewImg.src = publicUrl;
+          preview.style.display = 'block';
+        }
+        if (status) status.textContent = 'Foto enviada! URL preenchida. Agora salve o software.';
+      } catch (e) {
+        if (status) status.textContent = 'Erro: ' + (e.message || e);
+      }
     }
 
     async function salvarSoftware() {

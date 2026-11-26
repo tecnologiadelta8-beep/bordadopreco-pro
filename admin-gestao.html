@@ -964,9 +964,11 @@
         badge: (document.getElementById('sw-badge') && document.getElementById('sw-badge').value.trim()) || null,
         como_funciona: (document.getElementById('sw-como') && document.getElementById('sw-como').value.trim()) || null,
         ordem: parseInt((document.getElementById('sw-ordem') && document.getElementById('sw-ordem').value) || '0', 10) || 0,
-        ativo: true
+        ativo: true,
+        // Sempre grava os dois campos para compatibilidade
+        imagem_url: imagem || null,
+        foto_url: imagem || null
       };
-      if (imagem) payload.imagem_url = imagem;
 
       let softwareId = editId;
       if (editId) {

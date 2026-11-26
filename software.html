@@ -374,9 +374,12 @@
               <textarea id="duv-pergunta" required placeholder="Ex: Como gero o orçamento em PDF?"></textarea>
             </div>
             <div class="form-full">
-              <label>Foto (opcional) — cole a URL da imagem</label>
-              <input type="url" id="duv-foto" placeholder="https://... (Imgur, Drive público, R2...)">
-              <p style="font-size:0.75rem;color:#94a3b8;margin-top:4px;">Por enquanto cole o link da foto. Em breve upload direto do celular.</p>
+              <label>Foto (opcional)</label>
+              <input type="file" id="duv-foto-file" accept="image/*" capture="environment" style="padding:10px;border:2px solid #e2e8f0;border-radius:10px;width:100%;background:#f8fafc;">
+              <p style="font-size:0.75rem;color:#94a3b8;margin-top:4px;">Tire uma foto ou escolha da galeria. A imagem será salva junto com a dúvida.</p>
+              <div id="duv-foto-preview" style="display:none;margin-top:8px;">
+                <img id="duv-foto-preview-img" src="" alt="Preview" style="max-height:140px;border-radius:8px;border:1px solid #e2e8f0;">
+              </div>
             </div>
           </div>
           <button type="submit" class="btn btn-primary" style="margin-top:14px;">
@@ -784,6 +787,40 @@
     preencherUsuarioLogado();
   });
 
+  // Preview da foto da dúvida
+  (function () {
+    var fileInput = document.getElementById('duv-foto-file');
+    if (!fileInput) return;
+    fileInput.addEventListener('change', function () {
+      var file = fileInput.files && fileInput.files[0];
+      var box = document.getElementById('duv-foto-preview');
+      var img = document.getElementById('duv-foto-preview-img');
+      if (!file || !box || !img) return;
+      if (!file.type.startsWith('image/')) {
+        box.style.display = 'none';
+        return;
+      }
+      var url = URL.createObjectURL(file);
+      img.src = url;
+      box.style.display = 'block';
+    });
+  })();
+
+  async function uploadFotoDuvida(client, file) {
+    if (!file || !client) return null;
+    var ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (!ext || ext.length > 5) ext = 'jpg';
+    var path = 'duvidas/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+    var { data, error } = await client.storage.from('duvidas').upload(path, file, {
+      cacheControl: '3600',
+      upsert: false,
+      contentType: file.type || 'image/jpeg'
+    });
+    if (error) throw error;
+    var pub = client.storage.from('duvidas').getPublicUrl(data.path);
+    return (pub && pub.data && pub.data.publicUrl) ? pub.data.publicUrl : null;
+  }
+
   document.getElementById('form-duvida').addEventListener('submit', async function (e) {
     e.preventDefault();
     const client = sb();
@@ -791,9 +828,21 @@
     const nome = document.getElementById('duv-nome').value.trim();
     const telefone = document.getElementById('duv-tel').value.trim();
     const pergunta = document.getElementById('duv-pergunta').value.trim();
-    const foto = document.getElementById('duv-foto').value.trim();
+    const fileInput = document.getElementById('duv-foto-file');
+    const file = fileInput && fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
     if (!nome || !telefone || !pergunta) {
       return showMsg('msg-duvida', 'Preencha nome, telefone e a pergunta.', false);
+    }
+
+    var fotoUrl = null;
+    try {
+      if (file) {
+        showMsg('msg-duvida', 'Enviando foto...', true);
+        fotoUrl = await uploadFotoDuvida(client, file);
+      }
+    } catch (upErr) {
+      console.error(upErr);
+      return showMsg('msg-duvida', 'Não foi possível enviar a foto. Tente outra imagem ou envie sem foto.', false);
     }
 
     const { error } = await client.from('tira_duvida').insert({
@@ -801,7 +850,7 @@
       nome: nome,
       telefone: telefone,
       pergunta: pergunta,
-      foto_url: foto || null,
+      foto_url: fotoUrl || null,
       status: 'pendente'
     });
 
@@ -823,6 +872,8 @@
     }
     showMsg('msg-duvida', 'Dúvida enviada! Assim que respondermos, ela aparece aqui para todos.', true);
     document.getElementById('form-duvida').reset();
+    var prev = document.getElementById('duv-foto-preview');
+    if (prev) prev.style.display = 'none';
     preencherUsuarioLogado();
   });
 

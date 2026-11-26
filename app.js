@@ -77,18 +77,18 @@ window.addEventListener("load", () => {
   setTimeout(enablePwaForLoggedUser, 100);
 });
 
-// ===== Hero slideshow (leve) =====
-// - Fotos base do site (vídeo aulas / marca)
-// - + automaticamente qualquer software com imagem_url no Supabase
-// - Sem pesar: 1 timer, fade CSS, lazy nas demais
+// ===== Hero slideshow =====
+// - Fotos base do site (Wilcom, Embird, PE-DESIGN, logo)
+// - + automaticamente qualquer software com imagem_url / foto_url no Supabase
+// - Sem lazy (lazy travava o slide no celular)
+// - Timer robusto: reinicia ao voltar na aba
 (function initHeroSlider() {
   const root = document.getElementById("hero-slider");
   if (!root) return;
 
-  const INTERVAL_MS = 8000;
+  const INTERVAL_MS = 5000;
   const dotsBox = document.getElementById("hero-slider-dots");
 
-  // Fotos já hospedadas no site (sempre entram no slide)
   const SLIDES_BASE = [
     { src: "wilcom-e4.jpg", caption: "Wilcom e4" },
     { src: "wilcom-e2.jpg", caption: "Wilcom e2" },
@@ -116,10 +116,10 @@ window.addEventListener("load", () => {
       const div = document.createElement("div");
       div.className = "hero-slide" + (i === 0 ? " active" : "");
       const logoClass = item.logo ? ' class="hero-slide-logo"' : "";
-      const lazy = i === 0 ? "" : ' loading="lazy"';
+      // Sem loading="lazy": no celular a próxima foto não carregava e o slide parecia travado
       div.innerHTML =
         '<img src="' + escapeHtml(item.src) + '" alt="' + escapeHtml(item.caption || "Software") +
-        '" width="360" height="220" decoding="async"' + lazy + logoClass + ">" +
+        '" width="360" height="220" decoding="async"' + logoClass + ">" +
         '<span class="hero-slide-caption">' + escapeHtml(item.caption || "") + "</span>";
       root.insertBefore(div, dotsBox || null);
     });
@@ -129,6 +129,10 @@ window.addEventListener("load", () => {
       slidesData.forEach((_, i) => {
         const d = document.createElement("span");
         if (i === 0) d.classList.add("active");
+        d.addEventListener("click", function () {
+          goTo(i);
+          start();
+        });
         dotsBox.appendChild(d);
       });
     }
@@ -151,8 +155,12 @@ window.addEventListener("load", () => {
   function start() {
     stop();
     if (slidesData.length < 2) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    timer = setInterval(() => goTo(index + 1), INTERVAL_MS);
+    try {
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    } catch (e) {}
+    timer = setInterval(function () {
+      goTo(index + 1);
+    }, INTERVAL_MS);
   }
 
   function stop() {
@@ -160,9 +168,16 @@ window.addEventListener("load", () => {
     timer = null;
   }
 
-  document.addEventListener("visibilitychange", () => {
+  document.addEventListener("visibilitychange", function () {
     if (document.hidden) stop();
     else start();
+  });
+
+  // Toque no slide também avança (melhor no celular)
+  root.addEventListener("click", function (e) {
+    if (e.target && e.target.closest && e.target.closest(".hero-slider-dots")) return;
+    goTo(index + 1);
+    start();
   });
 
   async function carregarFotosSoftwares() {
@@ -185,7 +200,7 @@ window.addEventListener("load", () => {
       const extras = [];
       const seen = new Set(SLIDES_BASE.map((s) => s.src));
 
-      data.forEach((s) => {
+      data.forEach(function (s) {
         if (s.ativo === false) return;
         const url = (s.imagem_url || s.foto_url || "").trim();
         if (!url || seen.has(url)) return;
@@ -205,6 +220,6 @@ window.addEventListener("load", () => {
 
   renderSlides();
   start();
-  setTimeout(carregarFotosSoftwares, 400);
-  setTimeout(carregarFotosSoftwares, 2000);
+  setTimeout(carregarFotosSoftwares, 300);
+  setTimeout(carregarFotosSoftwares, 1500);
 })();

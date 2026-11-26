@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0a1f4d">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Recuperar Senha | JDC Tecnologia em Bordados</title>
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0a1f4d 0%, #1a3a6e 50%, #0f2a5a 100%);
+      padding: 20px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 36px 28px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .card h1 {
+      font-size: 1.4rem;
+      color: #0a1f4d;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .card .sub {
+      text-align: center;
+      color: #64748b;
+      font-size: 0.9rem;
+      margin-bottom: 22px;
+    }
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      color: #0a1f4d;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 13px 14px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 1rem;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: #2a5a9e;
+      box-shadow: 0 0 0 4px rgba(42,90,158,0.12);
+    }
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .btn-primary { background: #0a1f4d; color: #fff; }
+    .btn-primary:hover { background: #1a3a6e; }
+    .btn-secondary { background: #f5c518; color: #0a1f4d; }
+    .links {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+    .links a { color: #2a5a9e; font-weight: 600; text-decoration: none; }
+    .msg {
+      display: none;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+    .msg.show { display: block; }
+    .msg.ok { background: #f0fdf4; color: #166534; }
+    .msg.err { background: #fef2f2; color: #b91c1c; }
+    .senha-box {
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .senha-box input {
+      width: 100%;
+      text-align: center;
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      border: 2px solid #f5c518;
+      border-radius: 10px;
+      padding: 12px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Recuperar Senha</h1>
+    <p class="sub">JDC Tecnologia em Bordados</p>
+
+    <div class="msg" id="msg"></div>
+
+    <!-- Passo 1: dados pessoais -->
+    <div id="passo1">
+      <p style="font-size:0.9rem;color:#64748b;margin-bottom:18px;text-align:center;">
+        Informe os dados <strong>exatamente como no cadastro</strong>. Geramos uma senha temporária na hora.
+      </p>
+      <div class="form-group">
+        <label>Nome completo</label>
+        <input type="text" id="nome" placeholder="Como está no cadastro">
+      </div>
+      <div class="form-group">
+        <label>Telefone</label>
+        <input type="tel" id="telefone" placeholder="(65) 9XXXX-XXXX">
+      </div>
+      <div class="form-group">
+        <label>Data de nascimento</label>
+        <input type="text" id="nascimento" maxlength="10" placeholder="dd/mm/aaaa">
+      </div>
+      <button type="button" class="btn btn-primary" id="btnGerar">
+        Gerar senha temporária
+      </button>
+    </div>
+
+    <!-- Passo 2: senha gerada -->
+    <div id="passo2" style="display:none;">
+      <div class="senha-box">
+        <p style="font-weight:600;color:#166534;margin:0;">Senha temporária gerada!</p>
+        <input type="text" id="senhaTemp" readonly onclick="this.select()">
+        <p style="font-size:0.8rem;color:#64748b;margin:0;">Anote ou copie. Use no login e troque depois.</p>
+      </div>
+      <button type="button" class="btn btn-secondary" id="btnCopiar">
+        <i class="fas fa-copy"></i> Copiar senha
+      </button>
+      <a href="login.html" class="btn btn-primary" style="display:block;text-align:center;text-decoration:none;margin-top:10px;">
+        Ir para o Login
+      </a>
+    </div>
+
+    <div class="links">
+      <p><a href="login.html">← Voltar ao login</a></p>
+      <p style="margin-top:8px;font-size:0.85rem;color:#64748b;">
+        Ou fale no WhatsApp:
+        <a href="https://wa.me/5565999460391?text=Olá! Preciso recuperar minha senha do site JDC." target="_blank">
+          <i class="fab fa-whatsapp"></i> Contato
+        </a>
+      </p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script>
+    document.getElementById('nascimento').addEventListener('input', function () {
+      let v = this.value.replace(/\D/g, '').slice(0, 8);
+      if (v.length >= 5) v = v.slice(0,2) + '/' + v.slice(2,4) + '/' + v.slice(4);
+      else if (v.length >= 3) v = v.slice(0,2) + '/' + v.slice(2);
+      this.value = v;
+    });
+
+    function showMsg(text, ok) {
+      const el = document.getElementById('msg');
+      el.textContent = text;
+      el.className = 'msg show ' + (ok ? 'ok' : 'err');
+    }
+
+    function gerarSenhaTemp() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let s = '';
+      for (let i = 0; i < 8; i++) s += chars[Math.floor(Math.random() * chars.length)];
+      return s;
+    }
+
+    document.getElementById('btnGerar').addEventListener('click', async function () {
+      const nome = document.getElementById('nome').value.trim();
+      const telefone = document.getElementById('telefone').value.trim();
+      const nascimento = document.getElementById('nascimento').value.trim();
+      const btn = this;
+
+      if (!nome || !telefone || !nascimento) {
+        showMsg('Preencha todos os campos.', false);
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+      showMsg('', true);
+      document.getElementById('msg').classList.remove('show');
+
+      try {
+        if (typeof initSupabase === 'function') initSupabase();
+        if (!window.supabase) throw new Error('Sem conexão');
+
+        const digits = telefone.replace(/\D/g, '');
+        let query = supabase.from('clientes').select('*');
+
+        // Busca por telefone
+        const { data: lista, error } = await query.or(`telefone.ilike.%${digits}%,whatsapp.ilike.%${digits}%`);
+        if (error) throw error;
+
+        if (!lista || lista.length === 0) {
+          showMsg('Cadastro não encontrado. Verifique os dados.', false);
+          btn.disabled = false;
+          btn.innerHTML = 'Gerar senha temporária';
+          return;
+        }
+
+        // Filtra por nome e data de nascimento
+        const nomeNorm = nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        let cliente = null;
+
+        for (const c of lista) {
+          const cNome = (c.nome || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+          if (!cNome.includes(nomeNorm.split(' ')[0]) && !nomeNorm.includes(cNome.split(' ')[0])) continue;
+
+          // Compara data
+          if (c.data_nascimento) {
+            const parts = nascimento.split('/');
+            if (parts.length === 3) {
+              const iso = parts[2] + '-' + parts[1] + '-' + parts[0];
+              if (c.data_nascimento === iso || c.data_nascimento.startsWith(iso)) {
+                cliente = c;
+                break;
+              }
+            }
+          } else {
+            // Se não tem data cadastrada, aceita só nome + telefone
+            cliente = c;
+            break;
+          }
+        }
+
+        if (!cliente) {
+          showMsg('Os dados não conferem. Verifique nome, telefone e data de nascimento.', false);
+          btn.disabled = false;
+          btn.innerHTML = 'Gerar senha temporária';
+          return;
+        }
+
+        // Gera senha temporária e atualiza no banco
+        const temp = gerarSenhaTemp();
+        const { error: errUp } = await supabase
+          .from('clientes')
+          .update({ senha: temp })
+          .eq('id', cliente.id);
+
+        if (errUp) throw errUp;
+
+        document.getElementById('senhaTemp').value = temp;
+        document.getElementById('passo1').style.display = 'none';
+        document.getElementById('passo2').style.display = 'block';
+      } catch (err) {
+        console.error(err);
+        showMsg('Erro ao recuperar. Tente novamente ou fale no WhatsApp.', false);
+        btn.disabled = false;
+        btn.innerHTML = 'Gerar senha temporária';
+      }
+    });
+
+    document.getElementById('btnCopiar').addEventListener('click', async function () {
+      const senha = document.getElementById('senhaTemp').value;
+      try {
+        await navigator.clipboard.writeText(senha);
+        this.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+        setTimeout(() => this.innerHTML = '<i class="fas fa-copy"></i> Copiar senha', 2000);
+      } catch (e) {
+        document.getElementById('senhaTemp').select();
+        document.execCommand('copy');
+        this.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+      }
+    });
+  </script>
+</body>
+</html>

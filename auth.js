@@ -7,7 +7,7 @@ const STORAGE_KEY = 'jdc_session';
 const GESTOR_CREDS = {
   usuario: 'admin',
   email: 'admin@jdc.com',
-  senha: 'jdc2026',
+  senha: 'Jdc@Bordados2026!',
   nome: 'Gestor Master'
 };
 
@@ -65,14 +65,14 @@ function isCliente() {
 // ===== Login Gestor =====
 function loginGestor(usuarioOuEmail, senha) {
   const u = (usuarioOuEmail || '').trim().toLowerCase();
-  // Aceita senha em maiúsculas ou minúsculas (jdc2026 = JDC2026)
-  const p = (senha || '').trim().toLowerCase();
+  // Senha case-sensitive (recomendado para senha forte)
+  const p = (senha || '').trim();
 
   const matchUser =
     u === GESTOR_CREDS.usuario.toLowerCase() ||
     u === GESTOR_CREDS.email.toLowerCase();
 
-  if (matchUser && p === GESTOR_CREDS.senha.toLowerCase()) {
+  if (matchUser && p === GESTOR_CREDS.senha) {
     saveSession({
       role: 'gestor',
       nome: GESTOR_CREDS.nome,

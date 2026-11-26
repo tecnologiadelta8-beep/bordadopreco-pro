@@ -20,17 +20,15 @@ Site oficial + Área do Gestor e Cliente (PWA).
 
 ## Login
 
-### Gestor
-
 ### Cliente
-- Use o **e-mail** ou **telefone** cadastrado na tabela `clientes`
-- **Senha padrão:** últimos 4 dígitos do telefone/WhatsApp
-- (Se a coluna `senha` existir na tabela, usa ela em vez dos 4 dígitos)
+- Use o **e-mail** ou **telefone** cadastrado + senha definida no cadastro
 - Acesso: área de downloads e nome no topo do site
+
+### Gestor
+- Acesso restrito (credenciais não públicas)
 
 ## O que aparece quando logado
 
-- **Faixa verde no topo** (estilo Compre Diamantino / IBN)
 - Botão **Entrar** some e mostra: `Olá, [Nome]!`
 - Cliente → link "Meus Downloads"
 - Gestor → links "Painel" e "Gestão" + botão Sair
@@ -38,10 +36,4 @@ Site oficial + Área do Gestor e Cliente (PWA).
 ## Próximos passos
 
 1. Subir arquivos dos softwares no Cloudflare R2 e cadastrar a URL em **Downloads**
-2. (Opcional) Adicionar coluna `senha` na tabela `clientes` para senha personalizada:
-   ```sql
-   ALTER TABLE clientes ADD COLUMN IF NOT EXISTS senha text;
-   ```
-3. Sistema de licenças / validação de chave (já funcional em download.html)
-
-WhatsApp: 65 99946-0391 (Juarez Cunha)
+2. Sistema de licenças / validação de chave (já funcional em download.html)

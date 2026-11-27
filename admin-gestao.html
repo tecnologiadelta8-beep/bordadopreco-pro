@@ -190,6 +190,7 @@
       <button class="tab" data-tab="clientes">Clientes</button>
       <button class="tab" data-tab="tiraduvida">Tira-dúvidas</button>
       <button class="tab" data-tab="leads">Leads</button>
+      <button class="tab" data-tab="pedidos">Pedidos</button>
       <button class="tab" data-tab="nuvem">Nuvem</button>
     </div>
 
@@ -198,34 +199,53 @@
       <h2><i class="fas fa-box"></i> Cadastrar Software</h2>
       <div id="msg-softwares" class="msg"></div>
 
-      <!-- BLOCO 1: DADOS -->
-      <div class="bloco-cadastro" style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin-bottom:16px;">
-        <h3 style="margin:0 0 12px;color:#0a1f4d;font-size:1rem;"><i class="fas fa-tag"></i> 1. Dados do produto</h3>
+      <!-- BLOCO 1: PRODUTO + PAGAMENTO -->
+      <div class="bloco-cadastro" style="background:#fff;border:2px solid #16a34a;border-radius:12px;padding:16px 18px;margin-bottom:16px;">
+        <h3 style="margin:0 0 6px;color:#0a1f4d;font-size:1rem;"><i class="fas fa-tag"></i> 1. Produto e pagamento</h3>
+        <p style="margin:0 0 14px;font-size:0.85rem;color:#64748b;">
+          Nome, valor e como o cliente paga. O restante (foto, o que faz, instalador) vem nos blocos seguintes.
+        </p>
         <div class="form-grid">
           <div>
             <label>Nome do software *</label>
             <input type="text" id="sw-nome" placeholder="Ex: BordadoPreço Pro 6.0">
           </div>
           <div>
-            <label>Preço (R$)</label>
-            <input type="number" id="sw-preco" step="0.01" placeholder="75.00">
+            <label>Valor de venda (R$) *</label>
+            <input type="number" id="sw-preco" step="0.01" min="0" placeholder="75.00">
           </div>
-          <div>
-            <label>Badge (selo no card)</label>
-            <input type="text" id="sw-badge" placeholder="Ex: Mais Completo">
+          <div class="full" style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px 14px;">
+            <strong style="display:block;margin-bottom:10px;color:#166534;font-size:0.9rem;">
+              <i class="fas fa-money-bill-wave"></i> Formas de pagamento (aparecem em “Quero comprar”)
+            </strong>
+            <div class="form-grid" style="margin:0;">
+              <div>
+                <label>Chave PIX</label>
+                <input type="text" id="sw-pix" placeholder="CNPJ, e-mail ou celular da chave PIX">
+              </div>
+              <div>
+                <label>Código / link da maquininha ou PagBank</label>
+                <input type="text" id="sw-link-cartao" placeholder="Link do PagBank ou código da maquininha">
+              </div>
+            </div>
+            <small style="display:block;margin-top:8px;color:#64748b;font-size:0.78rem;">
+              PIX e cartão apenas. O cliente paga, envia HWID + comprovante e aguarda a chave de liberação.
+            </small>
           </div>
+          <!-- campos opcionais discretos -->
           <div>
-            <label>Ordem de exibição</label>
+            <label>Ordem na lista (opcional)</label>
             <input type="number" id="sw-ordem" value="1" placeholder="1">
           </div>
-          <div class="full">
-            <label>Resumo (texto curto do card na lista)</label>
-            <textarea id="sw-resumo" rows="2" placeholder="Cálculo automático de pontos + orçamentos em PDF/HTML."></textarea>
+          <div>
+            <label>Selo no card (opcional)</label>
+            <input type="text" id="sw-badge" placeholder="Ex: Mais vendido">
           </div>
           <div class="full">
-            <label>Descrição curta</label>
-            <textarea id="sw-desc" rows="2" placeholder="O que o programa faz em 1–2 frases."></textarea>
+            <label>Frase curta no card da loja (opcional)</label>
+            <input type="text" id="sw-resumo" placeholder="Ex: Orçamentos em PDF e cálculo de pontos">
           </div>
+          <input type="hidden" id="sw-desc" value="">
         </div>
       </div>
 
@@ -535,6 +555,35 @@
       </table>
     </div>
 
+    <!-- PEDIDOS DE COMPRA (HWID + comprovante) -->
+    <div class="panel" id="panel-pedidos">
+      <h2><i class="fas fa-shopping-cart"></i> Pedidos de compra</h2>
+      <div id="msg-pedidos" class="msg"></div>
+      <p style="color:#64748b;font-size:0.9rem;margin-bottom:14px;">
+        Cliente escolhe o software, paga (PIX ou cartão), envia <strong>HWID + comprovante</strong>.
+        Você confere, gera a chave em <strong>Licenças</strong> e marca o pedido como liberado.
+      </p>
+      <button type="button" class="btn btn-primary" onclick="carregarPedidos()" style="margin-bottom:12px;">
+        <i class="fas fa-sync"></i> Atualizar lista
+      </button>
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Cliente</th>
+            <th>Software</th>
+            <th>Valor</th>
+            <th>Pagamento</th>
+            <th>HWID</th>
+            <th>Comprovante</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="lista-pedidos"></tbody>
+      </table>
+    </div>
+
     <!-- NUVEM (estilo IBN / Compre Diamantino) -->
     <div class="panel" id="panel-nuvem">
       <h2><i class="fas fa-cloud"></i> Nuvem — Celular, PC e Tablet</h2>
@@ -646,6 +695,9 @@
       document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
       tab.classList.add('active');
       panel.classList.add('active');
+      if (nome === 'pedidos' && typeof carregarPedidos === 'function') carregarPedidos();
+      if (nome === 'leads' && typeof carregarLeads === 'function') carregarLeads();
+      if (nome === 'tiraduvida' && typeof carregarDuvidas === 'function') carregarDuvidas();
     }
 
     document.querySelectorAll('.tab').forEach(tab => {
@@ -909,6 +961,8 @@
       document.getElementById('sw-edit-id').value = s.id;
       document.getElementById('sw-nome').value = s.nome || '';
       document.getElementById('sw-preco').value = s.preco != null ? s.preco : '';
+      if (document.getElementById('sw-pix')) document.getElementById('sw-pix').value = s.pix_chave || '';
+      if (document.getElementById('sw-link-cartao')) document.getElementById('sw-link-cartao').value = s.link_cartao || '';
       document.getElementById('sw-badge').value = s.badge || '';
       document.getElementById('sw-ordem').value = s.ordem != null ? s.ordem : '0';
       document.getElementById('sw-resumo').value = s.resumo || '';
@@ -932,7 +986,7 @@
 
     function cancelarEdicaoSoftware() {
       document.getElementById('sw-edit-id').value = '';
-      ['sw-nome','sw-preco','sw-desc','sw-resumo','sw-badge','sw-como','sw-imagem','sw-arquivo-url','sw-arquivo-versao'].forEach(function(id) {
+      ['sw-nome','sw-preco','sw-pix','sw-link-cartao','sw-desc','sw-resumo','sw-badge','sw-como','sw-imagem','sw-arquivo-url','sw-arquivo-versao'].forEach(function(id) {
         const el = document.getElementById(id);
         if (el) el.value = '';
       });
@@ -1021,6 +1075,8 @@
       const payload = {
         nome,
         preco: document.getElementById('sw-preco').value || null,
+        pix_chave: (document.getElementById('sw-pix') && document.getElementById('sw-pix').value.trim()) || null,
+        link_cartao: (document.getElementById('sw-link-cartao') && document.getElementById('sw-link-cartao').value.trim()) || null,
         descricao: document.getElementById('sw-desc').value || null,
         resumo: (document.getElementById('sw-resumo') && document.getElementById('sw-resumo').value.trim()) || null,
         badge: (document.getElementById('sw-badge') && document.getElementById('sw-badge').value.trim()) || null,
@@ -1272,6 +1328,58 @@
     async function marcarLead(id, status) {
       await sb().from('leads').update({ status: status }).eq('id', id);
       carregarLeads();
+    }
+
+    // ===== Pedidos de compra =====
+    async function carregarPedidos() {
+      const tbody = document.getElementById('lista-pedidos');
+      if (!tbody) return;
+      tbody.innerHTML = '<tr><td colspan="9" style="color:#64748b">Carregando...</td></tr>';
+      try {
+        const { data, error } = await sb()
+          .from('pedidos_compra')
+          .select('*, softwares(nome)')
+          .order('criado_em', { ascending: false })
+          .limit(100);
+        if (error) {
+          tbody.innerHTML = '<tr><td colspan="9" style="color:#b91c1c">' + error.message + ' — rode o SQL de pedidos_compra</td></tr>';
+          return;
+        }
+        if (!data || !data.length) {
+          tbody.innerHTML = '<tr><td colspan="9" style="color:#64748b">Nenhum pedido ainda.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = data.map(function (p) {
+          const dataStr = p.criado_em ? new Date(p.criado_em).toLocaleString('pt-BR') : '—';
+          const sw = (p.softwares && p.softwares.nome) || p.software_nome || '—';
+          const valor = p.valor != null ? 'R$ ' + Number(p.valor).toFixed(2).replace('.', ',') : '—';
+          const comp = p.comprovante_url
+            ? '<a href="' + p.comprovante_url + '" target="_blank" rel="noopener">Ver</a>'
+            : '—';
+          const st = p.status || 'pendente';
+          return '<tr>' +
+            '<td style="font-size:0.85rem">' + dataStr + '</td>' +
+            '<td><strong>' + (p.nome || '') + '</strong><br><span style="font-size:0.8rem;color:#64748b">' + (p.telefone || '') + '</span></td>' +
+            '<td>' + sw + '</td>' +
+            '<td>' + valor + '</td>' +
+            '<td>' + (p.forma_pagamento || '') + '</td>' +
+            '<td><code style="font-size:0.7rem;word-break:break-all">' + (p.hwid || '—') + '</code></td>' +
+            '<td>' + comp + '</td>' +
+            '<td>' + st + '</td>' +
+            '<td style="white-space:nowrap">' +
+              (st !== 'liberado' ? '<button class="btn-sm" onclick="marcarPedido(\'' + p.id + '\',\'pago\')">Pago</button> ' : '') +
+              (st !== 'liberado' ? '<button class="btn-sm" onclick="marcarPedido(\'' + p.id + '\',\'liberado\')">Liberado</button>' : '') +
+            '</td></tr>';
+        }).join('');
+      } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="9" style="color:#b91c1c">' + (e.message || e) + '</td></tr>';
+      }
+    }
+
+    async function marcarPedido(id, status) {
+      await sb().from('pedidos_compra').update({ status: status }).eq('id', id);
+      if (window.JdcNotif) JdcNotif.add('pagamento', 'Pedido ' + status, 'Pedido atualizado no painel');
+      carregarPedidos();
     }
 
     // ===== NUVEM (celular / PC / tablet) =====

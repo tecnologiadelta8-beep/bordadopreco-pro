@@ -299,14 +299,17 @@
           <div class="sw-price" id="sw-preco"></div>
           <p class="sw-resumo" id="sw-resumo"></p>
           <div class="sw-actions">
-            <button type="button" class="btn btn-primary" id="btn-interesse">
+            <button type="button" class="btn btn-primary" id="btn-comprar">
+              <i class="fas fa-shopping-cart"></i> Quero comprar
+            </button>
+            <button type="button" class="btn btn-secondary" id="btn-interesse" style="border-color:#0a1f4d;color:#0a1f4d;">
               <i class="fas fa-hand-point-right"></i> Tenho interesse
             </button>
-            <a href="#tira-duvidas" class="btn btn-secondary" style="border-color:#0a1f4d;color:#0a1f4d;">
+            <a href="#tira-duvidas" class="btn btn-outline">
               <i class="fas fa-comments"></i> Tira-dúvidas
             </a>
             <a href="download.html" class="btn btn-outline">
-              <i class="fas fa-key"></i> Já tenho licença
+              <i class="fas fa-download"></i> Download
             </a>
           </div>
         </div>
@@ -318,11 +321,72 @@
         <div id="como-conteudo"></div>
       </section>
 
+      <!-- Quero comprar -->
+      <section class="sw-section" id="quero-comprar">
+        <h2><i class="fas fa-shopping-cart"></i> Quero comprar</h2>
+        <p style="color:#64748b;margin-bottom:12px;font-size:0.95rem;">
+          1) Baixe e instale o software · 2) Copie o <strong>HWID</strong> no programa ·
+          3) Pague (PIX ou cartão) · 4) Envie HWID + comprovante · 5) Aguarde a <strong>chave de liberação</strong>.
+        </p>
+        <div id="compra-preco-box" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px 16px;margin-bottom:16px;">
+          <div style="font-weight:700;color:#0a1f4d;font-size:1.15rem;" id="compra-preco-txt">Valor: —</div>
+          <div id="compra-pix-box" style="margin-top:10px;display:none;">
+            <span style="font-size:0.85rem;color:#64748b;">Chave PIX:</span>
+            <code id="compra-pix-chave" style="display:block;margin-top:4px;word-break:break-all;font-size:0.95rem;"></code>
+          </div>
+          <div id="compra-cartao-box" style="margin-top:10px;display:none;">
+            <a id="compra-cartao-link" href="#" target="_blank" rel="noopener" class="btn btn-primary" style="margin-top:6px;">
+              <i class="fas fa-credit-card"></i> Pagar com cartão
+            </a>
+          </div>
+        </div>
+        <form id="form-compra">
+          <div class="form-grid-sw">
+            <div>
+              <label>Seu nome *</label>
+              <input type="text" id="cmp-nome" required placeholder="Nome completo" autocomplete="name">
+            </div>
+            <div>
+              <label>WhatsApp / Telefone *</label>
+              <input type="tel" id="cmp-tel" required placeholder="+55 65 99999-9999" autocomplete="tel">
+            </div>
+            <div class="form-full">
+              <label>E-mail (opcional)</label>
+              <input type="email" id="cmp-email" placeholder="seu@email.com" autocomplete="email">
+            </div>
+            <div class="form-full">
+              <label>Forma de pagamento *</label>
+              <div style="display:flex;flex-wrap:wrap;gap:16px;margin-top:6px;">
+                <label style="display:flex;align-items:center;gap:6px;font-weight:500;cursor:pointer;">
+                  <input type="radio" name="cmp-pag" value="PIX" checked> PIX
+                </label>
+                <label style="display:flex;align-items:center;gap:6px;font-weight:500;cursor:pointer;">
+                  <input type="radio" name="cmp-pag" value="Cartão"> Cartão
+                </label>
+              </div>
+            </div>
+            <div class="form-full">
+              <label>HWID (código da máquina no programa) *</label>
+              <input type="text" id="cmp-hwid" required placeholder="Cole o HWID copiado do programa" style="text-transform:uppercase;font-family:monospace;">
+            </div>
+            <div class="form-full">
+              <label>Comprovante de pagamento *</label>
+              <input type="file" id="cmp-comprovante" accept="image/*,application/pdf" required style="padding:10px;border:2px solid #e2e8f0;border-radius:10px;width:100%;background:#f8fafc;">
+              <p style="font-size:0.75rem;color:#94a3b8;margin-top:4px;">Foto do PIX ou PDF do comprovante do cartão.</p>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" id="cmp-btn" style="margin-top:14px;">
+            <i class="fas fa-paper-plane"></i> Enviar pedido e aguardar chave
+          </button>
+          <div id="msg-compra" class="msg-sw"></div>
+        </form>
+      </section>
+
       <!-- Tenho interesse -->
       <section class="sw-section" id="tenho-interesse">
         <h2><i class="fas fa-hand-point-right"></i> Tenho interesse</h2>
         <p style="color:#64748b;margin-bottom:16px;font-size:0.95rem;">
-          Deixe seu nome e WhatsApp. Entramos em contato com os detalhes e a forma de pagamento.
+          Ainda não vai comprar agora? Deixe nome e WhatsApp que entramos em contato.
         </p>
         <form id="form-interesse">
           <div class="form-grid-sw">
@@ -702,6 +766,33 @@
         '<img src="' + escapeHtml(imgUrl) + '" alt="' + escapeHtml(data.nome || '') + '">';
     }
     renderComoFunciona(data.como_funciona || data.descricao || '');
+    // Preenche bloco de compra (preço / PIX / cartão definidos pelo gestor)
+    var precoTxt = document.getElementById('compra-preco-txt');
+    if (precoTxt) {
+      precoTxt.textContent = (data.preco != null && data.preco !== '')
+        ? ('Valor: R$ ' + Number(data.preco).toFixed(2).replace('.', ','))
+        : 'Valor: a combinar com o gestor';
+    }
+    var pixBox = document.getElementById('compra-pix-box');
+    var pixChave = document.getElementById('compra-pix-chave');
+    if (pixBox && pixChave) {
+      if (data.pix_chave) {
+        pixChave.textContent = data.pix_chave;
+        pixBox.style.display = 'block';
+      } else {
+        pixBox.style.display = 'none';
+      }
+    }
+    var cartBox = document.getElementById('compra-cartao-box');
+    var cartLink = document.getElementById('compra-cartao-link');
+    if (cartBox && cartLink) {
+      if (data.link_cartao) {
+        cartLink.href = data.link_cartao;
+        cartBox.style.display = 'block';
+      } else {
+        cartBox.style.display = 'none';
+      }
+    }
     document.getElementById('conteudo').style.display = 'block';
     preencherUsuarioLogado();
     carregarDuvidas();
@@ -746,10 +837,94 @@
     }).join('');
   }
 
+  var btnCompra = document.getElementById('btn-comprar');
+  if (btnCompra) {
+    btnCompra.addEventListener('click', function () {
+      document.getElementById('quero-comprar').scrollIntoView({ behavior: 'smooth' });
+      var n = document.getElementById('cmp-nome');
+      if (n) n.focus();
+    });
+  }
+
   document.getElementById('btn-interesse').addEventListener('click', function () {
     document.getElementById('tenho-interesse').scrollIntoView({ behavior: 'smooth' });
     document.getElementById('int-nome').focus();
   });
+
+  // Pedido de compra: HWID + comprovante
+  (function () {
+    var form = document.getElementById('form-compra');
+    if (!form) return;
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var client = sb();
+      if (!client || !software) {
+        showMsg('msg-compra', 'Erro de conexão. Recarregue a página.', false);
+        return;
+      }
+      var nome = (document.getElementById('cmp-nome').value || '').trim();
+      var tel = (document.getElementById('cmp-tel').value || '').trim();
+      var email = (document.getElementById('cmp-email').value || '').trim();
+      var hwid = (document.getElementById('cmp-hwid').value || '').trim().toUpperCase();
+      var pagEl = document.querySelector('input[name="cmp-pag"]:checked');
+      var forma = pagEl ? pagEl.value : 'PIX';
+      var file = document.getElementById('cmp-comprovante').files && document.getElementById('cmp-comprovante').files[0];
+      var btn = document.getElementById('cmp-btn');
+      if (!nome || !tel || !hwid || !file) {
+        showMsg('msg-compra', 'Preencha nome, telefone, HWID e anexe o comprovante.', false);
+        return;
+      }
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+      try {
+        var comprovanteUrl = null;
+        var path = 'comprovantes/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '-' +
+          (file.name || 'comp').replace(/[^a-zA-Z0-9._-]/g, '_');
+        var up = await client.storage.from('duvidas').upload(path, file, {
+          cacheControl: '3600',
+          upsert: false,
+          contentType: file.type || 'application/octet-stream'
+        });
+        if (up.error) throw up.error;
+        var pub = client.storage.from('duvidas').getPublicUrl(up.data.path);
+        comprovanteUrl = pub && pub.data ? pub.data.publicUrl : null;
+
+        var { error } = await client.from('pedidos_compra').insert({
+          software_id: software.id,
+          software_nome: software.nome || null,
+          nome: nome,
+          telefone: tel,
+          email: email || null,
+          hwid: hwid,
+          forma_pagamento: forma,
+          valor: software.preco != null ? Number(software.preco) : null,
+          comprovante_url: comprovanteUrl,
+          status: 'pendente'
+        });
+        if (error) throw error;
+
+        try {
+          await client.from('leads').insert({
+            software_id: software.id,
+            nome: nome,
+            telefone: tel,
+            mensagem: 'Pedido compra ' + forma + ' | HWID: ' + hwid,
+            origem: 'quero_comprar',
+            status: 'novo'
+          });
+        } catch (eL) {}
+
+        showMsg('msg-compra', 'Pedido enviado! Aguarde a chave de liberação pelo WhatsApp ou e-mail.', true);
+        form.reset();
+      } catch (err) {
+        console.error(err);
+        showMsg('msg-compra', 'Não foi possível enviar: ' + (err.message || err) + '. Use o WhatsApp se precisar.', false);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar pedido e aguardar chave';
+      }
+    });
+  })();
 
   document.getElementById('form-interesse').addEventListener('submit', async function (e) {
     e.preventDefault();

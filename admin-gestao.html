@@ -190,6 +190,7 @@
       <button class="tab" data-tab="clientes">Clientes</button>
       <button class="tab" data-tab="tiraduvida">Tira-dúvidas</button>
       <button class="tab" data-tab="leads">Leads</button>
+      <button class="tab" data-tab="nuvem">Nuvem</button>
     </div>
 
     <!-- SOFTWARES -->
@@ -511,6 +512,46 @@
         </thead>
         <tbody id="lista-leads"></tbody>
       </table>
+    </div>
+
+    <!-- NUVEM (estilo IBN / Compre Diamantino) -->
+    <div class="panel" id="panel-nuvem">
+      <h2><i class="fas fa-cloud"></i> Nuvem — Celular, PC e Tablet</h2>
+      <div id="msg-nuvem" class="msg"></div>
+
+      <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:14px;padding:18px 20px;margin-bottom:18px;">
+        <p style="margin:0 0 10px;color:#0c4a6e;font-size:0.95rem;line-height:1.5;">
+          No JDC os dados principais (softwares, clientes, dúvidas, leads, licenças) já ficam no
+          <strong>Supabase</strong>. Qualquer aparelho logado como gestor vê a mesma informação.
+        </p>
+        <p style="margin:0;color:#64748b;font-size:0.85rem;line-height:1.45;">
+          Use os botões abaixo para <strong>atualizar este aparelho</strong>, testar a conexão ou limpar cache local
+          (notificações do sino e dados temporários deste navegador).
+        </p>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+        <button type="button" class="btn btn-primary" id="btn-nuvem-atualizar" onclick="nuvemAtualizarTudo()">
+          <i class="fas fa-cloud-download-alt"></i> Atualizar da nuvem
+        </button>
+        <button type="button" class="btn" style="background:#f5c518;color:#0a1f4d;" id="btn-nuvem-testar" onclick="nuvemTestar()">
+          <i class="fas fa-plug"></i> Testar nuvem
+        </button>
+        <button type="button" class="btn" style="background:#ef4444;color:#fff;" id="btn-nuvem-limpar" onclick="nuvemLimparCache()">
+          <i class="fas fa-broom"></i> Limpar cache local
+        </button>
+      </div>
+
+      <p id="nuvem-status-texto" style="color:#64748b;font-size:0.9rem;margin:0 0 18px;">Pronto.</p>
+
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 18px;">
+        <h3 style="margin:0 0 10px;font-size:0.95rem;color:#0a1f4d;"><i class="fas fa-info-circle"></i> Como usar</h3>
+        <ul style="margin:0;padding-left:18px;color:#64748b;font-size:0.88rem;line-height:1.6;">
+          <li><strong>Atualizar da nuvem</strong> — recarrega softwares, dúvidas, leads e clientes neste aparelho.</li>
+          <li><strong>Testar nuvem</strong> — confere se o Supabase está respondendo.</li>
+          <li><strong>Limpar cache local</strong> — zera avisos do sino e dados temporários só deste navegador (não apaga a nuvem).</li>
+        </ul>
+      </div>
     </div>
   </div>
 
@@ -1210,6 +1251,68 @@
     async function marcarLead(id, status) {
       await sb().from('leads').update({ status: status }).eq('id', id);
       carregarLeads();
+    }
+
+    // ===== NUVEM (celular / PC / tablet) =====
+    function nuvemMsg(texto, ok) {
+      var el = document.getElementById('msg-nuvem');
+      var st = document.getElementById('nuvem-status-texto');
+      if (st) st.textContent = texto || 'Pronto.';
+      if (!el) return;
+      el.textContent = texto || '';
+      el.className = 'msg show ' + (ok === false ? 'err' : 'ok');
+      if (!texto) el.classList.remove('show');
+    }
+
+    async function nuvemTestar() {
+      nuvemMsg('Testando conexão com o Supabase...', true);
+      try {
+        var client = sb();
+        if (!client) throw new Error('Cliente Supabase não iniciado');
+        var { error } = await client.from('softwares').select('id').limit(1);
+        if (error) throw error;
+        nuvemMsg('Nuvem OK — Supabase respondendo neste aparelho.', true);
+        if (window.JdcNotif) JdcNotif.add('sistema', 'Teste de nuvem OK', 'Conexão com Supabase funcionando.');
+      } catch (e) {
+        nuvemMsg('Falha na nuvem: ' + (e.message || e), false);
+      }
+    }
+
+    async function nuvemAtualizarTudo() {
+      nuvemMsg('Atualizando dados da nuvem neste aparelho...', true);
+      try {
+        if (typeof carregarSoftwares === 'function') await carregarSoftwares();
+        if (typeof carregarDuvidas === 'function') await carregarDuvidas();
+        if (typeof carregarLeads === 'function') await carregarLeads();
+        if (typeof carregarLicencas === 'function') await carregarLicencas();
+        if (typeof carregarClientes === 'function') await carregarClientes();
+        if (typeof carregarDownloads === 'function') await carregarDownloads();
+        if (window.JdcNotif && typeof JdcNotif.sincronizarDoBanco === 'function') {
+          await JdcNotif.sincronizarDoBanco();
+        }
+        nuvemMsg('Atualizado! Softwares, dúvidas, leads, clientes e licenças recarregados da nuvem.', true);
+        if (window.JdcNotif) JdcNotif.add('sistema', 'Dados atualizados da nuvem', 'Este aparelho foi sincronizado agora.');
+      } catch (e) {
+        nuvemMsg('Erro ao atualizar: ' + (e.message || e), false);
+      }
+    }
+
+    function nuvemLimparCache() {
+      if (!confirm('Limpar cache local deste navegador?\n\nIsso apaga avisos do sino e dados temporários só neste aparelho.\nOs dados da nuvem (clientes, softwares, dúvidas) NÃO são apagados.')) {
+        return;
+      }
+      try {
+        localStorage.removeItem('jdc_notificacoes_gestor');
+        localStorage.removeItem('jdc_notif_seen_ids');
+        sessionStorage.removeItem('jdc_pwa_install_dismissed');
+        if (window.JdcNotif) {
+          JdcNotif.marcarTodasLidas();
+          JdcNotif.atualizarBadge();
+        }
+        nuvemMsg('Cache local limpo neste aparelho. Dados da nuvem permanecem intactos.', true);
+      } catch (e) {
+        nuvemMsg('Não foi possível limpar o cache: ' + (e.message || e), false);
+      }
     }
 
     // ===== Licenças =====

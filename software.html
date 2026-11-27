@@ -442,10 +442,14 @@
             </div>
             <div class="form-full">
               <label>Foto (opcional)</label>
-              <input type="file" id="duv-foto-file" accept="image/*" capture="environment" style="padding:10px;border:2px solid #e2e8f0;border-radius:10px;width:100%;background:#f8fafc;">
-              <p style="font-size:0.75rem;color:#94a3b8;margin-top:4px;">Tire uma foto ou escolha da galeria. A imagem será salva junto com a dúvida.</p>
-              <div id="duv-foto-preview" style="display:none;margin-top:8px;">
-                <img id="duv-foto-preview-img" src="" alt="Preview" style="max-height:140px;border-radius:8px;border:1px solid #e2e8f0;">
+              <div id="duv-foto-zone" style="border:2px dashed #cbd5e1;border-radius:12px;padding:12px;background:#f8fafc;">
+                <input type="file" id="duv-foto-file" accept="image/*" capture="environment" style="padding:8px;border:1px solid #e2e8f0;border-radius:8px;width:100%;background:#fff;">
+                <p style="font-size:0.75rem;color:#94a3b8;margin-top:8px;line-height:1.4;">
+                  Galeria, câmera, <strong>colar (Ctrl+V)</strong> ou arrastar. Depois pode <strong>cortar</strong> a imagem.
+                </p>
+                <div id="duv-foto-preview" style="display:none;margin-top:8px;">
+                  <img id="duv-foto-preview-img" src="" alt="Preview" style="max-height:140px;border-radius:8px;border:1px solid #e2e8f0;">
+                </div>
               </div>
             </div>
           </div>
@@ -477,6 +481,7 @@
   <script src="supabase-config.js"></script>
   <script src="auth.js"></script>
   <script src="app.js"></script>
+  <script src="jdc-image-pick.js"></script>
   <script>
 (function () {
   const params = new URLSearchParams(window.location.search);
@@ -965,22 +970,15 @@
     preencherUsuarioLogado();
   });
 
-  // Preview da foto da dúvida
+  // Foto: arquivo / câmera / colar / cortar
   (function () {
     var fileInput = document.getElementById('duv-foto-file');
-    if (!fileInput) return;
-    fileInput.addEventListener('change', function () {
-      var file = fileInput.files && fileInput.files[0];
-      var box = document.getElementById('duv-foto-preview');
-      var img = document.getElementById('duv-foto-preview-img');
-      if (!file || !box || !img) return;
-      if (!file.type.startsWith('image/')) {
-        box.style.display = 'none';
-        return;
-      }
-      var url = URL.createObjectURL(file);
-      img.src = url;
-      box.style.display = 'block';
+    if (!fileInput || !window.JdcImagePick) return;
+    JdcImagePick.bind({
+      input: fileInput,
+      previewBox: document.getElementById('duv-foto-preview'),
+      previewImg: document.getElementById('duv-foto-preview-img'),
+      dropZone: document.getElementById('duv-foto-zone')
     });
   })();
 
@@ -1007,7 +1005,9 @@
     const telefone = document.getElementById('duv-tel').value.trim();
     const pergunta = document.getElementById('duv-pergunta').value.trim();
     const fileInput = document.getElementById('duv-foto-file');
-    const file = fileInput && fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+    const file = (window.JdcImagePick && fileInput)
+      ? JdcImagePick.getFileFromInput(fileInput)
+      : (fileInput && fileInput.files && fileInput.files[0] ? fileInput.files[0] : null);
     if (!nome || !telefone || !pergunta) {
       return showMsg('msg-duvida', 'Preencha nome, telefone e a pergunta.', false);
     }

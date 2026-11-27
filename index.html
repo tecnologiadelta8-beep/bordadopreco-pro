@@ -401,9 +401,15 @@
             </div>
             <div style="margin-bottom:16px;">
               <label style="display:block;font-weight:600;color:#0a1f4d;margin-bottom:6px;font-size:0.9rem;">Foto (opcional)</label>
-              <input type="file" id="fc-foto" accept="image/*" capture="environment" style="width:100%;padding:10px;border:2px solid #e2e8f0;border-radius:10px;background:#f8fafc;">
-              <div id="fc-foto-preview" style="display:none;margin-top:8px;">
-                <img id="fc-foto-preview-img" src="" alt="Preview" style="max-height:120px;border-radius:8px;border:1px solid #e2e8f0;">
+              <div id="fc-foto-zone" style="border:2px dashed #cbd5e1;border-radius:12px;padding:12px;background:#f8fafc;">
+                <input type="file" id="fc-foto" accept="image/*" capture="environment" style="width:100%;padding:8px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;">
+                <p style="margin:8px 0 0;font-size:0.8rem;color:#64748b;line-height:1.4;">
+                  Escolha arquivo, tire foto no celular, <strong>cole (Ctrl+V)</strong> ou arraste.
+                  Depois você pode <strong>cortar</strong> antes de enviar.
+                </p>
+                <div id="fc-foto-preview" style="display:none;margin-top:8px;">
+                  <img id="fc-foto-preview-img" src="" alt="Preview" style="max-height:140px;border-radius:8px;border:1px solid #e2e8f0;">
+                </div>
               </div>
             </div>
             <button type="submit" class="btn btn-primary" id="fc-btn" style="width:100%;">
@@ -486,6 +492,7 @@
   <script src="supabase-config.js"></script>
   <script src="auth.js"></script>
   <script src="app.js"></script>
+  <script src="jdc-image-pick.js"></script>
   <script>
   // ===== Nossos Produtos na home (mesmo carregamento robusto de softwares.html) =====
   (function () {
@@ -619,17 +626,12 @@
     if (!form) return;
 
     var fileInput = document.getElementById('fc-foto');
-    if (fileInput) {
-      fileInput.addEventListener('change', function () {
-        var file = fileInput.files && fileInput.files[0];
-        var box = document.getElementById('fc-foto-preview');
-        var img = document.getElementById('fc-foto-preview-img');
-        if (!file || !box || !img || !file.type.startsWith('image/')) {
-          if (box) box.style.display = 'none';
-          return;
-        }
-        img.src = URL.createObjectURL(file);
-        box.style.display = 'block';
+    if (fileInput && window.JdcImagePick) {
+      JdcImagePick.bind({
+        input: fileInput,
+        previewBox: document.getElementById('fc-foto-preview'),
+        previewImg: document.getElementById('fc-foto-preview-img'),
+        dropZone: document.getElementById('fc-foto-zone')
       });
     }
 
@@ -663,7 +665,9 @@
       var tel = (document.getElementById('fc-tel').value || '').trim();
       var assunto = (document.getElementById('fc-assunto').value || '').trim();
       var mensagem = (document.getElementById('fc-msg').value || '').trim();
-      var file = fileInput && fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+      var file = (window.JdcImagePick && fileInput)
+        ? JdcImagePick.getFileFromInput(fileInput)
+        : (fileInput && fileInput.files && fileInput.files[0] ? fileInput.files[0] : null);
       var btn = document.getElementById('fc-btn');
       if (!nome || !tel || !mensagem) {
         fb('Preencha nome, telefone e mensagem.', false);

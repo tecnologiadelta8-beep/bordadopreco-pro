@@ -951,7 +951,7 @@
       reader.readAsText(file, 'UTF-8');
     }
 
-    function editarSoftware(id) {
+    async function editarSoftware(id) {
       const lista = window._jdcSoftwaresCache || [];
       const s = lista.find(function (x) { return String(x.id) === String(id); });
       if (!s) {
@@ -975,6 +975,45 @@
         prevImg.src = s.imagem_url || s.foto_url;
         prev.style.display = 'block';
       }
+
+      // Carrega instalador já vinculado (tabela downloads / R2)
+      if (document.getElementById('sw-arquivo-url')) document.getElementById('sw-arquivo-url').value = '';
+      if (document.getElementById('sw-arquivo-versao')) document.getElementById('sw-arquivo-versao').value = '';
+      if (document.getElementById('sw-arquivo-file')) document.getElementById('sw-arquivo-file').value = '';
+      const statusArq = document.getElementById('sw-arquivo-status');
+      if (statusArq) {
+        statusArq.textContent = 'Buscando arquivo vinculado no R2...';
+        statusArq.style.color = '#64748b';
+      }
+      try {
+        const { data: dls } = await sb()
+          .from('downloads')
+          .select('id, url_arquivo, versao, nome_arquivo, ativo, criado_em')
+          .eq('software_id', s.id)
+          .order('criado_em', { ascending: false })
+          .limit(5);
+        const dl = (dls || []).find(function (d) { return d && d.url_arquivo; }) || null;
+        if (dl) {
+          if (document.getElementById('sw-arquivo-url')) document.getElementById('sw-arquivo-url').value = dl.url_arquivo || '';
+          if (document.getElementById('sw-arquivo-versao')) document.getElementById('sw-arquivo-versao').value = dl.versao || '';
+          if (statusArq) {
+            statusArq.innerHTML = 'Arquivo vinculado: <a href="' + (dl.url_arquivo || '#') + '" target="_blank" rel="noopener">' +
+              (dl.nome_arquivo || 'abrir no R2') + '</a>' +
+              (dl.versao ? ' · v' + dl.versao : '');
+            statusArq.style.color = '#166534';
+          }
+        } else if (statusArq) {
+          statusArq.textContent = 'Nenhum instalador vinculado ainda. Envie um arquivo ou cole a URL do R2.';
+          statusArq.style.color = '#64748b';
+        }
+      } catch (eLoad) {
+        console.warn(eLoad);
+        if (statusArq) {
+          statusArq.textContent = 'Não foi possível carregar o download vinculado.';
+          statusArq.style.color = '#b45309';
+        }
+      }
+
       const btn = document.getElementById('btn-salvar-software');
       if (btn) btn.innerHTML = '<i class="fas fa-save"></i> Atualizar Software';
       const cancel = document.getElementById('btn-cancelar-edit');
@@ -1162,15 +1201,40 @@
 
       if (!url) return;
       const nomeArquivo = (file && file.name) || url.split('/').pop() || (nomeSoftware + '.exe');
-      const { error } = await sb().from('downloads').insert({
-        software_id: softwareId,
-        nome_arquivo: nomeArquivo,
-        url_arquivo: url,
-        versao: versao || null,
-        ativo: true
-      });
+
+      // Se já existe download deste software, atualiza; senão insere
+      let error = null;
+      try {
+        const { data: existentes } = await sb()
+          .from('downloads')
+          .select('id')
+          .eq('software_id', softwareId)
+          .order('criado_em', { ascending: false })
+          .limit(1);
+        if (existentes && existentes[0] && existentes[0].id) {
+          const up = await sb().from('downloads').update({
+            nome_arquivo: nomeArquivo,
+            url_arquivo: url,
+            versao: versao || null,
+            ativo: true
+          }).eq('id', existentes[0].id);
+          error = up.error;
+        } else {
+          const ins = await sb().from('downloads').insert({
+            software_id: softwareId,
+            nome_arquivo: nomeArquivo,
+            url_arquivo: url,
+            versao: versao || null,
+            ativo: true
+          });
+          error = ins.error;
+        }
+      } catch (eV) {
+        error = eV;
+      }
+
       if (error) {
-        if (status) status.textContent = 'Software ok, mas download não gravou: ' + error.message;
+        if (status) status.textContent = 'Software ok, mas download não gravou: ' + (error.message || error);
       } else if (status) {
         status.textContent = 'Instalador no R2 vinculado na aba Downloads.';
         status.style.color = '#166534';

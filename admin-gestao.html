@@ -326,28 +326,46 @@
       </table>
     </div>
 
-    <!-- LICENÇAS -->
+    <!-- LICENÇAS — controle HWID + chave de liberação -->
     <div class="panel" id="panel-licencas">
-      <h2><i class="fas fa-key"></i> Cadastrar Licença</h2>
+      <h2><i class="fas fa-key"></i> Licenças (HWID + chave de liberação)</h2>
       <div id="msg-licencas" class="msg"></div>
+      <p style="color:#64748b;font-size:0.88rem;margin:0 0 14px;line-height:1.45;">
+        Fluxo: cliente baixa e instala → envia <strong>HWID + comprovante</strong> → você aprova o pagamento →
+        gera a <strong>chave de liberação</strong> → grava aqui (nome, HWID, chave, data) → envia a chave ao cliente
+        ou ativa via AnyDesk.
+      </p>
       <div class="form-grid">
         <div>
-          <label>Chave de licença (só gestão vê e gera)</label>
+          <label>Nome do cliente *</label>
+          <input type="text" id="lic-cliente" placeholder="Nome completo">
+        </div>
+        <div>
+          <label>Software</label>
+          <select id="lic-software"></select>
+        </div>
+        <div class="full">
+          <label>HWID enviado pelo cliente *</label>
+          <input type="text" id="lic-hwid" placeholder="Ex: 07A6BAD327F835F233E7400A7E3595AE" style="text-transform:uppercase;font-family:monospace;">
+        </div>
+        <div>
+          <label>Chave de liberação (só gestão gera)</label>
           <div style="display:flex;gap:8px;">
-            <input type="text" id="lic-chave" placeholder="Ex: JDC-XXXX-YYYY" style="text-transform:uppercase;flex:1">
+            <input type="text" id="lic-chave" placeholder="Código de ativação" style="text-transform:uppercase;flex:1;font-family:monospace;">
             <button type="button" class="btn-sm" onclick="gerarChaveLicenca()" title="Gerar chave automática">
               <i class="fas fa-magic"></i> Gerar
             </button>
           </div>
         </div>
         <div>
-          <label>Software</label>
-          <select id="lic-software"></select>
+          <label>Data da instalação / ativação</label>
+          <input type="date" id="lic-data-inst">
         </div>
         <div>
           <label>Status</label>
           <select id="lic-status">
-            <option value="ativa">Ativa</option>
+            <option value="ativa">Ativa / liberada</option>
+            <option value="pendente">Aguardando pagamento</option>
             <option value="expirada">Expirada</option>
             <option value="cancelada">Cancelada</option>
           </select>
@@ -357,19 +375,22 @@
           <input type="date" id="lic-expiracao">
         </div>
         <div class="full">
-          <label>Observações</label>
-          <input type="text" id="lic-obs" placeholder="Nome do cliente, WhatsApp, etc.">
+          <label>Observações (WhatsApp, AnyDesk, etc.)</label>
+          <input type="text" id="lic-obs" placeholder="Ex: ativado via AnyDesk / WhatsApp 65 9...">
         </div>
       </div>
       <button class="btn btn-primary" onclick="salvarLicenca()">
-        <i class="fas fa-plus"></i> Salvar Licença
+        <i class="fas fa-plus"></i> Salvar no controle
       </button>
 
-      <table>
+      <table style="margin-top:18px;">
         <thead>
           <tr>
-            <th>Chave</th>
+            <th>Cliente</th>
+            <th>HWID</th>
+            <th>Chave liberação</th>
             <th>Software</th>
+            <th>Data inst.</th>
             <th>Status</th>
             <th>Obs</th>
           </tr>
@@ -1315,45 +1336,65 @@
       }
     }
 
-    // ===== Licenças =====
+    // ===== Licenças (cliente + HWID + chave + data) =====
     async function carregarLicencas() {
       const { data } = await sb()
         .from('licencas')
         .select('*, softwares(nome)')
         .order('criado_em', { ascending: false })
-        .limit(50);
-      
+        .limit(100);
+
       const tbody = document.getElementById('lista-licencas');
+      if (!tbody) return;
       tbody.innerHTML = '';
       (data || []).forEach(l => {
         const badge = l.status === 'ativa' ? 'badge-ativa' : 'badge-expirada';
+        const dataInst = l.data_instalacao
+          ? new Date(l.data_instalacao + (String(l.data_instalacao).length <= 10 ? 'T12:00:00' : '')).toLocaleDateString('pt-BR')
+          : '—';
         tbody.innerHTML += `<tr>
-          <td><code>${l.chave_licenca}</code></td>
+          <td><strong>${l.cliente_nome || '—'}</strong></td>
+          <td><code style="font-size:0.75rem;word-break:break-all;">${l.hwid || '—'}</code></td>
+          <td><code>${l.chave_licenca || '—'}</code></td>
           <td>${l.softwares?.nome || '—'}</td>
-          <td><span class="badge ${badge}">${l.status}</span></td>
-          <td>${l.observacoes || '—'}</td>
+          <td>${dataInst}</td>
+          <td><span class="badge ${badge}">${l.status || ''}</span></td>
+          <td style="font-size:0.85rem;">${l.observacoes || '—'}</td>
         </tr>`;
       });
+      if (!data || !data.length) {
+        tbody.innerHTML = '<tr><td colspan="7" style="color:#64748b">Nenhuma licença gravada ainda.</td></tr>';
+      }
     }
 
     async function salvarLicenca() {
-      const chave = document.getElementById('lic-chave').value.trim().toUpperCase();
-      const software_id = document.getElementById('lic-software').value;
-      if (!chave || !software_id) return showMsg('msg-licencas', 'Preencha chave e software', false);
+      const cliente = (document.getElementById('lic-cliente')?.value || '').trim();
+      const hwid = (document.getElementById('lic-hwid')?.value || '').trim().toUpperCase();
+      const chave = (document.getElementById('lic-chave')?.value || '').trim().toUpperCase();
+      const software_id = document.getElementById('lic-software')?.value;
+      if (!cliente || !hwid) return showMsg('msg-licencas', 'Preencha nome do cliente e HWID', false);
+      if (!chave || !software_id) return showMsg('msg-licencas', 'Preencha chave de liberação e software', false);
 
+      const dataInst = document.getElementById('lic-data-inst')?.value || null;
       const { error } = await sb().from('licencas').insert({
+        cliente_nome: cliente,
+        hwid: hwid,
         chave_licenca: chave,
         software_id,
+        data_instalacao: dataInst,
         status: document.getElementById('lic-status').value,
         data_expiracao: document.getElementById('lic-expiracao').value || null,
         observacoes: document.getElementById('lic-obs').value || null
       });
 
-      if (error) return showMsg('msg-licencas', error.message, false);
-      showMsg('msg-licencas', 'Licença salva!');
-      if (window.JdcNotif) JdcNotif.add('licenca', 'Nova licença', chave);
+      if (error) return showMsg('msg-licencas', error.message + ' (rode o SQL das colunas se faltar campo)', false);
+      showMsg('msg-licencas', 'Licença gravada: ' + cliente + ' / ' + hwid.slice(0, 8) + '…');
+      if (window.JdcNotif) JdcNotif.add('licenca', 'Licença liberada', cliente + ' — ' + chave);
+      document.getElementById('lic-cliente').value = '';
+      document.getElementById('lic-hwid').value = '';
       document.getElementById('lic-chave').value = '';
       document.getElementById('lic-obs').value = '';
+      document.getElementById('lic-data-inst').value = '';
       carregarLicencas();
     }
 

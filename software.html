@@ -324,9 +324,11 @@
       <!-- Quero comprar -->
       <section class="sw-section" id="quero-comprar">
         <h2><i class="fas fa-shopping-cart"></i> Quero comprar</h2>
-        <p style="color:#64748b;margin-bottom:12px;font-size:0.95rem;">
-          1) Baixe e instale o software · 2) Copie o <strong>HWID</strong> no programa ·
-          3) Pague (PIX ou cartão) · 4) Envie HWID + comprovante · 5) Aguarde a <strong>chave de liberação</strong>.
+        <p style="color:#64748b;margin-bottom:12px;font-size:0.95rem;line-height:1.55;">
+          1) Baixe e instale · 2) No programa, copie o <strong>HWID</strong> ·
+          3) Pague (PIX ou cartão) · 4) Envie o <strong>HWID + comprovante</strong> ao
+          <strong>gestor / suporte</strong> · 5) Aguarde a <strong>chave de liberação</strong>.
+          Sem o HWID o suporte não ativa a licença.
         </p>
         <div id="compra-preco-box" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px 16px;margin-bottom:16px;">
           <div style="font-weight:700;color:#0a1f4d;font-size:1.15rem;" id="compra-preco-txt">Valor: —</div>
@@ -366,13 +368,14 @@
               </div>
             </div>
             <div class="form-full">
-              <label>HWID (código da máquina no programa) *</label>
-              <input type="text" id="cmp-hwid" required placeholder="Cole o HWID copiado do programa" style="text-transform:uppercase;font-family:monospace;">
+              <label>HWID — código da máquina (vai para o gestor/suporte) *</label>
+              <input type="text" id="cmp-hwid" required placeholder="Cole o HWID copiado no botão ATIVAR do programa" style="text-transform:uppercase;font-family:monospace;">
+              <p style="font-size:0.75rem;color:#94a3b8;margin-top:4px;">Sem o HWID o suporte não consegue gerar a chave de ativação.</p>
             </div>
             <div class="form-full">
-              <label>Comprovante de pagamento *</label>
+              <label>Comprovante de pagamento (junto com o HWID) *</label>
               <input type="file" id="cmp-comprovante" accept="image/*,application/pdf" required style="padding:10px;border:2px solid #e2e8f0;border-radius:10px;width:100%;background:#f8fafc;">
-              <p style="font-size:0.75rem;color:#94a3b8;margin-top:4px;">Foto do PIX ou PDF do comprovante do cartão.</p>
+              <p style="font-size:0.75rem;color:#94a3b8;margin-top:4px;">Foto do PIX ou PDF do cartão. HWID + comprovante vão juntos para o gestor ativar.</p>
             </div>
           </div>
           <button type="submit" class="btn btn-primary" id="cmp-btn" style="margin-top:14px;">

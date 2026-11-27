@@ -204,6 +204,15 @@
           box.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#64748b;">Nenhum software cadastrado.</p>';
           return;
         }
+        // Busca arquivos de download por software
+        var dlMap = {};
+        try {
+          var dlr = await client.from('downloads').select('software_id, url_arquivo, versao, nome_arquivo').order('criado_em', { ascending: false });
+          (dlr.data || []).forEach(function (d) {
+            if (d.software_id && d.url_arquivo && !dlMap[d.software_id]) dlMap[d.software_id] = d;
+          });
+        } catch (eD) {}
+
         box.innerHTML = data.map(function (s) {
           var img = (s.imagem_url || s.foto_url || '').trim();
           var desc = s.resumo || s.descricao || '';
@@ -211,21 +220,122 @@
             ? '<div style="height:160px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;overflow:hidden;"><img src="' + esc(img) + '" alt="" style="max-width:100%;max-height:100%;object-fit:contain;"></div>'
             : '<div style="height:160px;background:linear-gradient(135deg,#0a1f4d,#1a3a6e);display:flex;align-items:center;justify-content:center;color:#f5c518;font-size:2rem;"><i class="fas fa-download"></i></div>';
           var link = s.id ? ('software.html?id=' + encodeURIComponent(s.id)) : 'softwares.html';
+          var arq = dlMap[s.id];
+          var btnBaixar = arq
+            ? '<button type="button" class="btn btn-primary jdc-btn-baixar" style="display:inline-flex;width:100%;justify-content:center;margin-bottom:8px;"' +
+                ' data-sid="' + esc(s.id) + '" data-snome="' + esc(s.nome) + '" data-url="' + esc(arq.url_arquivo) + '">' +
+                '<i class="fas fa-download"></i> Baixar programa</button>'
+            : '';
           return (
             '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;box-shadow:0 4px 16px rgba(10,31,77,0.06);">' +
               imgHtml +
               '<div style="padding:16px;">' +
                 '<h3 style="margin:0 0 8px;color:#0a1f4d;font-size:1.05rem;">' + esc(s.nome) + '</h3>' +
                 '<p style="margin:0 0 14px;color:#64748b;font-size:0.88rem;line-height:1.4;min-height:40px;">' + esc(desc).slice(0, 110) + (desc.length > 110 ? '…' : '') + '</p>' +
-                '<a href="' + link + '" class="btn btn-primary" style="display:inline-flex;width:100%;justify-content:center;"><i class="fas fa-eye"></i> Ver e baixar</a>' +
+                btnBaixar +
+                '<a href="' + link + '" class="btn btn-outline" style="display:inline-flex;width:100%;justify-content:center;"><i class="fas fa-eye"></i> Ver detalhes</a>' +
               '</div>' +
             '</div>'
           );
         }).join('');
+
+        // Liga botões de download com log silencioso
+        box.querySelectorAll('.jdc-btn-baixar').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            iniciarDownloadComLog({
+              softwareId: btn.getAttribute('data-sid'),
+              softwareNome: btn.getAttribute('data-snome'),
+              url: btn.getAttribute('data-url')
+            });
+          });
+        });
       } catch (e) {
         console.error(e);
         box.innerHTML = '<p style="grid-column:1/-1;text-align:center;"><a href="softwares.html">Ver softwares</a></p>';
       }
+    }
+
+    // Modal simples: nome + telefone antes do download (interesse mínimo)
+    function iniciarDownloadComLog(opts) {
+      opts = opts || {};
+      if (!opts.url) {
+        alert('Arquivo ainda não disponível. Use a página do software ou o WhatsApp.');
+        return;
+      }
+      var sess = null;
+      try { if (typeof getSession === 'function') sess = getSession(); } catch (e) {}
+      var nomeOk = sess && (sess.nome || sess.name);
+      var telOk = sess && (sess.telefone || sess.whatsapp || sess.phone);
+
+      function pedirDados(cb) {
+        if (nomeOk && telOk) {
+          cb(nomeOk, telOk);
+          return;
+        }
+        var overlay = document.getElementById('jdc-dl-overlay');
+        if (!overlay) {
+          overlay = document.createElement('div');
+          overlay.id = 'jdc-dl-overlay';
+          overlay.innerHTML =
+            '<div style="position:fixed;inset:0;background:rgba(10,31,77,0.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;">' +
+              '<div style="background:#fff;border-radius:14px;padding:22px;max-width:400px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,0.2);">' +
+                '<h3 style="margin:0 0 8px;color:#0a1f4d;font-size:1.1rem;">Antes de baixar</h3>' +
+                '<p style="margin:0 0 14px;color:#64748b;font-size:0.9rem;line-height:1.4;">Informe nome e WhatsApp (interesse / contato). O gestor só vê isso no painel.</p>' +
+                '<label style="display:block;font-weight:600;font-size:0.85rem;margin-bottom:4px;">Nome *</label>' +
+                '<input id="jdc-dl-nome" type="text" style="width:100%;padding:10px;border:2px solid #e2e8f0;border-radius:8px;margin-bottom:10px;">' +
+                '<label style="display:block;font-weight:600;font-size:0.85rem;margin-bottom:4px;">WhatsApp / Telefone *</label>' +
+                '<input id="jdc-dl-tel" type="tel" placeholder="+55 65 99999-9999" style="width:100%;padding:10px;border:2px solid #e2e8f0;border-radius:8px;margin-bottom:14px;">' +
+                '<div style="display:flex;gap:8px;">' +
+                  '<button type="button" id="jdc-dl-ok" class="btn btn-primary" style="flex:1;">Continuar e baixar</button>' +
+                  '<button type="button" id="jdc-dl-cancel" class="btn btn-outline" style="flex:1;">Cancelar</button>' +
+                '</div>' +
+              '</div>' +
+            '</div>';
+          document.body.appendChild(overlay);
+        } else {
+          overlay.style.display = 'block';
+        }
+        if (nomeOk) document.getElementById('jdc-dl-nome').value = nomeOk;
+        if (telOk) document.getElementById('jdc-dl-tel').value = telOk;
+        document.getElementById('jdc-dl-cancel').onclick = function () { overlay.style.display = 'none'; };
+        document.getElementById('jdc-dl-ok').onclick = function () {
+          var n = (document.getElementById('jdc-dl-nome').value || '').trim();
+          var t = (document.getElementById('jdc-dl-tel').value || '').trim();
+          if (!n || !t) { alert('Preencha nome e telefone.'); return; }
+          overlay.style.display = 'none';
+          cb(n, t);
+        };
+      }
+
+      pedirDados(async function (nome, tel) {
+        try {
+          var client = await ensureClient();
+          if (client) {
+            await client.from('download_logs').insert({
+              software_id: opts.softwareId || null,
+              software_nome: opts.softwareNome || null,
+              nome: nome,
+              telefone: tel,
+              origem: 'download.html'
+            });
+            // Também registra interesse leve (lead)
+            try {
+              await client.from('leads').insert({
+                software_id: opts.softwareId || null,
+                nome: nome,
+                telefone: tel,
+                mensagem: 'Download do instalador',
+                origem: 'download',
+                status: 'novo'
+              });
+            } catch (eL) {}
+          }
+        } catch (eLog) {
+          console.warn('log download', eLog);
+        }
+        // Abre o arquivo
+        window.open(opts.url, '_blank', 'noopener');
+      });
     }
 
     function configurarBlocoLicenca() {

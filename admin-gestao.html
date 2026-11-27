@@ -469,6 +469,28 @@
         </thead>
         <tbody id="lista-downloads"></tbody>
       </table>
+
+      <h3 style="margin:28px 0 10px;color:#0a1f4d;font-size:1.05rem;">
+        <i class="fas fa-user-secret"></i> Log de downloads (só gestor)
+      </h3>
+      <p style="font-size:0.88rem;color:#64748b;margin:0 0 12px;">
+        Quem baixou o arquivo. Compara com pedidos: <strong>comprou</strong> ou <strong>só baixou</strong> (ainda não enviou HWID/comprovante).
+      </p>
+      <button type="button" class="btn btn-primary" onclick="carregarLogDownloads()" style="margin-bottom:10px;">
+        <i class="fas fa-sync"></i> Atualizar log
+      </button>
+      <table>
+        <thead>
+          <tr>
+            <th>Quando</th>
+            <th>Nome</th>
+            <th>Telefone</th>
+            <th>Software</th>
+            <th>Situação</th>
+          </tr>
+        </thead>
+        <tbody id="lista-log-downloads"></tbody>
+      </table>
     </div>
 
     <!-- CLIENTES -->
@@ -698,6 +720,10 @@
       if (nome === 'pedidos' && typeof carregarPedidos === 'function') carregarPedidos();
       if (nome === 'leads' && typeof carregarLeads === 'function') carregarLeads();
       if (nome === 'tiraduvida' && typeof carregarDuvidas === 'function') carregarDuvidas();
+      if (nome === 'downloads') {
+        if (typeof carregarDownloads === 'function') carregarDownloads();
+        if (typeof carregarLogDownloads === 'function') carregarLogDownloads();
+      }
     }
 
     document.querySelectorAll('.tab').forEach(tab => {
@@ -1608,6 +1634,70 @@
       document.getElementById('dl-url').value = '';
       document.getElementById('dl-versao').value = '';
       carregarDownloads();
+    }
+
+    function _normTelLog(t) {
+      return String(t || '').replace(/\D/g, '');
+    }
+
+    async function carregarLogDownloads() {
+      const tbody = document.getElementById('lista-log-downloads');
+      if (!tbody) return;
+      tbody.innerHTML = '<tr><td colspan="5" style="color:#64748b">Carregando...</td></tr>';
+      try {
+        const { data: logs, error } = await sb()
+          .from('download_logs')
+          .select('*')
+          .order('criado_em', { ascending: false })
+          .limit(150);
+        if (error) {
+          tbody.innerHTML = '<tr><td colspan="5" style="color:#b91c1c">' + error.message + ' — rode o SQL de download_logs</td></tr>';
+          return;
+        }
+        if (!logs || !logs.length) {
+          tbody.innerHTML = '<tr><td colspan="5" style="color:#64748b">Nenhum download registrado ainda.</td></tr>';
+          return;
+        }
+        // Pedidos para cruzar telefone / software
+        let pedidos = [];
+        try {
+          const pr = await sb().from('pedidos_compra').select('telefone, software_id, status, hwid').limit(300);
+          pedidos = pr.data || [];
+        } catch (eP) {}
+        const telsComPedido = {};
+        pedidos.forEach(function (p) {
+          const k = _normTelLog(p.telefone);
+          if (k) telsComPedido[k] = p;
+        });
+        // Licenças também = comprou/ativou
+        let licencas = [];
+        try {
+          const lr = await sb().from('licencas').select('hwid, cliente_nome, status').limit(300);
+          licencas = lr.data || [];
+        } catch (eL) {}
+
+        tbody.innerHTML = logs.map(function (L) {
+          const quando = L.criado_em ? new Date(L.criado_em).toLocaleString('pt-BR') : '—';
+          const telN = _normTelLog(L.telefone);
+          const ped = telsComPedido[telN];
+          let sit = '<span style="color:#b45309;font-weight:600">Só baixou</span>';
+          if (ped) {
+            if (ped.status === 'liberado' || ped.status === 'pago') {
+              sit = '<span style="color:#166534;font-weight:600">Comprou / em ativação</span>';
+            } else {
+              sit = '<span style="color:#1d4ed8;font-weight:600">Enviou pedido</span>';
+            }
+          }
+          return '<tr>' +
+            '<td style="font-size:0.85rem">' + quando + '</td>' +
+            '<td>' + (L.nome || '—') + '</td>' +
+            '<td>' + (L.telefone || '—') + '</td>' +
+            '<td>' + (L.software_nome || '—') + '</td>' +
+            '<td>' + sit + '</td></tr>';
+        }).join('');
+      } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="5" style="color:#b91c1c">' + (e.message || e) + '</td></tr>';
+      }
     }
 
     // ===== Clientes =====

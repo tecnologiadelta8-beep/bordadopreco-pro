@@ -303,11 +303,12 @@ function isRunningAsPwa() {
 
 function canShowInstallBanner() {
   if (isRunningAsPwa()) return false;
-  if (!getSession()) return false;
+  // Qualquer visitante pode instalar (igual IBN / Compre Diamantino)
   if (sessionStorage.getItem(PWA_INSTALL_DISMISSED_KEY) === '1') return false;
-  // Só mostra se o navegador ofereceu o prompt OU se for iOS (instruções manuais)
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  return !!deferredInstallPrompt || isIOS;
+  const isAndroid = /android/i.test(navigator.userAgent);
+  // Chrome/Edge: espera o beforeinstallprompt; iOS/Android: mostra instruções
+  return !!deferredInstallPrompt || isIOS || isAndroid;
 }
 
 function showPwaInstallBanner() {
@@ -315,7 +316,8 @@ function showPwaInstallBanner() {
   if (document.getElementById('jdc-pwa-install-banner')) return;
 
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const session = getSession();
+  let session = null;
+  try { if (typeof getSession === 'function') session = getSession(); } catch (e) {}
   const appName = session && session.role === 'gestor' ? 'JDC Gestor' : 'JDC Bordados';
 
   const banner = document.createElement('div');
@@ -427,35 +429,30 @@ function showPwaInstallBanner() {
 }
 
 function schedulePwaInstallBanner() {
-  // Espera um pouco após o login/redirect para o SW e o prompt estarem prontos
-  setTimeout(() => showPwaInstallBanner(), 600);
-  setTimeout(() => showPwaInstallBanner(), 2000);
+  // Qualquer visitante pode instalar (igual IBN / Compre Diamantino)
+  setTimeout(function () { showPwaInstallBanner(); }, 800);
+  setTimeout(function () { showPwaInstallBanner(); }, 2500);
+  setTimeout(function () { showPwaInstallBanner(); }, 5000);
 }
 
 if (typeof document !== 'undefined') {
-  document.addEventListener('DOMContentLoaded', () => {
-    // Pequeno delay para garantir que supabase-config.js já rodou
+  document.addEventListener('DOMContentLoaded', function () {
     setTimeout(initAuthUI, 50);
-    // Se já estiver logado nesta página, tenta mostrar o banner
-    setTimeout(() => {
-      if (getSession()) schedulePwaInstallBanner();
-    }, 200);
+    // Mostra banner de instalar app para todos (não só logados)
+    setTimeout(function () { schedulePwaInstallBanner(); }, 300);
   });
 
   // Captura o evento nativo (Chrome/Edge/Android)
-  window.addEventListener('beforeinstallprompt', (e) => {
+  window.addEventListener('beforeinstallprompt', function (e) {
     e.preventDefault();
     deferredInstallPrompt = e;
-    // Só mostra o banner se estiver logado
-    if (typeof getSession === 'function' && getSession()) {
-      schedulePwaInstallBanner();
-    }
+    schedulePwaInstallBanner();
   });
 
-  window.addEventListener('appinstalled', () => {
+  window.addEventListener('appinstalled', function () {
     deferredInstallPrompt = null;
     sessionStorage.setItem(PWA_INSTALL_DISMISSED_KEY, '1');
-    const el = document.getElementById('jdc-pwa-install-banner');
+    var el = document.getElementById('jdc-pwa-install-banner');
     if (el) el.remove();
   });
 }

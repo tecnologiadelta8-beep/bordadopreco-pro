@@ -37,7 +37,12 @@
   <meta name="twitter:description" content="Soluções completas para bordadeiras: manutenção remota, softwares, suporte e sites.">
   <meta name="twitter:image" content="https://jdctecnologiaembordados.com.br/icon-512.png">
   
-  <!-- manifest injetado só quando logado (ver app.js / auth.js) -->
+  <!-- PWA — disponível para todos (visitante, cliente e gestor) -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="JDC Bordados">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -141,7 +146,32 @@
     </div>
   </section>
 
-  <!-- Services -->
+  <!-- Nossos Produtos (prioridade) -->
+  <section class="softwares-preview" id="produtos" style="padding-top:48px;">
+    <div class="container">
+      <div class="section-header">
+        <h2>Nossos Produtos</h2>
+        <p>Softwares prontos para bordadeiras e ateliês — clique e conheça cada um</p>
+      </div>
+
+      <div class="preview-grid" id="lista-produtos-home" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;">
+        <p style="grid-column:1/-1;text-align:center;color:#64748b;">
+          <i class="fas fa-spinner fa-spin"></i> Carregando produtos...
+        </p>
+      </div>
+
+      <div class="preview-cta" style="margin-top:28px;">
+        <a href="softwares.html" class="btn btn-primary">
+          <i class="fas fa-box-open"></i> Ver todos os Softwares
+        </a>
+        <a href="download.html" class="btn btn-secondary" style="border-color: var(--blue-dark); color: var(--blue-dark);">
+          <i class="fas fa-key"></i> Área de Download
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services (depois dos produtos) -->
   <section class="services" id="servicos">
     <div class="container">
       <div class="section-header">
@@ -194,43 +224,6 @@
             Solicitar <i class="fas fa-arrow-right"></i>
           </a>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Softwares Preview -->
-  <section class="softwares-preview">
-    <div class="container">
-      <div class="section-header">
-        <h2>Nossos Softwares</h2>
-        <p>Ferramentas desenvolvidas especialmente para bordadeiras e ateliês</p>
-      </div>
-      
-      <div class="preview-grid">
-        <div class="preview-card">
-          <div class="preview-badge">Mais Completo</div>
-          <h3>BordadoPreço Pro v5.1</h3>
-          <p>Cálculo automático de pontos + orçamentos em PDF/HTML personalizados.</p>
-        </div>
-        <div class="preview-card">
-          <div class="preview-badge simple">Mais Simples</div>
-          <h3>Borda Fácil Pro</h3>
-          <p>Preço direto pela quantidade de pontos. Ideal para iniciantes.</p>
-        </div>
-        <div class="preview-card">
-          <div class="preview-badge org">Organização</div>
-          <h3>Extrator & Organizador</h3>
-          <p>Organize matrizes por bastidor e elimine duplicatas automaticamente.</p>
-        </div>
-      </div>
-      
-      <div class="preview-cta">
-        <a href="softwares.html" class="btn btn-primary">
-          <i class="fas fa-box-open"></i> Ver todos os Softwares
-        </a>
-        <a href="download.html" class="btn btn-secondary" style="border-color: var(--blue-dark); color: var(--blue-dark);">
-          <i class="fas fa-key"></i> Área de Download
-        </a>
       </div>
     </div>
   </section>
@@ -413,5 +406,86 @@
   <script src="supabase-config.js"></script>
   <script src="auth.js"></script>
   <script src="app.js"></script>
+  <script>
+  // ===== Nossos Produtos na home (com foto + link para demonstração) =====
+  (function () {
+    function esc(s) {
+      return String(s || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    async function carregarProdutosHome() {
+      var box = document.getElementById('lista-produtos-home');
+      if (!box) return;
+
+      try {
+        if (typeof initSupabase === 'function') initSupabase();
+        var client = (typeof getSupabase === 'function' && getSupabase()) || window.jdcSb || null;
+        if (!client || !client.from) {
+          box.innerHTML = '<p style="grid-column:1/-1;text-align:center;"><a href="softwares.html">Ver softwares</a></p>';
+          return;
+        }
+
+        var { data, error } = await client
+          .from('softwares')
+          .select('id, nome, resumo, descricao, preco, imagem_url, foto_url, badge, ativo')
+          .order('ordem', { ascending: true })
+          .order('nome');
+
+        if (error || !data || !data.length) {
+          box.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#64748b;">Nenhum produto cadastrado ainda. <a href="softwares.html">Ver softwares</a></p>';
+          return;
+        }
+
+        var ativos = data.filter(function (s) { return s.ativo !== false; });
+        if (!ativos.length) ativos = data;
+
+        box.innerHTML = ativos.map(function (s) {
+          var img = (s.imagem_url || s.foto_url || '').trim();
+          var desc = s.resumo || s.descricao || 'Clique e conheça os detalhes.';
+          var preco = (s.preco != null && s.preco !== '')
+            ? 'R$ ' + Number(s.preco).toFixed(2).replace('.', ',')
+            : '';
+          var badge = s.badge
+            ? '<div class="preview-badge" style="position:absolute;top:12px;left:12px;z-index:2;">' + esc(s.badge) + '</div>'
+            : '';
+          var imgHtml = img
+            ? '<div style="height:160px;overflow:hidden;border-radius:12px 12px 0 0;background:#f1f5f9;">' +
+                '<img src="' + esc(img) + '" alt="' + esc(s.nome) + '" style="width:100%;height:100%;object-fit:cover;display:block;">' +
+              '</div>'
+            : '<div style="height:160px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0a1f4d,#1a3a6e);border-radius:12px 12px 0 0;color:#f5c518;font-size:2.5rem;"><i class="fas fa-laptop-code"></i></div>';
+          var link = s.id ? ('software.html?id=' + encodeURIComponent(s.id)) : 'softwares.html';
+
+          return (
+            '<a href="' + link + '" class="preview-card" style="text-decoration:none;color:inherit;display:block;padding:0;overflow:hidden;position:relative;transition:transform .2s,box-shadow .2s;">' +
+              badge +
+              imgHtml +
+              '<div style="padding:16px 18px 18px;">' +
+                '<h3 style="margin:0 0 8px;font-size:1.1rem;color:#0a1f4d;">' + esc(s.nome) + '</h3>' +
+                '<p style="margin:0 0 12px;font-size:0.9rem;color:#64748b;line-height:1.4;min-height:40px;">' + esc(desc).slice(0, 120) + (desc.length > 120 ? '…' : '') + '</p>' +
+                (preco ? '<p style="margin:0 0 12px;font-weight:700;color:#0a1f4d;">' + preco + '</p>' : '') +
+                '<span class="btn btn-primary" style="display:inline-flex;align-items:center;gap:6px;padding:10px 16px;font-size:0.9rem;">' +
+                  '<i class="fas fa-sparkles"></i> Conheça essa novidade' +
+                '</span>' +
+              '</div>' +
+            '</a>'
+          );
+        }).join('');
+      } catch (e) {
+        console.error(e);
+        box.innerHTML = '<p style="grid-column:1/-1;text-align:center;"><a href="softwares.html">Ver softwares</a></p>';
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function () { setTimeout(carregarProdutosHome, 200); });
+    } else {
+      setTimeout(carregarProdutosHome, 200);
+    }
+  })();
+  </script>
 </body>
 </html>

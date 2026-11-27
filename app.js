@@ -41,40 +41,39 @@ if (header) {
   });
 }
 
-// ===== PWA só para usuários logados =====
-// Visitante não recebe manifest nem service worker → não aparece "Instalar app"
-function enablePwaForLoggedUser() {
-  // Só roda se auth.js estiver disponível e houver sessão
-  if (typeof getSession !== "function") return;
-  const session = getSession();
-  if (!session) return;
+// ===== PWA para todos (visitante, cliente e gestor) =====
+// Igual IBN / Compre Diamantino: qualquer pessoa pode instalar o app
+function enablePwaForEveryone() {
+  var session = null;
+  try {
+    if (typeof getSession === "function") session = getSession();
+  } catch (e) {}
 
-  // Adiciona / garante o manifest
-  let link = document.querySelector('link[rel="manifest"]');
+  // Manifest
+  var link = document.querySelector('link[rel="manifest"]');
   if (!link) {
     link = document.createElement("link");
     link.rel = "manifest";
     document.head.appendChild(link);
   }
-  // Gestor usa o manifest do gestor; cliente usa o público
-  link.href = session.role === "gestor" ? "manifest-gestor.json" : "manifest.json";
+  // Gestor logado usa manifest do gestor; demais usam o público
+  link.href = session && session.role === "gestor" ? "manifest-gestor.json" : "manifest.json";
 
-  // Registra o service worker correspondente
+  // Service Worker
   if ("serviceWorker" in navigator) {
-    const swFile = session.role === "gestor" ? "sw-gestor.js" : "sw.js";
-    navigator.serviceWorker.register(swFile).catch(() => {});
+    var swFile = session && session.role === "gestor" ? "sw-gestor.js" : "sw.js";
+    navigator.serviceWorker.register(swFile).catch(function () {});
   }
 
-  // Mostra banner de instalação logo após o login (definido em auth.js)
+  // Banner de instalação (auth.js)
   if (typeof schedulePwaInstallBanner === "function") {
     schedulePwaInstallBanner();
   }
 }
 
-// Chamado depois do auth inicializar
-window.addEventListener("load", () => {
-  // Pequeno delay para auth.js ter rodado
-  setTimeout(enablePwaForLoggedUser, 100);
+window.addEventListener("load", function () {
+  setTimeout(enablePwaForEveryone, 150);
+  setTimeout(enablePwaForEveryone, 1200);
 });
 
 // ===== Hero slideshow =====

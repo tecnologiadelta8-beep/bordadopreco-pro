@@ -1453,9 +1453,10 @@
             ? '<a href="' + p.comprovante_url + '" target="_blank" rel="noopener">Ver</a>'
             : '—';
           const st = p.status || 'pendente';
+          const codigo = p.codigo ? '<br><code style="font-size:0.75rem;background:#f1f5f9;padding:1px 5px;border-radius:4px;">' + p.codigo + '</code>' : '';
           return '<tr>' +
             '<td style="font-size:0.85rem">' + dataStr + '</td>' +
-            '<td><strong>' + (p.nome || '') + '</strong><br><span style="font-size:0.8rem;color:#64748b">' + (p.telefone || '') + '</span></td>' +
+            '<td><strong>' + (p.nome || '') + '</strong><br><span style="font-size:0.8rem;color:#64748b">' + (p.telefone || '') + '</span>' + codigo + '</td>' +
             '<td>' + sw + '</td>' +
             '<td>' + valor + '</td>' +
             '<td>' + (p.forma_pagamento || '') + '</td>' +

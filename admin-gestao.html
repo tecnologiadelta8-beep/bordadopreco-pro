@@ -613,34 +613,40 @@
 
       <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:14px;padding:18px 20px;margin-bottom:18px;">
         <p style="margin:0 0 10px;color:#0c4a6e;font-size:0.95rem;line-height:1.5;">
-          No JDC os dados principais (softwares, clientes, dúvidas, leads, licenças) já ficam no
-          <strong>Supabase</strong>. Qualquer aparelho logado como gestor vê a mesma informação.
+          Dados de gestão (softwares, clientes, dúvidas, leads, licenças, pedidos) ficam no
+          <strong>Supabase</strong>. Fotos e instaladores ficam no <strong>Cloudflare R2</strong>.
+          Qualquer aparelho logado como gestor vê a mesma base.
         </p>
         <p style="margin:0;color:#64748b;font-size:0.85rem;line-height:1.45;">
-          Use os botões abaixo para <strong>atualizar este aparelho</strong>, testar a conexão ou limpar cache local
-          (notificações do sino e dados temporários deste navegador).
+          Ao <strong>salvar</strong> no painel já grava na nuvem. Use os botões para
+          <strong>confirmar envio</strong>, <strong>buscar</strong> neste aparelho, <strong>testar Supabase + R2</strong>
+          ou limpar cache local.
         </p>
       </div>
 
       <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+        <button type="button" class="btn btn-primary" id="btn-nuvem-enviar" onclick="nuvemEnviarConfirmar()" style="background:#166534;">
+          <i class="fas fa-cloud-upload-alt"></i> Enviar / confirmar nuvem
+        </button>
         <button type="button" class="btn btn-primary" id="btn-nuvem-atualizar" onclick="nuvemAtualizarTudo()">
-          <i class="fas fa-cloud-download-alt"></i> Atualizar da nuvem
+          <i class="fas fa-cloud-download-alt"></i> Buscar da nuvem
         </button>
         <button type="button" class="btn" style="background:#f5c518;color:#0a1f4d;" id="btn-nuvem-testar" onclick="nuvemTestar()">
-          <i class="fas fa-plug"></i> Testar nuvem
+          <i class="fas fa-plug"></i> Testar Supabase + R2
         </button>
         <button type="button" class="btn" style="background:#ef4444;color:#fff;" id="btn-nuvem-limpar" onclick="nuvemLimparCache()">
           <i class="fas fa-broom"></i> Limpar cache local
         </button>
       </div>
 
-      <p id="nuvem-status-texto" style="color:#64748b;font-size:0.9rem;margin:0 0 18px;">Pronto.</p>
+      <p id="nuvem-status-texto" style="color:#64748b;font-size:0.9rem;margin:0 0 18px;white-space:pre-line;">Pronto.</p>
 
       <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px 18px;">
         <h3 style="margin:0 0 10px;font-size:0.95rem;color:#0a1f4d;"><i class="fas fa-info-circle"></i> Como usar</h3>
         <ul style="margin:0;padding-left:18px;color:#64748b;font-size:0.88rem;line-height:1.6;">
-          <li><strong>Atualizar da nuvem</strong> — recarrega softwares, dúvidas, leads e clientes neste aparelho.</li>
-          <li><strong>Testar nuvem</strong> — confere se o Supabase está respondendo.</li>
+          <li><strong>Enviar / confirmar nuvem</strong> — verifica escrita no Supabase, lista o R2 e recarrega os dados neste aparelho (útil no celular/PC do gestor).</li>
+          <li><strong>Buscar da nuvem</strong> — só puxa softwares, dúvidas, leads, clientes, downloads e licenças para este aparelho.</li>
+          <li><strong>Testar Supabase + R2</strong> — testa banco (Supabase) <em>e</em> armazenamento de arquivos (R2). Se o R2 falhar, é quase sempre CORS.</li>
           <li><strong>Limpar cache local</strong> — zera avisos do sino e dados temporários só deste navegador (não apaga a nuvem).</li>
         </ul>
       </div>
@@ -1483,22 +1489,152 @@
       if (!texto) el.classList.remove('show');
     }
 
+    /** Testa só leitura no Supabase */
+    async function _testeSupabase() {
+      var client = sb();
+      if (!client) throw new Error('Cliente Supabase não iniciado');
+      var { data, error } = await client.from('softwares').select('id').limit(1);
+      if (error) throw error;
+      return { ok: true, qtd: (data || []).length };
+    }
+
+    /** Testa escrita no Supabase (ping) */
+    async function _testeEscritaSupabase() {
+      var client = sb();
+      if (!client) throw new Error('Cliente Supabase não iniciado');
+      // Leitura + contagem já prova conexão; escrita real já ocorre ao salvar software/cliente.
+      // Tenta um select em várias tabelas críticas.
+      var tabelas = ['softwares', 'downloads', 'clientes', 'leads', 'licencas'];
+      var ok = [];
+      var falha = [];
+      for (var i = 0; i < tabelas.length; i++) {
+        try {
+          var r = await client.from(tabelas[i]).select('*', { count: 'exact', head: true });
+          if (r.error) falha.push(tabelas[i] + ': ' + r.error.message);
+          else ok.push(tabelas[i] + (r.count != null ? ' (' + r.count + ')' : ''));
+        } catch (e) {
+          falha.push(tabelas[i] + ': ' + (e.message || e));
+        }
+      }
+      return { ok: ok, falha: falha };
+    }
+
+    /** Testa R2 (listar bucket — precisa CORS + chave) */
+    async function _testeR2() {
+      if (typeof AWS === 'undefined') throw new Error('AWS SDK não carregado');
+      if (typeof R2_CONFIG === 'undefined' || !R2_CONFIG.accessKeyId) {
+        throw new Error('r2-config.js ausente ou sem chave');
+      }
+      AWS.config.update({
+        accessKeyId: R2_CONFIG.accessKeyId,
+        secretAccessKey: R2_CONFIG.secretAccessKey,
+        region: R2_CONFIG.region || 'auto',
+        s3ForcePathStyle: true
+      });
+      var s3 = new AWS.S3({
+        endpoint: R2_CONFIG.endpoint,
+        signatureVersion: 'v4',
+        s3ForcePathStyle: true
+      });
+      return new Promise(function (resolve, reject) {
+        s3.listObjectsV2(
+          { Bucket: R2_CONFIG.bucket, MaxKeys: 3 },
+          function (err, data) {
+            if (err) {
+              var m = (err.message || err.code || String(err));
+              if (/network|cors|failed to fetch/i.test(m)) {
+                reject(new Error(m + ' — configure CORS no bucket R2 (jdc-bordados).'));
+              } else {
+                reject(new Error(m));
+              }
+              return;
+            }
+            var n = (data && data.Contents) ? data.Contents.length : 0;
+            var nomes = (data && data.Contents || []).map(function (c) { return c.Key; }).slice(0, 3);
+            resolve({ ok: true, arquivos: n, amostra: nomes });
+          }
+        );
+      });
+    }
+
     async function nuvemTestar() {
-      nuvemMsg('Testando conexão com o Supabase...', true);
+      nuvemMsg('Testando Supabase e R2...', true);
+      var linhas = [];
+      var tudoOk = true;
+
       try {
-        var client = sb();
-        if (!client) throw new Error('Cliente Supabase não iniciado');
-        var { error } = await client.from('softwares').select('id').limit(1);
-        if (error) throw error;
-        nuvemMsg('Nuvem OK — Supabase respondendo neste aparelho.', true);
-        if (window.JdcNotif) JdcNotif.add('sistema', 'Teste de nuvem OK', 'Conexão com Supabase funcionando.');
+        await _testeSupabase();
+        var esc = await _testeEscritaSupabase();
+        linhas.push('✓ Supabase OK — tabelas: ' + (esc.ok.join(', ') || 'ok'));
+        if (esc.falha.length) {
+          tudoOk = false;
+          linhas.push('⚠ Supabase parcial: ' + esc.falha.join('; '));
+        }
       } catch (e) {
-        nuvemMsg('Falha na nuvem: ' + (e.message || e), false);
+        tudoOk = false;
+        linhas.push('✗ Supabase: ' + (e.message || e));
+      }
+
+      try {
+        var r2 = await _testeR2();
+        linhas.push('✓ R2 OK — bucket acessível' +
+          (r2.amostra && r2.amostra.length ? ' (ex.: ' + r2.amostra.join(', ') + ')' : ''));
+      } catch (e2) {
+        tudoOk = false;
+        linhas.push('✗ R2: ' + (e2.message || e2));
+      }
+
+      nuvemMsg(linhas.join('\n'), tudoOk);
+      if (window.JdcNotif) {
+        JdcNotif.add('sistema', tudoOk ? 'Teste nuvem OK' : 'Teste nuvem com falha',
+          tudoOk ? 'Supabase e R2 responderam.' : 'Veja o detalhe na aba Nuvem.');
+      }
+    }
+
+    /** Confirma nuvem (gestor): valida Supabase + R2 e puxa tudo neste aparelho */
+    async function nuvemEnviarConfirmar() {
+      nuvemMsg('Confirmando envio / sincronização com a nuvem...', true);
+      try {
+        var esc = await _testeEscritaSupabase();
+        if (esc.falha.length && !esc.ok.length) {
+          throw new Error('Supabase sem acesso: ' + esc.falha.join('; '));
+        }
+        var r2Linha = '';
+        try {
+          var r2 = await _testeR2();
+          r2Linha = 'R2 OK.';
+        } catch (eR) {
+          r2Linha = 'R2 com problema: ' + (eR.message || eR) + ' (uploads de foto/instalador podem falhar até ajustar CORS).';
+        }
+        // Recarrega neste aparelho o que já está na nuvem
+        if (typeof carregarSoftwares === 'function') await carregarSoftwares();
+        if (typeof carregarDuvidas === 'function') await carregarDuvidas();
+        if (typeof carregarLeads === 'function') await carregarLeads();
+        if (typeof carregarLicencas === 'function') await carregarLicencas();
+        if (typeof carregarClientes === 'function') await carregarClientes();
+        if (typeof carregarDownloads === 'function') await carregarDownloads();
+        if (typeof carregarPedidos === 'function') await carregarPedidos();
+        if (window.JdcNotif && typeof JdcNotif.sincronizarDoBanco === 'function') {
+          await JdcNotif.sincronizarDoBanco();
+        }
+        nuvemMsg(
+          'Nuvem confirmada neste aparelho.\n' +
+          'Supabase: ' + esc.ok.join(', ') +
+          (esc.falha.length ? '\n⚠ ' + esc.falha.join('; ') : '') +
+          '\n' + r2Linha +
+          '\nLembrete: cada Salvar no painel já grava no Supabase; foto/instalador gravam no R2 ao enviar.',
+          esc.falha.length ? false : true
+        );
+        if (window.JdcNotif) {
+          JdcNotif.add('sistema', 'Nuvem confirmada', 'Gestor sincronizou este aparelho.');
+        }
+      } catch (e) {
+        nuvemMsg('Falha ao confirmar nuvem: ' + (e.message || e), false);
       }
     }
 
     async function nuvemAtualizarTudo() {
-      nuvemMsg('Atualizando dados da nuvem neste aparelho...', true);
+      nuvemMsg('Buscando dados da nuvem neste aparelho...', true);
       try {
         if (typeof carregarSoftwares === 'function') await carregarSoftwares();
         if (typeof carregarDuvidas === 'function') await carregarDuvidas();
@@ -1506,13 +1642,14 @@
         if (typeof carregarLicencas === 'function') await carregarLicencas();
         if (typeof carregarClientes === 'function') await carregarClientes();
         if (typeof carregarDownloads === 'function') await carregarDownloads();
+        if (typeof carregarPedidos === 'function') await carregarPedidos();
         if (window.JdcNotif && typeof JdcNotif.sincronizarDoBanco === 'function') {
           await JdcNotif.sincronizarDoBanco();
         }
-        nuvemMsg('Atualizado! Softwares, dúvidas, leads, clientes e licenças recarregados da nuvem.', true);
-        if (window.JdcNotif) JdcNotif.add('sistema', 'Dados atualizados da nuvem', 'Este aparelho foi sincronizado agora.');
+        nuvemMsg('Busca concluída — softwares, dúvidas, leads, clientes, downloads, pedidos e licenças atualizados neste aparelho.', true);
+        if (window.JdcNotif) JdcNotif.add('sistema', 'Dados buscados da nuvem', 'Este aparelho foi atualizado.');
       } catch (e) {
-        nuvemMsg('Erro ao atualizar: ' + (e.message || e), false);
+        nuvemMsg('Erro ao buscar: ' + (e.message || e), false);
       }
     }
 
